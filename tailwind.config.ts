@@ -8,9 +8,15 @@ export default {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        digitalNumbers: ["var(--font-digital-number)"],
+        volkhov: ["var(--font-volkhov)"],
+        poppins: ["var(--font-poppins)"],
+      },
       colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
+        primary: {
+          600: "var(--color-primary-600)",
+        },
       },
     },
   },
