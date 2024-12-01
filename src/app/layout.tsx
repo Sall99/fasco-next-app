@@ -1,16 +1,24 @@
 import type { Metadata } from "next";
+import { Volkhov } from "next/font/google";
+import { Poppins } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
 
-const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
+const DigitalNumbers = localFont({
+  src: "./fonts/DigitalNumbers-Regular.ttf",
+  variable: "--font-digital-number",
   weight: "100 900",
 });
-const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
-  weight: "100 900",
+const volkhov = Volkhov({
+  subsets: ["latin"],
+  weight: ["400", "700", "400", "700"],
+  variable: "--font-volkhov",
+});
+
+const poppins = Poppins({
+  subsets: ["latin-ext"],
+  weight: ["100", "200", "300", "400", "500", "600", "800", "900"],
+  variable: "--font-poppins",
 });
 
 export const metadata: Metadata = {
@@ -26,7 +34,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${DigitalNumbers.variable} ${volkhov.variable} ${poppins.variable} antialiased`}
       >
         {children}
       </body>
