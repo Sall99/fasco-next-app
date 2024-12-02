@@ -11,7 +11,7 @@ const DigitalNumbers = localFont({
 });
 const volkhov = Volkhov({
   subsets: ["latin"],
-  weight: ["400", "700", "400", "700"],
+  weight: ["400", "700"],
   variable: "--font-volkhov",
 });
 
@@ -34,7 +34,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${DigitalNumbers.variable} ${volkhov.variable} ${poppins.variable} antialiased`}
+        className={`${DigitalNumbers.variable} ${volkhov.variable} ${poppins.variable} base-layout antialiased`}
       >
         {children}
       </body>

@@ -13,10 +13,27 @@ export default {
         volkhov: ["var(--font-volkhov)"],
         poppins: ["var(--font-poppins)"],
       },
+      screens: {
+        sm: "640px",
+
+        md: "768px",
+
+        lg: "1024px",
+
+        xl: "1280px",
+
+        "2xl": "1600px",
+      },
       colors: {
         primary: {
+          200: "var(--color-primary-200)",
           600: "var(--color-primary-600)",
         },
+      },
+
+      spacing: {
+        _949: "949px",
+        _1077: "1077px",
       },
     },
   },
