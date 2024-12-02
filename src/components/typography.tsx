@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import clsx from "clsx";
 import { VariantProps, cva } from "class-variance-authority";
@@ -7,7 +8,7 @@ const typographyVariants = cva(
     "transition-all",
     "duration-300",
     "ease-in-out",
-    "font-sans",
+    "font-poppins",
     "tracking-tight",
   ],
   {
@@ -20,7 +21,8 @@ const typographyVariants = cva(
           "font-normal",
           "leading-relaxed",
         ],
-
+        "p-16": ["text-[16px]", "font-normal", "leading-relaxed"],
+        "p-12": ["text-[12px]", "font-normal", "leading-relaxed"],
         h1: [
           "text-3xl",
           "md:text-4xl",
@@ -94,7 +96,7 @@ const typographyVariants = cva(
       color: "default",
       alignment: "left",
     },
-  }
+  },
 );
 
 type AllowedElements =
@@ -108,7 +110,7 @@ interface TypographyProps<T extends AllowedElements>
   children: React.ReactNode;
 }
 
-function Typography<T extends AllowedElements = "p">({
+export function Typography<T extends AllowedElements = "p">({
   as,
   variant,
   color,
@@ -120,6 +122,8 @@ function Typography<T extends AllowedElements = "p">({
 }: TypographyProps<T>) {
   const defaultComponentMap = {
     p: "p",
+    "p-16": "p",
+    "p-12": "p",
     h1: "h1",
     h2: "h2",
     h3: "h3",
@@ -141,11 +145,11 @@ function Typography<T extends AllowedElements = "p">({
           alignment,
           font,
         }),
-        className
+        className,
       ),
       ...props,
     },
-    children
+    children,
   );
 }
 

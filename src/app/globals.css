@@ -3,5 +3,31 @@
 @tailwind utilities;
 
 :root {
+  --color-gray-200: rgba(157, 157, 157, 1);
   --color-primary-600: rgba(72, 72, 72, 1);
+}
+
+.base-layout {
+  max-width: 1819px;
+  margin: 0 auto;
+}
+
+.or-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.line {
+  flex: 1;
+  height: 1px;
+  background-color: #ccc;
+}
+
+.or-text {
+  margin: 0 10px;
+  color: #888;
+  font-weight: bold;
+  font-size: 14px;
 }
