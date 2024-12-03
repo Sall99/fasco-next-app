@@ -6,6 +6,7 @@ import React, {
 } from "react";
 import clsx from "clsx";
 import { VariantProps, cva } from "class-variance-authority";
+import { FieldError, UseFormRegisterReturn } from "react-hook-form";
 
 export type InputType =
   | "text"
@@ -66,14 +67,16 @@ interface InputProps
   label?: string;
   error?: string;
   multiline?: false;
+  register?: UseFormRegisterReturn;
 }
 
 interface TextareaProps
   extends Omit<TextareaHTMLAttributes<HTMLTextAreaElement>, "size">,
     VariantProps<typeof inputVariants> {
   label?: string;
-  error?: string;
+  error?: FieldError | string;
   multiline: true;
+  register?: UseFormRegisterReturn;
 }
 
 type BaseInputProps = InputProps | TextareaProps;
@@ -82,8 +85,16 @@ const Input = forwardRef<
   HTMLInputElement | HTMLTextAreaElement,
   BaseInputProps
 >((props, ref) => {
-  const { label, error, className, variant, size, multiline, ...restProps } =
-    props;
+  const {
+    label,
+    error,
+    className,
+    variant,
+    size,
+    register,
+    multiline,
+    ...restProps
+  } = props;
 
   const combinedRef = ref as React.Ref<HTMLInputElement | HTMLTextAreaElement>;
 
@@ -110,6 +121,7 @@ const Input = forwardRef<
             },
             className,
           )}
+          {...register}
           {...(restProps as TextareaHTMLAttributes<HTMLTextAreaElement>)}
         />
       ) : (
@@ -123,11 +135,16 @@ const Input = forwardRef<
             },
             className,
           )}
+          {...register}
           {...(restProps as InputHTMLAttributes<HTMLInputElement>)}
         />
       )}
 
-      {error && <p className="mt-1 text-xs text-red-500">{error}</p>}
+      {error && (
+        <p className="mt-1 font-poppins text-xs text-red-500">
+          {typeof error === "string" ? error : error.message}
+        </p>
+      )}
     </div>
   );
 });
