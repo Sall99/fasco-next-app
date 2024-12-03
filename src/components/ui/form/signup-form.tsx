@@ -1,13 +1,26 @@
+"use client";
 import React from "react";
-import { Input, Typography, Button } from "@/components";
 import { FcGoogle } from "react-icons/fc";
 import { VscGithubInverted } from "react-icons/vsc";
 import Link from "next/link";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+
+import { Input, Typography, Button } from "@/components";
+import { signupSchema } from "@/constants";
 
 type InputType = "text" | "email" | "password" | "tel";
+type FormData = {
+  fName: string;
+  lName: string;
+  email: string;
+  phone: string;
+  password: string;
+  confirmPassword: string;
+};
 
 const formFields: Array<{
-  name: string;
+  name: keyof FormData;
   label: string;
   placeholder: string;
   type: InputType;
@@ -58,6 +71,19 @@ const formFields: Array<{
 ];
 
 export function SignupForm() {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormData>({
+    resolver: yupResolver(signupSchema),
+  });
+
+  const onSubmit = (data: FormData) => {
+    console.log(data);
+    console.log("submited");
+  };
+
   return (
     <div className="w-full">
       <Typography variant="h2" font="primary">
@@ -94,14 +120,17 @@ export function SignupForm() {
         </div>
       </div>
 
-      <form>
+      <form onSubmit={handleSubmit(onSubmit)}>
         <div className="grid gap-4 xl:grid-cols-2">
           {formFields.map(({ name, type, placeholder }, key) => (
             <Input
               key={key}
+              id={name}
+              {...register(name)}
               name={name}
               type={type}
               placeholder={placeholder}
+              error={errors[name]?.message}
             />
           ))}
         </div>
