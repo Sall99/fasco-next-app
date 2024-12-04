@@ -7,12 +7,12 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import toast from "react-hot-toast";
 
 import { Input, Typography, Button } from "@/components";
-import { forgotPasswordSchema } from "@/constants";
+import { confirmationCodeSchema } from "@/constants";
 import { useRouter } from "next/navigation";
 
-type InputType = "email" | "password";
+type InputType = "number";
 type FormData = {
-  email: string;
+  confirmationCode: number;
 };
 
 const formFields: Array<{
@@ -23,30 +23,29 @@ const formFields: Array<{
   multiline: boolean;
 }> = [
   {
-    name: "email",
-    label: "Email",
-    placeholder: "Email Address",
-    type: "email",
+    name: "confirmationCode",
+    label: "Enter The Confirmation Code",
+    placeholder: "Confirmation Code",
+    type: "number",
     multiline: false,
   },
 ];
 
-export function ForgotPasswordForm() {
+export function ConfirmCodeForm() {
   const router = useRouter();
-
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<FormData>({
-    resolver: yupResolver(forgotPasswordSchema),
+    resolver: yupResolver(confirmationCodeSchema),
   });
 
   const saveSettings = async () => {
     await new Promise((resolve) => {
       setTimeout(() => {
         resolve("Success");
-        router.push("/auth/confirm-code");
+        router.push("/auth/new-password");
       }, 1000);
     });
   };
@@ -54,9 +53,9 @@ export function ForgotPasswordForm() {
   const onSubmit = async (data: FormData) => {
     console.log(data);
     toast.promise(saveSettings(), {
-      loading: "Sending confirmation code...",
-      success: <b>Code sent successfully!</b>,
-      error: <b>Failed to send code. Try again!</b>,
+      loading: "Verifying confirmation code...",
+      success: <b>Verified!</b>,
+      error: <b>Failed to verify the code. Try again!</b>,
     });
   };
 
@@ -68,7 +67,7 @@ export function ForgotPasswordForm() {
 
       <div className="mt-20">
         <Typography variant="h5" font="primary" className="mb-7">
-          Forget Password
+          Enter The Confirmation Code
         </Typography>
       </div>
 
@@ -95,9 +94,12 @@ export function ForgotPasswordForm() {
             </Button>
           </form>
           <Typography variant="p-12" alignment="center" className="mt-5">
-            Already have an account?{" "}
-            <Link href="/auth/login" className="text-blue-500 underline">
-              Login
+            Didn’t receive Confirmation Code?{" "}
+            <Link
+              href="/auth/forgot-password"
+              className="text-blue-500 underline"
+            >
+              Resend Now
             </Link>
           </Typography>
         </div>

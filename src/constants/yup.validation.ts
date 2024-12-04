@@ -23,6 +23,18 @@ export const forgotPasswordSchema = yup.object().shape({
     .required("Email is required"),
 });
 
+export const confirmationCodeSchema = yup.object().shape({
+  confirmationCode: yup
+    .number()
+    .typeError("Confirmation code must be a valid number")
+    .required("Confirmation code is required")
+    .test(
+      "len",
+      "Confirmation code must be exactly 4 digits",
+      (value) => value?.toString().length === 4,
+    ),
+});
+
 export const signupSchema = yup.object().shape({
   fName: yup
     .string()
