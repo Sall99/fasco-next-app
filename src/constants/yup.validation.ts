@@ -23,6 +23,21 @@ export const forgotPasswordSchema = yup.object().shape({
     .required("Email is required"),
 });
 
+export const resetPasswordSchema = yup.object().shape({
+  password: yup
+    .string()
+    .required("Password is required")
+    .min(8, "Password must be at least 8 characters")
+    .matches(
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])/,
+      "Password must include uppercase, lowercase, number, and special character",
+    ),
+  confirmPassword: yup
+    .string()
+    .required("Confirm Password is required")
+    .oneOf([yup.ref("password"), ""], "Passwords must match"),
+});
+
 export const confirmationCodeSchema = yup.object().shape({
   confirmationCode: yup
     .number()
