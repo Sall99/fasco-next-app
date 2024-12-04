@@ -7,16 +7,12 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 
 import { Input, Typography, Button } from "@/components";
-import { signupSchema } from "@/constants";
+import { loginSchema } from "@/constants";
 
-type InputType = "text" | "email" | "password" | "tel";
+type InputType = "email" | "password";
 type FormData = {
-  fName: string;
-  lName: string;
   email: string;
-  phone: string;
   password: string;
-  confirmPassword: string;
 };
 
 const formFields: Array<{
@@ -27,33 +23,13 @@ const formFields: Array<{
   multiline: boolean;
 }> = [
   {
-    name: "fName",
-    label: "First Name",
-    placeholder: "First Name",
-    type: "text",
-    multiline: false,
-  },
-  {
-    name: "lName",
-    label: "Last Name",
-    placeholder: "Last Name",
-    type: "text",
-    multiline: false,
-  },
-  {
     name: "email",
     label: "Email",
     placeholder: "Email Address",
     type: "email",
     multiline: false,
   },
-  {
-    name: "phone",
-    label: "Phone Number",
-    placeholder: "Phone Number",
-    type: "tel",
-    multiline: false,
-  },
+
   {
     name: "password",
     label: "Password",
@@ -61,22 +37,15 @@ const formFields: Array<{
     type: "password",
     multiline: false,
   },
-  {
-    name: "confirmPassword",
-    label: "Confirm Password",
-    placeholder: "Confirm Password",
-    type: "password",
-    multiline: false,
-  },
 ];
 
-export function SignupForm() {
+export function LoginForm() {
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<FormData>({
-    resolver: yupResolver(signupSchema),
+    resolver: yupResolver(loginSchema),
   });
 
   const onSubmit = (data: FormData) => {
@@ -92,7 +61,7 @@ export function SignupForm() {
 
       <div className="mt-6">
         <Typography variant="h5" font="primary" className="mb-7">
-          Create Account
+          Sign In To FASCO
         </Typography>
 
         <div className="mb-5 flex flex-col gap-5 xl:flex-row">
@@ -122,7 +91,7 @@ export function SignupForm() {
 
       <div className="flex min-h-[50vh] flex-col justify-between">
         <form onSubmit={handleSubmit(onSubmit)}>
-          <div className="grid gap-4 xl:grid-cols-2">
+          <div>
             {formFields.map(({ name, type, placeholder }, key) => (
               <Input
                 key={key}
@@ -137,19 +106,25 @@ export function SignupForm() {
           </div>
 
           <div className="mt-10 px-10">
-            <Button fullWidth>
+            <Button fullWidth className="mb-5">
               <Typography color="white" variant="p-16" font="default">
-                Create Account
+                Log in
               </Typography>
             </Button>
+            <Link href="/auth/signup">
+              <Button variant="outline" fullWidth className="mb-2">
+                <Typography color="blue" variant="p-16" font="default">
+                  Register Now
+                </Typography>
+              </Button>
+            </Link>
+            <Link href="/auth/forgot-password">
+              <Typography variant="p-12" color="blue" alignment={"right"}>
+                Forgot password ?
+              </Typography>
+            </Link>
           </div>
         </form>
-        <Typography variant="p-12" alignment="center" className="mt-5">
-          Already have an account?{" "}
-          <Link href="/auth/login" className="text-blue-500 underline">
-            Login
-          </Link>
-        </Typography>
 
         <Typography variant="p-12" alignment="right" className="mt-10 lg:mt-0">
           <Link href="/terms-conditions">FASCO Terms & Codnitions</Link>

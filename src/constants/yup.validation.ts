@@ -1,5 +1,28 @@
 import * as yup from "yup";
 
+export const loginSchema = yup.object().shape({
+  email: yup
+    .string()
+    .email("Invalid email format")
+    .required("Email is required"),
+
+  password: yup
+    .string()
+    .required("Password is required")
+    .min(8, "Password must be at least 8 characters")
+    .matches(
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])/,
+      "Password must include uppercase, lowercase, number, and special character",
+    ),
+});
+
+export const forgotPasswordSchema = yup.object().shape({
+  email: yup
+    .string()
+    .email("Invalid email format")
+    .required("Email is required"),
+});
+
 export const signupSchema = yup.object().shape({
   fName: yup
     .string()

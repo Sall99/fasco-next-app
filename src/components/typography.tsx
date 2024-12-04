@@ -78,6 +78,7 @@ const typographyVariants = cva(
         primary: "text-blue-600 dark:text-blue-400",
         white: "text-white",
         black: "text-black",
+        blue: "text-blue-500",
       },
       font: {
         default: "font-poppins",
