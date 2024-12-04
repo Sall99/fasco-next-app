@@ -7,12 +7,13 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import toast from "react-hot-toast";
 
 import { Input, Typography, Button } from "@/components";
-import { confirmationCodeSchema } from "@/constants";
+import { resetPasswordSchema } from "@/constants";
 import { useRouter } from "next/navigation";
 
-type InputType = "number";
+type InputType = "email" | "password";
 type FormData = {
-  confirmationCode: number;
+  password: string;
+  confirmPassword: string;
 };
 
 const formFields: Array<{
@@ -23,29 +24,37 @@ const formFields: Array<{
   multiline: boolean;
 }> = [
   {
-    name: "confirmationCode",
-    label: "Enter The Confirmation Code",
-    placeholder: "Confirmation Code",
-    type: "number",
+    name: "password",
+    label: "Password",
+    placeholder: "Password",
+    type: "password",
+    multiline: false,
+  },
+  {
+    name: "confirmPassword",
+    label: "Confirm Password",
+    placeholder: "Confirm Password",
+    type: "password",
     multiline: false,
   },
 ];
 
-export function ConfirmCodeForm() {
+export function ResetPasswordForm() {
   const router = useRouter();
+
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<FormData>({
-    resolver: yupResolver(confirmationCodeSchema),
+    resolver: yupResolver(resetPasswordSchema),
   });
 
   const saveSettings = async () => {
     await new Promise((resolve) => {
       setTimeout(() => {
         resolve("Success");
-        router.push("/auth/reset-password");
+        router.push("/auth/confirm-code");
       }, 1000);
     });
   };
@@ -53,9 +62,9 @@ export function ConfirmCodeForm() {
   const onSubmit = async (data: FormData) => {
     console.log(data);
     toast.promise(saveSettings(), {
-      loading: "Verifying confirmation code...",
-      success: <b>Verified!</b>,
-      error: <b>Failed to verify the code. Try again!</b>,
+      loading: "Sending confirmation code...",
+      success: <b>Code sent successfully!</b>,
+      error: <b>Failed to send code. Try again!</b>,
     });
   };
 
@@ -67,7 +76,7 @@ export function ConfirmCodeForm() {
 
       <div className="mt-20">
         <Typography variant="h5" font="primary" className="mb-7">
-          Enter The Confirmation Code
+          Enter Your New Password
         </Typography>
       </div>
 
@@ -89,17 +98,14 @@ export function ConfirmCodeForm() {
             </div>
             <Button fullWidth className="mb-5">
               <Typography color="white" variant="p-16" font="default">
-                Send confirmation code
+                Submit
               </Typography>
             </Button>
           </form>
           <Typography variant="p-12" alignment="center" className="mt-5">
-            Didn’t receive Confirmation Code?{" "}
-            <Link
-              href="/auth/forgot-password"
-              className="text-blue-500 underline"
-            >
-              Resend Now
+            Already have an account?{" "}
+            <Link href="/auth/login" className="text-blue-500 underline">
+              Login
             </Link>
           </Typography>
         </div>
