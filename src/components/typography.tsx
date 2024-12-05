@@ -36,7 +36,6 @@ const typographyVariants = cva(
           "md:text-3xl",
           "lg:text-4xl",
           "2xl:text-[54px]",
-          "font-bold",
           "leading-tight",
         ],
         h3: [

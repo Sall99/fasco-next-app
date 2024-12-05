@@ -4,6 +4,7 @@ import { Poppins } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
 import { Toaster } from "react-hot-toast";
+import { Header } from "@/components";
 
 const DigitalNumbers = localFont({
   src: "./fonts/DigitalNumbers-Regular.ttf",
@@ -37,6 +38,7 @@ export default function RootLayout({
       <body
         className={`${DigitalNumbers.variable} ${volkhov.variable} ${poppins.variable} base-layout antialiased`}
       >
+        <Header />
         {children}
         <Toaster />
       </body>
