@@ -26,12 +26,20 @@ export default {
       },
       colors: {
         primary: {
+          100: "var(--color-primary-100)",
           200: "var(--color-primary-200)",
           600: "var(--color-primary-600)",
         },
       },
 
       spacing: {
+        _150: "150px",
+        _249: "249px",
+        _383: "383px",
+        _392: "392px",
+        _427: "427px",
+        _570: "570px",
+        _756: "756px",
         _949: "949px",
         _1077: "1077px",
       },

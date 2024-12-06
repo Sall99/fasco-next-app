@@ -66,7 +66,7 @@ const typographyVariants = cva(
           "text-sm",
           "md:text-base",
           "lg:text-lg",
-          "2xl:text-[24px]",
+          "2xl:text-[20px]",
           "font-medium",
           "leading-tight",
         ],

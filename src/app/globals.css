@@ -3,6 +3,7 @@
 @tailwind utilities;
 
 :root {
+  --color-gray-100: rgba(224, 224, 224, 1);
   --color-gray-200: rgba(157, 157, 157, 1);
   --color-primary-600: rgba(72, 72, 72, 1);
 }
@@ -30,4 +31,8 @@
   color: #888;
   font-weight: bold;
   font-size: 14px;
+}
+
+.outline-text {
+  -webkit-text-stroke: 2px var(--color-primary-600);
 }
