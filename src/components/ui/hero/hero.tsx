@@ -42,16 +42,16 @@ export const Hero = () => {
 
   return (
     <motion.section
-      className="m-auto mt-24 flex max-w-7xl justify-between"
+      className="m-auto mt-10 flex max-w-7xl items-center justify-center px-6 lg:mt-24 lg:justify-between"
       initial="hidden"
       animate="visible"
       variants={containerVariants}
     >
       <motion.div
-        className="flex h-_756 w-_392 items-end bg-gray-200"
+        className="hidden h-_756 w-_392 items-end bg-gray-200 lg:flex"
         variants={imageVariants}
       >
-        <div className="h-_570 relative w-full">
+        <div className="relative h-_570 w-full">
           <Image
             src="/imgs/hero-il-1.png"
             alt="Auth illustration"
@@ -64,7 +64,7 @@ export const Hero = () => {
       </motion.div>
 
       <motion.div
-        className="flex h-_756 w-_427 flex-col justify-between"
+        className="flex w-full flex-col justify-between gap-10 sm:w-_427 lg:mx-6 lg:h-_756"
         variants={containerVariants}
       >
         <motion.div
@@ -84,17 +84,17 @@ export const Hero = () => {
         </motion.div>
 
         <motion.div
-          className="flex h-_383 w-full flex-col items-center justify-center"
+          className="flex w-full flex-col items-center justify-center lg:h-_383"
           variants={containerVariants}
         >
           <motion.h2
-            className="font-poppins text-[91px] font-medium uppercase leading-none text-primary-600"
+            className="font-poppins text-5xl font-medium uppercase leading-none text-primary-600 lg:text-[91px]"
             variants={textVariants}
           >
             Ultimate
           </motion.h2>
           <motion.h2
-            className="outline-text text-[187px] font-bold uppercase leading-none text-transparent"
+            className="outline-text text-7xl font-bold uppercase leading-none text-transparent lg:text-[187px]"
             variants={textVariants}
           >
             Sale
@@ -128,10 +128,10 @@ export const Hero = () => {
       </motion.div>
 
       <motion.div
-        className="flex h-_756 w-_392 items-end bg-gray-200"
+        className="hidden h-_756 w-_392 items-end bg-gray-200 lg:flex"
         variants={imageVariants}
       >
-        <div className="h-_570 w-_249 relative">
+        <div className="relative h-_570 w-_249">
           <Image
             src="/imgs/hero-il-2.png"
             alt="Auth illustration"
