@@ -4,13 +4,7 @@ import clsx from "clsx";
 import { VariantProps, cva } from "class-variance-authority";
 
 const typographyVariants = cva(
-  [
-    "transition-all",
-    "duration-300",
-    "ease-in-out",
-    "font-poppins",
-    "tracking-tight",
-  ],
+  ["transition-all", "duration-300", "ease-in-out", "tracking-tight"],
   {
     variants: {
       variant: {

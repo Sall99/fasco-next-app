@@ -3,13 +3,14 @@ import { Volkhov } from "next/font/google";
 import { Poppins } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 import { Toaster } from "react-hot-toast";
 import { Header } from "@/components";
 
 const DigitalNumbers = localFont({
   src: "./fonts/DigitalNumbers-Regular.ttf",
   variable: "--font-digital-number",
-  weight: "100 900",
 });
 const volkhov = Volkhov({
   subsets: ["latin"],
