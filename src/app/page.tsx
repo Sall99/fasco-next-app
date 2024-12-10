@@ -1,4 +1,4 @@
-import { Hero, Logos, MonthDeals } from "@/components";
+import { Hero, Logos, MonthDeals, NewArrivals } from "@/components";
 
 export default function Home() {
   return (
@@ -6,6 +6,7 @@ export default function Home() {
       <Hero />
       <Logos />
       <MonthDeals />
+      <NewArrivals />
     </div>
   );
 }

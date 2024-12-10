@@ -82,7 +82,7 @@ function CountDown() {
         <Typography font="primary" variant="h3">
           Deals Of The Month
         </Typography>
-        <Typography font="primary" variant="p" className="mt-5">
+        <Typography font="primary" variant="p-16" className="mt-5">
           Dont miss our special offers! Shop the best deals and save big on your
           favorite items
         </Typography>
