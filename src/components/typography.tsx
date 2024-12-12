@@ -72,6 +72,7 @@ const typographyVariants = cva(
         white: "text-white",
         black: "text-black",
         blue: "text-blue-500",
+        red: "text-red-500",
       },
       font: {
         default: "font-poppins",

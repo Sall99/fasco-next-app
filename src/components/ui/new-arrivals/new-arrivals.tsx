@@ -1,28 +1,34 @@
 import React from "react";
 
 import { Tabs, Typography } from "@/components";
+import { womenSFashion } from "@/constants/data";
 
 const categories = [
   {
-    name: "Classrooms",
+    name: "Men's Fashion",
+    data: womenSFashion,
   },
   {
-    name: "Library",
+    name: "Women's Fashion",
+    data: womenSFashion,
   },
   {
-    name: "Science Lab",
+    name: "Women Accessories",
+    data: womenSFashion,
   },
   {
-    name: "Computer Lab",
+    name: "Men Accessories",
+    data: womenSFashion,
   },
   {
-    name: "Garden and Nature Area",
+    name: "Discount Deals",
+    data: womenSFashion,
   },
 ];
 
 export const NewArrivals = () => {
   return (
-    <section className="m-auto mt-10 flex max-w-7xl flex-col px-4 lg:mt-24">
+    <section className="m-auto mt-10 flex max-w-7xl flex-col lg:mt-24">
       <div className="m-auto max-w-_756">
         <Typography variant="h2" font="primary" alignment="center">
           New Arrivals

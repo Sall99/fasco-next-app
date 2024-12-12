@@ -1,11 +1,11 @@
-import { Hero, Logos, MonthDeals, NewArrivals } from "@/components";
+import { Hero, Logos, NewArrivals } from "@/components";
 
 export default function Home() {
   return (
     <div>
       <Hero />
       <Logos />
-      <MonthDeals />
+      {/* <MonthDeals /> */}
       <NewArrivals />
     </div>
   );
