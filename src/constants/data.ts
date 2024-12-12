@@ -63,8 +63,10 @@ export const Products = [
     name: "Shiny Dress",
     brand: "Al Karam",
     price: 95.5,
+    viewersCount: 24,
+    category: "Women's Fashion",
     rating: {
-      average: 4.1,
+      average: 5,
       reviewsCount: 4100,
     },
     stock: {
@@ -85,8 +87,9 @@ export const Products = [
     brand: "Al Karam",
     price: 95.5,
     viewersCount: 24,
+    category: "Women's Fashion",
     rating: {
-      average: 4.1,
+      average: 5,
       reviewsCount: 4100,
     },
     stock: {
@@ -107,8 +110,9 @@ export const Products = [
     brand: "Al Karam",
     price: 95.5,
     viewersCount: 24,
+    category: "Women's Fashion",
     rating: {
-      average: 4.1,
+      average: 5,
       reviewsCount: 4100,
     },
     stock: {
@@ -129,8 +133,9 @@ export const Products = [
     brand: "Al Karam",
     price: 95.5,
     viewersCount: 24,
+    category: "Women's Fashion",
     rating: {
-      average: 4.1,
+      average: 5,
       reviewsCount: 4100,
     },
     stock: {
@@ -151,8 +156,9 @@ export const Products = [
     brand: "Al Karam",
     price: 95.5,
     viewersCount: 24,
+    category: "Women's Fashion",
     rating: {
-      average: 4.1,
+      average: 5,
       reviewsCount: 4100,
     },
     stock: {
@@ -175,8 +181,9 @@ export const Products = [
     brand: "Al Karam",
     price: 95.5,
     viewersCount: 24,
+    category: "Women's Fashion",
     rating: {
-      average: 4.1,
+      average: 5,
       reviewsCount: 4100,
     },
     stock: {
@@ -192,3 +199,7 @@ export const Products = [
     description: "A clean and casual white shirt suitable for any occasion.",
   },
 ];
+
+export const womenSFashion = Products.filter(
+  (product) => product.category.toLowerCase() === "women's fashion",
+);
