@@ -1,12 +1,17 @@
 import React from "react";
 
 import { Tabs, Typography } from "@/components";
-import { womenSFashion } from "@/constants/data";
+import {
+  womenSFashion,
+  menSFashion,
+  womenAccessories,
+  menAccessories,
+} from "@/constants/data";
 
 const categories = [
   {
     name: "Men's Fashion",
-    data: womenSFashion,
+    data: menSFashion,
   },
   {
     name: "Women's Fashion",
@@ -14,11 +19,11 @@ const categories = [
   },
   {
     name: "Women Accessories",
-    data: womenSFashion,
+    data: womenAccessories,
   },
   {
     name: "Men Accessories",
-    data: womenSFashion,
+    data: menAccessories,
   },
   {
     name: "Discount Deals",

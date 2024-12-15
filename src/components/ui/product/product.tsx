@@ -20,11 +20,11 @@ export function Product({ product }: ProductProps) {
 
   return (
     <div
-      className="group relative m-auto h-[438px] w-[386px] overflow-hidden rounded-lg bg-white p-4"
+      className="group relative m-auto w-[386px] overflow-hidden rounded-lg bg-white p-4"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div className="relative h-[244px] w-full">
+      <div className="relative h-[444px] w-full">
         <AnimatePresence mode="wait">
           <motion.div
             key={isHovered ? "hover-image" : "primary-image"}
