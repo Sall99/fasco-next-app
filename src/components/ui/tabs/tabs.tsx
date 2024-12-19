@@ -6,11 +6,14 @@ import { Product } from "../product";
 interface TabsProps {
   categories: {
     name: string;
-    data: ProductType[];
+    data: {
+      products: ProductType[];
+    };
   }[];
 }
 
 export function Tabs({ categories }: TabsProps) {
+  console.log(categories);
   return (
     <div className="container mx-auto px-4 py-24">
       <TabGroup>
@@ -28,7 +31,7 @@ export function Tabs({ categories }: TabsProps) {
           {categories.map(({ name, data }) => (
             <TabPanel key={name} className="rounded-xl bg-white/5 p-3">
               <ul className="grid grid-cols-1 justify-center gap-6 md:grid-cols-2 lg:grid-cols-3">
-                {data.map((product) => (
+                {data.products.map((product) => (
                   <li key={product.id} className="flex justify-center">
                     <Product product={product} />
                   </li>
