@@ -51,8 +51,8 @@ export async function POST(req: Request) {
           },
           rating: {
             create: {
-              average: 0,
-              reviewsCount: 0,
+              average: product.rating?.average ?? 0,
+              reviewsCount: product.rating?.reviewsCount ?? 0,
             },
           },
           isAlmostSoldOut: false,

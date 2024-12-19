@@ -53,7 +53,7 @@ export function Product({ product }: ProductProps) {
         {product.brand}
       </Typography>
       <Typography variant="p-12" className="mt-5">
-        {formatReviewCount(product.rating.reviewsCount)} Customer Reviews
+        ({formatReviewCount(product.rating.reviewsCount)}) Customer Reviews
       </Typography>
 
       <div className="mt-5 flex items-center justify-between">
