@@ -1,9 +1,12 @@
 "use client";
 import React, { useMemo } from "react";
-import { Tabs, Typography } from "@/components";
+import { useRouter } from "next/navigation";
+import { Tabs, Typography, Button } from "@/components";
 import { useProducts, useProductsByCategory } from "@/actions/products";
 
 export const NewArrivals = () => {
+  const router = useRouter();
+
   const {
     products: allProducts,
     isLoading: isLoadingAll,
@@ -61,6 +64,10 @@ export const NewArrivals = () => {
     { name: "All Products", data: allProducts },
   ];
 
+  const handleViewMore = () => {
+    router.push("/shop");
+  };
+
   return (
     <section className="m-auto mt-10 flex max-w-7xl flex-col lg:mt-24">
       <div className="m-auto max-w-_756">
@@ -74,6 +81,9 @@ export const NewArrivals = () => {
       </div>
 
       <Tabs categories={allCategories} />
+      <Button onClick={handleViewMore} className="m-auto mt-5">
+        View More
+      </Button>
     </section>
   );
 };

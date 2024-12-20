@@ -13,9 +13,8 @@ interface TabsProps {
 }
 
 export function Tabs({ categories }: TabsProps) {
-  console.log(categories);
   return (
-    <div className="container mx-auto px-4 py-24">
+    <div className="container mx-auto px-4 pt-24">
       <TabGroup>
         <TabList className="mb-6 flex space-x-4 overflow-x-auto lg:justify-center">
           {categories.map(({ name }) => (
