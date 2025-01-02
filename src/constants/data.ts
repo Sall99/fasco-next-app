@@ -1570,3 +1570,34 @@ export const womenAccessories = Products.filter(
 export const menAccessories = Products.filter(
   (product) => product.category.toLowerCase() === "men accessories",
 );
+
+export const featuresData = [
+  {
+    title: "High Quality",
+    description: "crafted from top materials",
+    image: "high-quality.png",
+    w: 51,
+    h: 50,
+  },
+  {
+    title: "Warrany Protection",
+    description: "Over 2 years",
+    image: "waranty.png",
+    w: 38,
+    h: 50,
+  },
+  {
+    title: "Free Shipping",
+    description: "Order over 150 $",
+    image: "shipping.png",
+    w: 46,
+    h: 50,
+  },
+  {
+    title: "24 / 7 Support",
+    description: "Dedicated support",
+    image: "export.png",
+    w: 50,
+    h: 50,
+  },
+];

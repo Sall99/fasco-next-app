@@ -5,7 +5,6 @@ export default function Home() {
     <div>
       <Hero />
       <Logos />
-      {/* <MonthDeals /> */}
       <NewArrivals />
       <Feature />
     </div>
