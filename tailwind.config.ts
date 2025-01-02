@@ -28,6 +28,7 @@ export default {
         primary: {
           100: "var(--color-primary-100)",
           150: "var(--color-primary-150)",
+          160: "var(--color-primary-160)",
           200: "var(--color-primary-200)",
           600: "var(--color-primary-600)",
         },
