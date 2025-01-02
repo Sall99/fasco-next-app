@@ -1601,3 +1601,42 @@ export const featuresData = [
     h: 50,
   },
 ];
+
+export const GalleryData = [
+  {
+    image:
+      "https://res.cloudinary.com/dx6jhjxpt/image/upload/v1734116039/fasco/IM000344U12625_2157_4_l0xwgz.jpg",
+    w: 320,
+    h: 308,
+  },
+  {
+    image:
+      "https://res.cloudinary.com/dx6jhjxpt/image/upload/v1734112252/fasco/PI001133U12220Z_1000_2_tyc1w5.webp",
+    w: 256,
+    h: 380,
+  },
+  {
+    image:
+      "https://res.cloudinary.com/dx6jhjxpt/image/upload/v1733829688/fasco/clothingstore-shop-pic23-1-1_ygo9jf.webp",
+    w: 256,
+    h: 308,
+  },
+  {
+    image:
+      "https://res.cloudinary.com/dx6jhjxpt/image/upload/v1733766313/fasco/clothingstore-shop-pic21-2_cambj1.webp",
+    w: 256,
+    h: 380,
+  },
+  {
+    image:
+      "https://res.cloudinary.com/dx6jhjxpt/image/upload/v1733665460/fasco/image_62_fvgvyf.png",
+    w: 256,
+    h: 308,
+  },
+  {
+    image:
+      "https://res.cloudinary.com/dx6jhjxpt/image/upload/v1733665459/fasco/image_65_rc5r19.png",
+    w: 256,
+    h: 380,
+  },
+];
