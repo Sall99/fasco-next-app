@@ -6,3 +6,4 @@ export * from "./new-arrivals";
 export * from "./tabs";
 export * from "./product";
 export * from "./features";
+export * from "./gallery";
