@@ -5,7 +5,7 @@ import { GalleryData } from "@/constants/data";
 
 export const Gallery = () => {
   return (
-    <section className="container mx-auto px-4 py-12 md:py-24">
+    <section className="container mx-auto px-4">
       <div className="mx-auto mb-12 max-w-2xl text-center">
         <Typography
           variant="h2"
