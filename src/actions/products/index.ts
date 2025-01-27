@@ -23,3 +23,12 @@ export const useProductsByCategory = (category: string, count: number) => {
     isError: error,
   };
 };
+
+export const useGetProduct = (id: string) => {
+  const { data, error } = useSWR(`/products/details/${id}`, fetcher);
+  return {
+    data,
+    isLoading: !error && !data,
+    isError: error,
+  };
+};

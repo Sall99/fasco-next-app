@@ -13,7 +13,7 @@ export async function GET(
   }
 
   try {
-    const product = await prisma.product.findUnique({
+    const data = await prisma.product.findUnique({
       where: {
         id,
       },
@@ -24,14 +24,14 @@ export async function GET(
       },
     });
 
-    if (!product) {
+    if (!data) {
       return handleErrorResponse(new Error("Product not found"));
     }
 
     return NextResponse.json({
       status: 200,
       message: "success",
-      product,
+      data,
     });
   } catch (error) {
     return handleErrorResponse(error as Error);
