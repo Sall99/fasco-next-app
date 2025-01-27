@@ -2,10 +2,15 @@ import { NextResponse } from "next/server";
 import { prisma } from "../../../../../../libs";
 import { handleErrorResponse } from "../../route";
 
-export async function GET(
-  request: Request,
-  { params }: { params: { id: string } },
-) {
+import { NextRequest } from "next/server";
+
+type PageParams = {
+  params: {
+    id: string;
+  };
+};
+
+export async function GET(request: NextRequest, { params }: PageParams) {
   const { id } = params;
 
   if (!id) {
