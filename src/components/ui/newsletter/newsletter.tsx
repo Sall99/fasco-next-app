@@ -39,7 +39,7 @@ const imageSlideRight = {
 
 export function Newsletter() {
   return (
-    <section className="py-20">
+    <section className="px-4 py-20">
       <div className="m-auto mt-24 flex max-w-7xl flex-col items-center justify-between px-4 lg:flex-row lg:px-0">
         <motion.div
           className="relative h-_500 w-_337 overflow-hidden"
@@ -59,7 +59,7 @@ export function Newsletter() {
         </motion.div>
 
         <motion.div
-          className="text-center"
+          className="py-10 text-center lg:py-0"
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
