@@ -8,7 +8,7 @@ function validateCount(count: string | null): number | null {
   return parseInt(count);
 }
 
-function handleErrorResponse(error: Error) {
+export function handleErrorResponse(error: Error) {
   return NextResponse.json(
     { error: error.message || "An error occurred" },
     { status: 500 },
