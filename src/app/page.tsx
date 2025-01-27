@@ -5,6 +5,7 @@ import {
   Feature,
   Gallery,
   Testimonials,
+  Newsletter,
 } from "@/components";
 
 export default function Home() {
@@ -16,6 +17,7 @@ export default function Home() {
       <Feature />
       <Gallery />
       <Testimonials />
+      <Newsletter />
     </div>
   );
 }
