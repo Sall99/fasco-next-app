@@ -4,14 +4,11 @@ import { handleErrorResponse } from "../../route";
 
 import { NextRequest } from "next/server";
 
-type PageParams = {
-  params: {
-    id: string;
-  };
-};
-
-export async function GET(request: NextRequest, { params }: PageParams) {
-  const { id } = params;
+export async function GET(
+  request: NextRequest,
+  context: { params: { id: string } },
+) {
+  const { id } = context.params;
 
   if (!id) {
     return NextResponse.json({ error: "ID is required" }, { status: 400 });
