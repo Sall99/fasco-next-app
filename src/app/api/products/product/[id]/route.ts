@@ -1,21 +1,19 @@
 import { NextResponse } from "next/server";
 import { prisma } from "../../../../../../libs";
-
 import { NextRequest } from "next/server";
 
-function handleErrorResponse(error: Error) {
+const handleErrorResponse = (error: Error) => {
   return NextResponse.json(
     { error: error.message || "An error occurred" },
     { status: 500 },
   );
-}
+};
 
 export async function GET(
   request: NextRequest,
-  context: { params: Promise<{ id: string }> },
+  context: { params: { id: string } },
 ) {
-  const { id } = await context.params;
-
+  const { id } = context.params;
   if (!id) {
     return NextResponse.json({ error: "ID is required" }, { status: 400 });
   }
@@ -33,7 +31,7 @@ export async function GET(
     });
 
     if (!data) {
-      return handleErrorResponse(new Error("Product not found"));
+      return NextResponse.json({ error: "Product not found" }, { status: 404 });
     }
 
     return NextResponse.json({
