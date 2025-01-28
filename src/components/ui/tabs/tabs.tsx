@@ -2,6 +2,7 @@
 import { ProductType } from "@/types";
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@headlessui/react";
 import { Product } from "../product";
+import Link from "next/link";
 
 interface TabsProps {
   categories: {
@@ -32,7 +33,9 @@ export function Tabs({ categories }: TabsProps) {
               <ul className="grid grid-cols-1 justify-center gap-6 md:grid-cols-2 lg:grid-cols-3">
                 {data.products.map((product) => (
                   <li key={product.id} className="flex justify-center">
-                    <Product product={product} />
+                    <Link href={`/product/details/${product.id}`}>
+                      <Product product={product} />
+                    </Link>
                   </li>
                 ))}
               </ul>
