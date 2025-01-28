@@ -25,7 +25,7 @@ export const useProductsByCategory = (category: string, count: number) => {
 };
 
 export const useGetProduct = (id: string) => {
-  const { data, error } = useSWR(`/products/product/${id}`, fetcher);
+  const { data, error } = useSWR(`/products/product?id=${id}`, fetcher);
   return {
     data,
     isLoading: !error && !data,

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { prisma } from "../../../../../../libs";
+import { prisma } from "../../../../../libs";
 import { NextRequest } from "next/server";
 
 const handleErrorResponse = (error: Error) => {
@@ -9,11 +9,8 @@ const handleErrorResponse = (error: Error) => {
   );
 };
 
-export async function GET(
-  request: NextRequest,
-  context: { params: { id: string } },
-) {
-  const { id } = context.params;
+export async function GET(req: NextRequest) {
+  const id = req.nextUrl.searchParams.get("id");
   if (!id) {
     return NextResponse.json({ error: "ID is required" }, { status: 400 });
   }
