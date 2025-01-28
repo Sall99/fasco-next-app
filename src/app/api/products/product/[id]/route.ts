@@ -1,8 +1,14 @@
 import { NextResponse } from "next/server";
 import { prisma } from "../../../../../../libs";
-import { handleErrorResponse } from "../../route";
 
 import { NextRequest } from "next/server";
+
+export function handleErrorResponse(error: Error) {
+  return NextResponse.json(
+    { error: error.message || "An error occurred" },
+    { status: 500 },
+  );
+}
 
 export async function GET(
   request: NextRequest,
