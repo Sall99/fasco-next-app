@@ -6,9 +6,9 @@ import { NextRequest } from "next/server";
 
 export async function GET(
   request: NextRequest,
-  context: { params: { id: string } },
+  context: { params: Promise<{ id: string }> },
 ) {
-  const { id } = context.params;
+  const { id } = await context.params;
 
   if (!id) {
     return NextResponse.json({ error: "ID is required" }, { status: 400 });
