@@ -3,7 +3,7 @@ import { prisma } from "../../../../../../libs";
 
 import { NextRequest } from "next/server";
 
-export function handleErrorResponse(error: Error) {
+function handleErrorResponse(error: Error) {
   return NextResponse.json(
     { error: error.message || "An error occurred" },
     { status: 500 },
