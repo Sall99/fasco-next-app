@@ -6,6 +6,7 @@ import { ProductType } from "@/types";
 import { Typography } from "@/components";
 import { StarRating } from "../star-rating";
 import { formatReviewCount } from "@/utils";
+import clsx from "clsx";
 
 interface ProductProps {
   product: ProductType;
@@ -20,7 +21,9 @@ export function Product({ product }: ProductProps) {
 
   return (
     <div
-      className="group relative m-auto w-[386px] overflow-hidden rounded-lg bg-white p-4"
+      className={clsx(
+        "group relative m-auto w-[386px] overflow-hidden rounded-lg bg-white p-4",
+      )}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
