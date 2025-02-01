@@ -11,7 +11,7 @@ export const NewArrivals = () => {
     products: allProducts,
     isLoading: isLoadingAll,
     isError: isErrorAll,
-  } = useProducts(27);
+  } = useProducts(27, 10);
 
   const menFashion = useProductsByCategory("Men's Fashion", 9);
   const womenFashion = useProductsByCategory("Women's Fashion", 9);

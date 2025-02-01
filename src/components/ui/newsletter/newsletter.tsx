@@ -65,11 +65,11 @@ export function Newsletter() {
           viewport={{ once: true }}
           variants={fadeIn}
         >
-          <motion.h2 className="text-3xl font-bold" variants={fadeIn}>
+          <motion.h2 className="font-poppins text-3xl" variants={fadeIn}>
             Subscribe to Our Newsletter
           </motion.h2>
 
-          <motion.p className="mt-4 text-base" variants={fadeIn}>
+          <motion.p className="mt-4 font-poppins text-base" variants={fadeIn}>
             Subscribe to our newsletter to get the latest updates and special
             offers.
           </motion.p>

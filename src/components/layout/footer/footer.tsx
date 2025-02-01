@@ -1,3 +1,4 @@
+"use client";
 import Typography from "@/components/typography";
 import Link from "next/link";
 import React from "react";
