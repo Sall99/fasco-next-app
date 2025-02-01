@@ -44,7 +44,7 @@ const itemVariants = {
   },
 };
 
-export const Filters = () => {
+const Filters = () => {
   return (
     <motion.div
       className="lg:w-1/4"
