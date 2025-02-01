@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Product, Typography } from "@/components";
 import { ChevronRight } from "lucide-react";
@@ -44,7 +44,7 @@ const itemVariants = {
   },
 };
 
-export const Filters = () => {
+const Filters = () => {
   return (
     <motion.div
       className="lg:w-1/4"
@@ -151,7 +151,7 @@ const ProductList = ({ products }: ProductListProps) => {
 
   return (
     <motion.div
-      className="lg:w-3/4"
+      className="w-full"
       initial={{ x: 50, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
       transition={{ duration: 0.5 }}
@@ -258,7 +258,20 @@ const Navigation = () => {
 };
 
 export default function ShopPage() {
-  const { products, isLoading, isError } = useProducts(26);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 26;
+  const prevPageRef = useRef(currentPage);
+  const { products, isLoading, isError, total, isValidating } = useProducts(
+    currentPage,
+    itemsPerPage,
+  );
+
+  useEffect(() => {
+    if (prevPageRef.current !== currentPage && !isValidating) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      prevPageRef.current = currentPage;
+    }
+  }, [isValidating, currentPage]);
 
   if (isLoading) {
     return (
@@ -279,18 +292,50 @@ export default function ShopPage() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
       >
-        <div className="text-primary mt-4">Error loading product</div>
+        <div className="text-primary mt-4">Error loading products</div>
       </motion.div>
     );
   }
-  const productsData = products.products;
+
+  const productsData = products;
+  const totalPages = Math.ceil(total / itemsPerPage);
+
+  const handlePrevious = () => {
+    if (currentPage > 1) setCurrentPage((prev) => prev - 1);
+  };
+
+  const handleNext = () => {
+    if (currentPage < totalPages) setCurrentPage((prev) => prev + 1);
+  };
 
   return (
     <div className="container mx-auto mb-14 mt-10 px-4 lg:px-0">
       <Navigation />
       <div className="flex flex-col gap-8 lg:flex-row">
         <Filters />
-        <ProductList products={productsData} />
+        <div className="w-full">
+          <ProductList products={productsData} />
+
+          <div className="mt-8 flex justify-center gap-4">
+            <button
+              onClick={handlePrevious}
+              disabled={currentPage === 1}
+              className="rounded bg-gray-200 px-4 py-2 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              Previous
+            </button>
+            <span className="px-4 py-2">
+              Page {currentPage} of {totalPages}
+            </span>
+            <button
+              onClick={handleNext}
+              disabled={currentPage >= totalPages}
+              className="rounded bg-gray-200 px-4 py-2 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              Next
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );

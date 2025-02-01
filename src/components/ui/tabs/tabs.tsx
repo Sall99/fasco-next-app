@@ -14,6 +14,7 @@ interface TabsProps {
 }
 
 export function Tabs({ categories }: TabsProps) {
+  console.log(categories);
   return (
     <div className="container mx-auto px-4 pt-24">
       <TabGroup>
@@ -30,15 +31,17 @@ export function Tabs({ categories }: TabsProps) {
         <TabPanels>
           {categories.map(({ name, data }) => (
             <TabPanel key={name} className="rounded-xl bg-white/5 p-3">
-              <ul className="grid grid-cols-1 justify-center gap-6 md:grid-cols-2 lg:grid-cols-3">
-                {data.products.map((product) => (
-                  <li key={product.id} className="flex justify-center">
-                    <Link href={`/product/details/${product.id}`}>
-                      <Product product={product} />
-                    </Link>
-                  </li>
-                ))}
-              </ul>
+              {data.products && (
+                <ul className="grid grid-cols-1 justify-center gap-6 md:grid-cols-2 lg:grid-cols-3">
+                  {data.products.map((product) => (
+                    <li key={product.id} className="flex justify-center">
+                      <Link href={`/product/details/${product.id}`}>
+                        <Product product={product} />
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              )}
             </TabPanel>
           ))}
         </TabPanels>

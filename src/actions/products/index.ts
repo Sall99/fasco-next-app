@@ -3,12 +3,22 @@ import { instance } from "@/config";
 
 const fetcher = (url: string) => instance.get(url).then((res) => res.data);
 
-export const useProducts = (count: number) => {
-  const { data, error } = useSWR(`/products?count=${count}`, fetcher);
+export const useProducts = (page: number, limit: number) => {
+  const { data, error, isValidating } = useSWR(
+    `/products?page=${page}&limit=${limit}`,
+    fetcher,
+    {
+      keepPreviousData: true,
+      revalidateOnFocus: false,
+    },
+  );
+
   return {
-    products: data,
+    products: data?.products,
+    total: data?.total,
     isLoading: !error && !data,
     isError: error,
+    isValidating,
   };
 };
 
