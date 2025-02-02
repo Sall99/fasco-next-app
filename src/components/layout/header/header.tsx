@@ -146,7 +146,7 @@ export const Header = () => {
               animate="visible"
               exit="hidden"
               variants={mobileMenuVariants}
-              className="fixed left-0 top-0 z-40 h-screen w-full bg-white px-6 pt-20 lg:hidden"
+              className="fixed left-0 top-0 z-[75] h-screen w-full bg-white px-6 pt-20 lg:hidden"
             >
               <div className="flex flex-col gap-6">
                 {Links.map(({ title, path }, key) => (

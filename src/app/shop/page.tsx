@@ -2,29 +2,11 @@
 import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Feature, Product, Typography } from "@/components";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, X } from "lucide-react";
 import { useProducts } from "@/actions";
 import { ProductType } from "@/types";
 import clsx from "clsx";
 import { motion, AnimatePresence } from "framer-motion";
-
-const priceRanges = [
-  "$0-$50",
-  "$50-$100",
-  "$100-$550",
-  "$550-$1000",
-  "$1000-$2000",
-];
-
-const categories = [
-  "All",
-  "Women's Fashion",
-  "Men's Fashion",
-  "Women Accessories",
-  "Men Accessories",
-];
-
-const brands = ["Al Karam", "Donna Karan", "Prettygarden", "Bomber", "Dokotoo"];
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -44,101 +26,164 @@ const itemVariants = {
   },
 };
 
-const Filters = () => {
+const MobileFilters = () => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const drawerVariants = {
+    closed: {
+      x: "100%",
+      transition: {
+        type: "spring",
+        stiffness: 400,
+        damping: 40,
+      },
+    },
+    open: {
+      x: 0,
+      transition: {
+        type: "spring",
+        stiffness: 400,
+        damping: 40,
+      },
+    },
+  };
+
   return (
-    <motion.div
-      className="lg:w-1/4"
-      initial={{ x: -50, opacity: 0 }}
-      animate={{ x: 0, opacity: 1 }}
-      transition={{ duration: 0.5 }}
-    >
-      <div className="space-y-6">
-        <div>
-          <Typography variant="h6" className="mb-2">
-            Filters
-          </Typography>
-
-          <motion.div
-            className="mb-6 mt-10"
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-          >
-            <Typography variant="h6" className="mb-2">
-              Prices
-            </Typography>
-            <div className="space-y-2">
-              {priceRanges.map((range) => (
-                <motion.label
-                  key={range}
-                  className="flex items-center space-x-2"
-                  variants={itemVariants}
-                >
-                  <input type="checkbox" className="cursor-pointer rounded" />
-                  <Typography variant="p-12">{range}</Typography>
-                </motion.label>
-              ))}
-            </div>
-          </motion.div>
-
-          <motion.div
-            className="mb-6"
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-          >
-            <Typography variant="h6" className="mb-2">
-              Categories
-            </Typography>
-            <ul className="space-y-2">
-              {categories.map((category) => (
-                <motion.li
-                  key={category}
-                  className="flex cursor-pointer items-center space-x-2"
-                  variants={itemVariants}
-                  whileHover={{ scale: 1.05 }}
-                >
-                  <Typography
-                    variant="p-12"
-                    className="text-primary rounded-full bg-gray-200 px-2 py-1"
-                  >
-                    {category}
-                  </Typography>
-                </motion.li>
-              ))}
-            </ul>
-          </motion.div>
-
-          <motion.div
-            className="mb-6"
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-          >
-            <Typography variant="h6" className="mb-2">
-              Brands
-            </Typography>
-            <ul className="space-y-2">
-              {brands.map((brand) => (
-                <motion.li
-                  key={brand}
-                  className="flex cursor-pointer items-center space-x-2"
-                  variants={itemVariants}
-                  whileHover={{ scale: 1.05 }}
-                >
-                  <Typography
-                    variant="p-12"
-                    className="text-primary rounded-full bg-gray-200 px-2 py-1"
-                  >
-                    {brand}
-                  </Typography>
-                </motion.li>
-              ))}
-            </ul>
-          </motion.div>
-        </div>
+    <>
+      <div className="fixed bottom-4 left-4 right-4 z-50 lg:hidden">
+        <button
+          onClick={() => setIsOpen(true)}
+          className="w-full rounded-lg bg-black p-4 text-white shadow-lg"
+        >
+          Open Filters
+        </button>
       </div>
-    </motion.div>
+
+      <div className="hidden lg:block lg:w-1/4">
+        <FilterContent />
+      </div>
+
+      <AnimatePresence>
+        {isOpen && (
+          <>
+            <motion.div
+              className="fixed inset-0 z-50 bg-black bg-opacity-50"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsOpen(false)}
+            />
+
+            <motion.div
+              className="fixed bottom-0 left-0 right-0 z-50 h-[90vh] rounded-t-3xl bg-white p-6"
+              variants={drawerVariants}
+              initial="closed"
+              animate="open"
+              exit="closed"
+            >
+              <div className="flex items-center justify-between pb-4">
+                <h2 className="text-xl font-bold">Filters</h2>
+                <button
+                  onClick={() => setIsOpen(false)}
+                  className="rounded-full p-2 hover:bg-gray-100"
+                >
+                  <X className="h-6 w-6" />
+                </button>
+              </div>
+
+              <div className="h-full overflow-y-auto pb-20">
+                <FilterContent />
+              </div>
+
+              <div className="absolute bottom-0 left-0 right-0 border-t bg-white p-4">
+                <button
+                  onClick={() => setIsOpen(false)}
+                  className="w-full rounded-lg bg-black p-4 text-white"
+                >
+                  Apply Filters
+                </button>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+    </>
+  );
+};
+const FilterContent = () => {
+  const priceRanges = ["$0 - $50", "$50 - $100", "$100 - $200", "$200+"];
+  const categories = ["Electronics", "Clothing", "Books", "Home & Garden"];
+  const brands = ["Apple", "Samsung", "Nike", "Adidas"];
+
+  return (
+    <div className="space-y-6">
+      <motion.div
+        className="mb-6"
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+      >
+        <h3 className="mb-2 text-lg font-semibold">Prices</h3>
+        <div className="space-y-2">
+          {priceRanges.map((range) => (
+            <motion.label
+              key={range}
+              className="flex items-center space-x-2"
+              variants={itemVariants}
+            >
+              <input type="checkbox" className="cursor-pointer rounded" />
+              <span>{range}</span>
+            </motion.label>
+          ))}
+        </div>
+      </motion.div>
+
+      <motion.div
+        className="mb-6"
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+      >
+        <h3 className="mb-2 text-lg font-semibold">Categories</h3>
+        <ul className="space-y-2">
+          {categories.map((category) => (
+            <motion.li
+              key={category}
+              className="flex cursor-pointer items-center space-x-2"
+              variants={itemVariants}
+              whileHover={{ scale: 1.05 }}
+            >
+              <span className="rounded-full bg-gray-200 px-2 py-1">
+                {category}
+              </span>
+            </motion.li>
+          ))}
+        </ul>
+      </motion.div>
+
+      <motion.div
+        className="mb-6"
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+      >
+        <h3 className="mb-2 text-lg font-semibold">Brands</h3>
+        <ul className="space-y-2">
+          {brands.map((brand) => (
+            <motion.li
+              key={brand}
+              className="flex cursor-pointer items-center space-x-2"
+              variants={itemVariants}
+              whileHover={{ scale: 1.05 }}
+            >
+              <span className="rounded-full bg-gray-200 px-2 py-1">
+                {brand}
+              </span>
+            </motion.li>
+          ))}
+        </ul>
+      </motion.div>
+    </div>
   );
 };
 
@@ -309,10 +354,10 @@ export default function ShopPage() {
   };
 
   return (
-    <section className="container mx-auto mb-14 mt-10 px-4 lg:px-0">
+    <section className="container mx-auto mb-14 mt-10 min-h-screen px-4 lg:px-0">
       <Navigation />
       <div className="mb-20 flex flex-col gap-8 lg:flex-row">
-        <Filters />
+        <MobileFilters />
         <div className="w-full">
           <ProductList products={productsData} />
 
