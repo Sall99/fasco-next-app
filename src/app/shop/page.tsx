@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { Product, Typography } from "@/components";
+import { Feature, Product, Typography } from "@/components";
 import { ChevronRight } from "lucide-react";
 import { useProducts } from "@/actions";
 import { ProductType } from "@/types";
@@ -309,34 +309,35 @@ export default function ShopPage() {
   };
 
   return (
-    <div className="container mx-auto mb-14 mt-10 px-4 lg:px-0">
+    <section className="container mx-auto mb-14 mt-10 px-4 lg:px-0">
       <Navigation />
-      <div className="flex flex-col gap-8 lg:flex-row">
+      <div className="mb-20 flex flex-col gap-8 lg:flex-row">
         <Filters />
         <div className="w-full">
           <ProductList products={productsData} />
 
-          <div className="mt-8 flex justify-center gap-4">
+          <div className="mt-8 flex items-center justify-center gap-4">
             <button
               onClick={handlePrevious}
               disabled={currentPage === 1}
-              className="rounded bg-gray-200 px-4 py-2 disabled:cursor-not-allowed disabled:opacity-50"
+              className="rounded bg-gray-200 px-2 py-2 disabled:cursor-not-allowed disabled:opacity-50"
             >
-              Previous
+              <Typography variant="p-12">Previous</Typography>
             </button>
-            <span className="px-4 py-2">
+            <Typography variant="p-12">
               Page {currentPage} of {totalPages}
-            </span>
+            </Typography>
             <button
               onClick={handleNext}
               disabled={currentPage >= totalPages}
-              className="rounded bg-gray-200 px-4 py-2 disabled:cursor-not-allowed disabled:opacity-50"
+              className="rounded bg-gray-200 px-2 py-2 disabled:cursor-not-allowed disabled:opacity-50"
             >
-              Next
+              <Typography variant="p-12">Next</Typography>
             </button>
           </div>
         </div>
       </div>
-    </div>
+      <Feature />
+    </section>
   );
 }
