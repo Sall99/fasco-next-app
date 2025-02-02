@@ -86,9 +86,11 @@ export function SignupForm() {
 
   return (
     <div className="w-full">
-      <Typography variant="h2" font="primary">
-        FASCO
-      </Typography>
+      <Link href="/">
+        <Typography variant="h2" font="primary">
+          FASCO
+        </Typography>
+      </Link>
 
       <div className="mt-6">
         <Typography variant="h5" font="primary" className="mb-7">

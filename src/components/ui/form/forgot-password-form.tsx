@@ -62,10 +62,11 @@ export function ForgotPasswordForm() {
 
   return (
     <div className="w-full">
-      <Typography variant="h2" font="primary">
-        FASCO
-      </Typography>
-
+      <Link href="/">
+        <Typography variant="h2" font="primary">
+          FASCO
+        </Typography>
+      </Link>
       <div className="mt-20">
         <Typography variant="h5" font="primary" className="mb-7">
           Forget Password
