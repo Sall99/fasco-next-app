@@ -14,7 +14,7 @@ const links = [
 
 export const Footer = () => {
   return (
-    <footer className="border-t border-gray-200 py-8">
+    <footer className="mt-40 border-t border-gray-200 py-8">
       <div className="m-auto flex w-full flex-col items-center justify-between px-4 sm:flex-row lg:max-w-_876">
         <Link href="/">
           <Typography variant="h2" font="primary">
