@@ -9,17 +9,21 @@ import React, { useState } from "react";
 import { useGetProduct } from "@/actions";
 import { Button, Feature, Typography } from "@/components";
 import { StarRating } from "@/components/ui/star-rating";
+import { useDispatch } from "react-redux";
+import { addToCart } from "@/store/slices/cart";
 
 interface GalleryProps {
   images: string[];
 }
 
 interface DetailsProps {
+  id: string;
   name: string;
   brand: string;
   price: number;
   viewersCount: number;
   tags: string[];
+  images: string[];
   description: string;
   category: {
     name: string;
@@ -113,6 +117,7 @@ function Gallery({ images }: GalleryProps) {
 }
 
 const Details = ({
+  id,
   name,
   brand,
   price,
@@ -122,8 +127,22 @@ const Details = ({
   category,
   stock,
   rating,
+  images,
 }: DetailsProps) => {
   const [quantity, setQuantity] = useState(1);
+  const dispatch = useDispatch();
+
+  const handleAddToCart = () => {
+    dispatch(
+      addToCart({
+        productId: id,
+        name,
+        price,
+        quantity,
+        image: images[0],
+      }),
+    );
+  };
 
   const handleIncrement = () => {
     setQuantity(quantity + 1);
@@ -237,7 +256,7 @@ const Details = ({
             <Plus size={10} />
           </button>
         </div>
-        <Button size="sm" className="mt-4">
+        <Button size="sm" className="mt-4" onClick={handleAddToCart}>
           Add to cart
         </Button>
       </div>
@@ -281,17 +300,19 @@ export default function Page() {
   return (
     <section className="mx-auto mt-10">
       <div className="flex flex-col justify-center gap-4 p-4 md:gap-8 lg:flex-row">
-        <Gallery images={product?.images || []} />
+        <Gallery images={product?.images} />
         <Details
-          name={product?.name || ""}
-          brand={product?.brand || ""}
-          price={product?.price || 0}
-          viewersCount={product?.viewersCount || 0}
-          tags={product?.tags || []}
-          description={product?.description || ""}
-          category={product?.category || { name: "", slug: "" }}
-          stock={product?.stock || { quantity: 0, lowStockThreshold: 0 }}
-          rating={product?.rating || { average: 0, reviewsCount: 0 }}
+          id={product?.id}
+          name={product?.name}
+          brand={product?.brand}
+          price={product?.price}
+          viewersCount={product?.viewersCount}
+          tags={product?.tags}
+          description={product?.description}
+          category={product?.category}
+          stock={product?.stock}
+          rating={product?.rating}
+          images={product?.images}
         />
       </div>
       <div className="my-40">
