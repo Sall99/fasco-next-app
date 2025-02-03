@@ -73,8 +73,9 @@ const cartSlice = createSlice({
       const item = state.items.find(
         (i) => i.productId === action.payload.productId,
       );
+
       if (item) {
-        const maxAllowedDecrement = item.quantity - 1;
+        const maxAllowedDecrement = item.quantity;
         const actualDecrement = Math.min(
           action.payload.quantity,
           maxAllowedDecrement,
@@ -84,6 +85,12 @@ const cartSlice = createSlice({
           state.totalQuantity -= actualDecrement;
           state.totalPrice -= actualDecrement * item.price;
           item.quantity -= actualDecrement;
+
+          if (item.quantity <= 0) {
+            state.items = state.items.filter(
+              (i) => i.productId !== action.payload.productId,
+            );
+          }
         }
       }
     },
