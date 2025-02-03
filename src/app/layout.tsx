@@ -93,12 +93,12 @@ export default function RootLayout({
       <body
         className={`${DigitalNumbers.variable} ${volkhov.variable} ${poppins.variable} base-layout antialiased`}
       >
-        <Header />
-
-        <StoreProvider>{children}</StoreProvider>
-
-        <Toaster />
-        <Footer />
+        <StoreProvider>
+          <Header />
+          {children}
+          <Toaster />
+          <Footer />
+        </StoreProvider>
       </body>
     </html>
   );

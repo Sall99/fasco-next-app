@@ -66,6 +66,27 @@ const cartSlice = createSlice({
         item.quantity = action.payload.quantity;
       }
     },
+    decreaseQuantity: (
+      state,
+      action: PayloadAction<{ productId: string; quantity: number }>,
+    ) => {
+      const item = state.items.find(
+        (i) => i.productId === action.payload.productId,
+      );
+      if (item) {
+        const maxAllowedDecrement = item.quantity - 1;
+        const actualDecrement = Math.min(
+          action.payload.quantity,
+          maxAllowedDecrement,
+        );
+
+        if (actualDecrement > 0) {
+          state.totalQuantity -= actualDecrement;
+          state.totalPrice -= actualDecrement * item.price;
+          item.quantity -= actualDecrement;
+        }
+      }
+    },
     clearCart: (state) => {
       state.items = [];
       state.totalQuantity = 0;
@@ -84,6 +105,7 @@ export const {
   addToCart,
   removeFromCart,
   updateQuantity,
+  decreaseQuantity,
   clearCart,
   initializeCart,
 } = cartSlice.actions;
