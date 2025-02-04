@@ -16,6 +16,7 @@ const typographyVariants = cva(
           "leading-relaxed",
         ],
         "p-16": ["text-[16px]", "font-normal", "leading-relaxed"],
+        "p-14": ["text-[14px]", "font-normal", "leading-relaxed"],
         "p-12": ["text-[12px]", "font-normal", "leading-relaxed"],
         h1: [
           "text-3xl",
@@ -118,6 +119,7 @@ export function Typography<T extends AllowedElements = "p">({
   const defaultComponentMap = {
     p: "p",
     "p-16": "p",
+    "p-14": "p",
     "p-12": "p",
     h1: "h1",
     h2: "h2",
