@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import React, { useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Menu, ShoppingCart, Plus, Minus } from "lucide-react";
@@ -142,17 +142,22 @@ const CartContent = ({
   </div>
 );
 
-const CartTotal = ({ cartTotalPrice }: { cartTotalPrice: number }) => (
-  <div className="border-t border-gray-200 py-4">
-    <div className="mb-4 flex justify-between">
-      <Typography variant="p-12">Subtotal</Typography>
-      <Typography variant="p-12" className="font-semibold">
-        ${cartTotalPrice.toFixed(2)}
-      </Typography>
+const CartTotal = ({ cartTotalPrice }: { cartTotalPrice: number }) => {
+  const router = useRouter();
+  return (
+    <div className="border-t border-gray-200 py-4">
+      <div className="mb-4 flex justify-between">
+        <Typography variant="p-12">Subtotal</Typography>
+        <Typography variant="p-12" className="font-semibold">
+          ${cartTotalPrice.toFixed(2)}
+        </Typography>
+      </div>
+      <Button className="w-full" onClick={() => router.push("/checkout")}>
+        Checkout
+      </Button>
     </div>
-    <Button className="w-full">Checkout</Button>
-  </div>
-);
+  );
+};
 
 const NavLink = ({
   path,
