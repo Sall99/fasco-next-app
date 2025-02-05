@@ -1,13 +1,18 @@
 "use client";
-import React from "react";
+import React, { useCallback, useState } from "react";
 import { FcGoogle } from "react-icons/fc";
 import { VscGithubInverted } from "react-icons/vsc";
 import Link from "next/link";
-import { useForm } from "react-hook-form";
+import { SubmitHandler, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 
 import { Input, Typography, Button } from "@/components";
 import { signupSchema } from "@/constants";
+import { SignupFormData } from "@/types";
+import { signupAction } from "@/actions";
+import toast from "react-hot-toast";
+import { AxiosError } from "axios";
+import { useRouter } from "next/navigation";
 
 type InputType = "text" | "email" | "password" | "tel";
 type FormData = {
@@ -71,6 +76,8 @@ const formFields: Array<{
 ];
 
 export function SignupForm() {
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
   const {
     register,
     handleSubmit,
@@ -79,10 +86,25 @@ export function SignupForm() {
     resolver: yupResolver(signupSchema),
   });
 
-  const onSubmit = (data: FormData) => {
-    console.log(data);
-    console.log("submited");
-  };
+  const onSubmit: SubmitHandler<SignupFormData> = useCallback(
+    async (values) => {
+      setIsLoading(true);
+      try {
+        await signupAction(values);
+        toast.success("Signup successful! Welcome aboard.");
+        router.push("/auth/login");
+      } catch (error) {
+        if (error instanceof AxiosError && error.response) {
+          toast.error(error.response.data?.error || "An error occurred");
+        } else {
+          toast.error("An unknown error occurred");
+        }
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [],
+  );
 
   return (
     <div className="w-full">
@@ -139,7 +161,7 @@ export function SignupForm() {
           </div>
 
           <div className="mt-10 px-10">
-            <Button fullWidth>
+            <Button fullWidth loading={isLoading}>
               <Typography color="white" variant="p-16" font="default">
                 Create Account
               </Typography>

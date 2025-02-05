@@ -18,3 +18,12 @@ export type ProductType = {
   images: string[];
   description: string;
 };
+
+export type SignupFormData = {
+  fName: string;
+  lName: string;
+  email: string;
+  phone: string;
+  password: string;
+  confirmPassword: string;
+};
