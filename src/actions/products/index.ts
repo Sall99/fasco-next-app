@@ -1,7 +1,8 @@
 import useSWR from "swr";
 import { instance } from "@/config";
 
-const fetcher = (url: string) => instance.get(url).then((res) => res.data);
+export const fetcher = (url: string) =>
+  instance.get(url).then((res) => res.data);
 
 export const useProducts = (page: number, limit: number) => {
   const { data, error, isValidating } = useSWR(
