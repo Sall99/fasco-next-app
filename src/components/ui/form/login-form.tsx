@@ -1,13 +1,16 @@
 "use client";
-import React from "react";
+import React, { useCallback } from "react";
 import { FcGoogle } from "react-icons/fc";
 import { VscGithubInverted } from "react-icons/vsc";
 import Link from "next/link";
-import { useForm } from "react-hook-form";
+import { SubmitHandler, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { signIn } from "next-auth/react";
 
 import { Input, Typography, Button } from "@/components";
 import { loginSchema } from "@/constants";
+import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 type InputType = "email" | "password";
 type FormData = {
@@ -47,12 +50,36 @@ export function LoginForm() {
   } = useForm<FormData>({
     resolver: yupResolver(loginSchema),
   });
+  const [loading, setLoading] = React.useState(false);
 
-  const onSubmit = (data: FormData) => {
-    console.log(data);
-    console.log("submited");
-  };
+  const router = useRouter();
 
+  const onSubmit: SubmitHandler<FormData> = useCallback(
+    async (values) => {
+      setLoading(true);
+      try {
+        const result = await signIn("credentials", {
+          ...values,
+          redirect: false,
+        });
+
+        if (result?.error) {
+          console.error(result.error);
+          toast.error("An error occurred. Please try again later.");
+        }
+
+        if (result) {
+          router.push("/");
+        }
+      } catch (error) {
+        toast.error("An error occurred. Please try again later.");
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [router],
+  );
   return (
     <div className="w-full">
       <Link href="/">
@@ -108,7 +135,7 @@ export function LoginForm() {
           </div>
 
           <div className="mt-10 px-10">
-            <Button fullWidth className="mb-5">
+            <Button fullWidth className="mb-5" loading={loading}>
               <Typography color="white" variant="p-16" font="default">
                 Log in
               </Typography>
