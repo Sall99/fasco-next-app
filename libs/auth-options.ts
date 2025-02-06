@@ -1,6 +1,6 @@
-import NextAuth, { User as NextAuthUser } from "next-auth";
+import { NextAuthOptions, User as NextAuthUser } from "next-auth";
 import { PrismaAdapter } from "@auth/prisma-adapter";
-import { prisma } from "../../../../libs";
+import { prisma } from "./prisma.db";
 import GitHub from "next-auth/providers/github";
 import Google from "next-auth/providers/google";
 import Credentials from "next-auth/providers/credentials";
@@ -12,7 +12,7 @@ declare module "next-auth" {
   }
 }
 
-export const { handlers, auth, signIn, signOut } = NextAuth({
+export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
   providers: [
     GitHub({
@@ -75,4 +75,4 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       return session;
     },
   },
-});
+};
