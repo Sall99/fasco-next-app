@@ -13,6 +13,7 @@ import { signupAction } from "@/actions";
 import toast from "react-hot-toast";
 import { AxiosError } from "axios";
 import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
 
 type InputType = "text" | "email" | "password" | "tel";
 type FormData = {
@@ -121,7 +122,13 @@ export function SignupForm() {
 
         <div className="mb-5 flex flex-col gap-5 xl:flex-row">
           <Button variant="outline" fullWidth leftIcon={<FcGoogle size={20} />}>
-            <Typography variant="p-16" font="default">
+            <Typography
+              variant="p-16"
+              font="default"
+              onClick={() => {
+                signIn("google");
+              }}
+            >
               Sign up with Google
             </Typography>
           </Button>
@@ -129,6 +136,11 @@ export function SignupForm() {
             variant="outline"
             fullWidth
             leftIcon={<VscGithubInverted size={20} />}
+            onClick={() => {
+              signIn("github", {
+                callbackUrl: "/",
+              });
+            }}
           >
             <Typography variant="p-16" font="default">
               Sign up with Github
