@@ -7,6 +7,7 @@ import "slick-carousel/slick/slick-theme.css";
 import { Toaster } from "react-hot-toast";
 import { Footer, Header } from "@/components";
 import StoreProvider from "@/store/provider";
+import { SessionWrapper } from "../../libs";
 
 const DigitalNumbers = localFont({
   src: "./fonts/DigitalNumbers-Regular.ttf",
@@ -53,7 +54,7 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
@@ -94,10 +95,12 @@ export default function RootLayout({
         className={`${DigitalNumbers.variable} ${volkhov.variable} ${poppins.variable} base-layout antialiased`}
       >
         <StoreProvider>
-          <Header />
-          {children}
-          <Toaster />
-          <Footer />
+          <SessionWrapper>
+            <Header />
+            {children}
+            <Toaster />
+            <Footer />
+          </SessionWrapper>
         </StoreProvider>
       </body>
     </html>
