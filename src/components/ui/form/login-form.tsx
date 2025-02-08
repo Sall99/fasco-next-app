@@ -94,7 +94,14 @@ export function LoginForm() {
         </Typography>
 
         <div className="mb-5 flex flex-col gap-5 xl:flex-row">
-          <Button variant="outline" fullWidth leftIcon={<FcGoogle size={20} />}>
+          <Button
+            variant="outline"
+            fullWidth
+            leftIcon={<FcGoogle size={20} />}
+            onClick={() => {
+              signIn("google");
+            }}
+          >
             <Typography variant="p-16" font="default">
               Sign up with Google
             </Typography>
@@ -103,6 +110,11 @@ export function LoginForm() {
             variant="outline"
             fullWidth
             leftIcon={<VscGithubInverted size={20} />}
+            onClick={() => {
+              signIn("github", {
+                callbackUrl: "/",
+              });
+            }}
           >
             <Typography variant="p-16" font="default">
               Sign up with Github

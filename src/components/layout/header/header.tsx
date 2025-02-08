@@ -15,6 +15,7 @@ import {
   updateQuantity,
 } from "@/store/slices/cart";
 import Image from "next/image";
+import { signOut, useSession } from "next-auth/react";
 
 const Links = [
   { title: "Home", path: "/" },
@@ -22,6 +23,16 @@ const Links = [
   { title: "Log in", path: "/auth/login" },
 ];
 
+const getLinks = (isAuthenticated: boolean) => [
+  { title: "Home", path: "/" },
+  { title: "Shop", path: "/shop" },
+  ...(isAuthenticated
+    ? [
+        { title: "My Orders", path: "/orders" },
+        { title: "Profile", path: "/profile" },
+      ]
+    : [{ title: "Log in", path: "/auth/login" }]),
+];
 interface CartItemActions {
   handleUpdateQuantity: (productId: string, quantity: number) => void;
   handleDecreaseQuantity: (productId: string) => void;
@@ -272,6 +283,10 @@ export const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const dispatch = useDispatch();
+  const { data: session, status } = useSession();
+  const isAuthenticated = status === "authenticated";
+
+  console.log(session, isAuthenticated);
 
   const cartItems = useSelector(selectCartItems);
   const cartTotalPrice = useSelector(selectTotalPrice);
@@ -325,7 +340,11 @@ export const Header = () => {
             </Link>
           </motion.div>
 
-          <DesktopNavigation toggleCart={toggleCart} cartItems={cartItems} />
+          <DesktopNavigation
+            toggleCart={toggleCart}
+            cartItems={cartItems}
+            isAuthenticated={isAuthenticated}
+          />
 
           <MobileNavigation
             toggleCart={toggleCart}
@@ -355,7 +374,13 @@ export const Header = () => {
           )}
         </AnimatePresence>
       </motion.header>
-
+      <button
+        onClick={() => {
+          signOut();
+        }}
+      >
+        signout
+      </button>
       <MobileMenu isOpen={isMobileMenuOpen} toggle={toggleMobileMenu} />
     </>
   );
@@ -364,13 +389,15 @@ export const Header = () => {
 const DesktopNavigation = ({
   toggleCart,
   cartItems,
+  isAuthenticated,
 }: {
   toggleCart: () => void;
   cartItems: CartItem[];
+  isAuthenticated: boolean;
 }) => (
   <div className="hidden items-center gap-5 lg:flex">
     <motion.ul className="flex items-center gap-5" variants={headerVariants}>
-      {Links.map(({ title, path }, key) => (
+      {getLinks(isAuthenticated).map(({ title, path }, key) => (
         <NavLink key={key} path={path} title={title} />
       ))}
     </motion.ul>
@@ -383,9 +410,6 @@ const DesktopNavigation = ({
       <button onClick={toggleCart}>
         <CartIcon itemCount={cartItems.length} />
       </button>
-      <Link href="/auth/signup">
-        <Button>Sign up</Button>
-      </Link>
     </motion.div>
   </div>
 );
