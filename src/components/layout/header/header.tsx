@@ -15,7 +15,7 @@ import {
   updateQuantity,
 } from "@/store/slices/cart";
 import Image from "next/image";
-import { signOut, useSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
 
 const Links = [
   { title: "Home", path: "/" },
@@ -374,13 +374,6 @@ export const Header = () => {
           )}
         </AnimatePresence>
       </motion.header>
-      <button
-        onClick={() => {
-          signOut();
-        }}
-      >
-        signout
-      </button>
       <MobileMenu isOpen={isMobileMenuOpen} toggle={toggleMobileMenu} />
     </>
   );

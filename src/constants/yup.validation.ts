@@ -85,3 +85,17 @@ export const signupSchema = yup.object().shape({
     .required("Confirm Password is required")
     .oneOf([yup.ref("password"), ""], "Passwords must match"),
 });
+export const profileSchema = yup.object().shape({
+  fName: yup.string().required("First Name is required"),
+  lName: yup.string().required("Last Name is required"),
+  email: yup.string().email("Invalid email").required("Email is required"),
+  phone: yup.string().required("Phone number is required"),
+});
+
+export const addressSchema = yup.object().shape({
+  street: yup.string().required("Street address is required"),
+  city: yup.string().required("City is required"),
+  state: yup.string().required("State is required"),
+  zipCode: yup.string().required("Zip code is required"),
+  country: yup.string().required("Country is required"),
+});
