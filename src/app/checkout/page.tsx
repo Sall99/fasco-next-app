@@ -171,7 +171,7 @@ const Input = ({
 }) => (
   <div>
     <label className="mb-2 block font-poppins text-sm">{label}</label>
-    <input {...props} className="w-full rounded border p-2" />
+    <input {...props} className="mb-5 w-full rounded border p-2" />
     {error && (
       <Typography variant="p-12" className="text-red-500">
         Required field
