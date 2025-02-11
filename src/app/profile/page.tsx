@@ -115,15 +115,20 @@ const ProfilePage: React.FC = () => {
         );
       case "account":
         return (
-          <form
-            onSubmit={handleProfileSubmit(handleProfileUpdate)}
-            className="space-y-4"
-          >
-            <ProfileForm register={profileRegister} errors={profileErrors} />
-            <Button type="submit" disabled={isProfileSubmitting}>
-              Update Profile
-            </Button>
-          </form>
+          <div className="space-y-6">
+            <Typography variant="h6">
+              Update your account information
+            </Typography>
+            <form
+              onSubmit={handleProfileSubmit(handleProfileUpdate)}
+              className="space-y-4"
+            >
+              <ProfileForm register={profileRegister} errors={profileErrors} />
+              <Button type="submit" disabled={isProfileSubmitting}>
+                Update Profile
+              </Button>
+            </form>
+          </div>
         );
       default:
         return null;
@@ -178,7 +183,7 @@ const Sidebar = ({
       isOpen ? "translate-x-0" : "-translate-x-full"
     }`}
   >
-    <h2 className="mb-4 text-lg font-semibold">My Account</h2>
+    <Typography className="mb-4 text-lg font-semibold">My Account</Typography>
     <nav>
       <ul className="space-y-2">
         {["dashboard", "orders", "addresses", "account"].map((tab) => (
@@ -219,7 +224,7 @@ interface FormProps<T extends FieldValues> {
 }
 
 const AddressForm: React.FC<FormProps<Address>> = ({ register, errors }) => (
-  <div className="grid gap-4 sm:grid-cols-2">
+  <div className="grid gap-4 rounded-lg bg-white p-20 shadow-sm sm:grid-cols-2">
     {Object.keys(addressSchema.fields).map((field) => (
       <Input
         key={field}
@@ -232,7 +237,7 @@ const AddressForm: React.FC<FormProps<Address>> = ({ register, errors }) => (
 );
 
 const ProfileForm: React.FC<FormProps<Profile>> = ({ register, errors }) => (
-  <div className="grid gap-4 sm:grid-cols-2">
+  <div className="grid gap-4 rounded-lg bg-white p-20 shadow-sm sm:grid-cols-2">
     {Object.keys(profileSchema.fields).map((field) => (
       <Input
         key={field}
