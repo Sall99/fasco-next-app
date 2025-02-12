@@ -1,3 +1,5 @@
+import { CartItem } from "@/store/slices/cart";
+
 export type ProductType = {
   id: string;
   name: string;
@@ -27,3 +29,29 @@ export type SignupFormData = {
   password: string;
   confirmPassword: string;
 };
+
+export interface CreatePaymentIntentPayload {
+  amount: number;
+  shipping: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    address: string;
+    city: string;
+    country: string;
+    zipCode: string;
+  };
+  cartItems: CartItem[];
+}
+
+export interface SessionUser {
+  id: string;
+  name: string;
+  email: string;
+  image: string;
+}
+export interface MinimalCartItem {
+  id: string;
+  qty: number;
+  price: number;
+}

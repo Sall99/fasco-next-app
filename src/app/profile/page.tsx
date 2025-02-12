@@ -12,8 +12,15 @@ import * as yup from "yup";
 import { addressSchema, profileSchema } from "@/constants";
 import { Button, Typography } from "@/components";
 import { Menu } from "lucide-react";
+import { signOut } from "next-auth/react";
 
-type Tab = "dashboard" | "orders" | "addresses" | "account" | "wishlist";
+type Tab =
+  | "dashboard"
+  | "orders"
+  | "addresses"
+  | "account"
+  | "wishlist"
+  | "logout";
 type Address = yup.InferType<typeof addressSchema>;
 type Profile = yup.InferType<typeof profileSchema>;
 type Order = {
@@ -130,6 +137,26 @@ const ProfilePage: React.FC = () => {
             </form>
           </div>
         );
+
+      case "logout":
+        return (
+          <div className="space-y-6 rounded-lg bg-white p-20 shadow-sm">
+            <Typography variant="p-16">
+              Are you sure you want to logout?
+            </Typography>
+            <Button
+              onClick={() => {
+                signOut();
+              }}
+            >
+              Logout
+            </Button>
+
+            <Typography variant="p-12">
+              You will be redirected to the login page
+            </Typography>
+          </div>
+        );
       default:
         return null;
     }
@@ -186,23 +213,25 @@ const Sidebar = ({
     <Typography className="mb-4 text-lg font-semibold">My Account</Typography>
     <nav>
       <ul className="space-y-2">
-        {["dashboard", "orders", "addresses", "account"].map((tab) => (
-          <li key={tab}>
-            <button
-              onClick={() => {
-                setActiveTab(tab as Tab);
-                setIsOpen(false);
-              }}
-              className={`w-full rounded-md px-4 py-2 text-left ${
-                activeTab === tab
-                  ? "bg-blue-100 text-blue-600"
-                  : "text-gray-700 hover:bg-gray-100"
-              }`}
-            >
-              {tab.charAt(0).toUpperCase() + tab.slice(1)}
-            </button>
-          </li>
-        ))}
+        {["dashboard", "orders", "addresses", "account", "logout"].map(
+          (tab) => (
+            <li key={tab}>
+              <button
+                onClick={() => {
+                  setActiveTab(tab as Tab);
+                  setIsOpen(false);
+                }}
+                className={`w-full rounded-md px-4 py-2 text-left ${
+                  activeTab === tab
+                    ? "bg-blue-100 text-blue-600"
+                    : "text-gray-700 hover:bg-gray-100"
+                }`}
+              >
+                {tab.charAt(0).toUpperCase() + tab.slice(1)}
+              </button>
+            </li>
+          ),
+        )}
       </ul>
     </nav>
   </div>
