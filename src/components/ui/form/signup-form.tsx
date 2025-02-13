@@ -126,7 +126,9 @@ export function SignupForm() {
               variant="p-16"
               font="default"
               onClick={() => {
-                signIn("google");
+                signIn("google", {
+                  callbackUrl: "/",
+                });
               }}
             >
               Sign up with Google
