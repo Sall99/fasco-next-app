@@ -4,13 +4,10 @@ import { authOptions } from "../../../../../libs/auth-options";
 import { prisma } from "../../../../../libs";
 import { SessionUser } from "@/types";
 
-interface OrderParams {
-  params: {
-    orderId: string;
-  };
-}
-
-export async function GET(req: Request, { params }: OrderParams) {
+export async function GET(
+  req: Request,
+  { params }: { params: { orderId: string } },
+) {
   try {
     const session = (await getServerSession(authOptions)) as {
       user: SessionUser;
@@ -20,11 +17,9 @@ export async function GET(req: Request, { params }: OrderParams) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { orderId } = params;
-
     const order = await prisma.order.findFirst({
       where: {
-        id: orderId,
+        id: params.orderId,
         userId: session.user.id,
       },
       include: {
