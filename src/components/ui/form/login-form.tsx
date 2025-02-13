@@ -99,7 +99,9 @@ export function LoginForm() {
             fullWidth
             leftIcon={<FcGoogle size={20} />}
             onClick={() => {
-              signIn("google");
+              signIn("google", {
+                callbackUrl: "/",
+              });
             }}
           >
             <Typography variant="p-16" font="default">
