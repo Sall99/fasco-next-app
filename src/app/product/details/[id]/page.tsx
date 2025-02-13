@@ -7,7 +7,7 @@ import Image from "next/image";
 import { useParams } from "next/navigation";
 import React, { useState } from "react";
 import { useGetProduct } from "@/actions";
-import { Button, Feature, Typography } from "@/components";
+import { Button, Feature, Skeleton, Typography } from "@/components";
 import { StarRating } from "@/components/ui/star-rating";
 import { useDispatch } from "react-redux";
 import { addToCart } from "@/store/slices/cart";
@@ -38,6 +38,71 @@ interface DetailsProps {
     reviewsCount: number;
   };
 }
+
+const GallerySkeleton = () => (
+  <div className="flex flex-col justify-center gap-4 md:flex-row md:gap-4">
+    <motion.div
+      className="flex gap-2 overflow-x-auto md:max-h-[600px] md:flex-col md:overflow-y-auto"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+    >
+      {[1, 2, 3, 4].map((index) => (
+        <Skeleton key={index} className="h-20 w-20 flex-shrink-0" />
+      ))}
+    </motion.div>
+
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="relative"
+    >
+      <Skeleton className="aspect-[3/4] w-full md:w-_438 lg:h-_570" />
+    </motion.div>
+  </div>
+);
+
+const DetailsSkeleton = () => (
+  <div className="space-y-4 lg:w-_500">
+    <Skeleton className="h-4 w-24" />
+    <Skeleton className="h-4 w-32" />
+    <Skeleton className="h-8 w-3/4" />
+
+    <div className="flex items-center gap-2">
+      <Skeleton className="h-4 w-32" />
+      <Skeleton className="h-4 w-24" />
+    </div>
+
+    <Skeleton className="h-6 w-24" />
+
+    <div className="space-y-2">
+      <Skeleton className="h-4 w-full" />
+      <Skeleton className="h-4 w-5/6" />
+      <Skeleton className="h-4 w-4/6" />
+    </div>
+
+    <div className="flex flex-wrap gap-2">
+      {[1, 2, 3].map((index) => (
+        <Skeleton key={index} className="h-8 w-20 rounded-full" />
+      ))}
+    </div>
+
+    <div className="flex flex-wrap items-center gap-2">
+      <Skeleton className="h-8 w-32" />
+      <Skeleton className="h-8 w-24" />
+    </div>
+
+    <div className="flex items-center gap-4">
+      <Skeleton className="h-10 w-32" />
+      <Skeleton className="h-10 w-full" />
+    </div>
+
+    <div className="flex items-center gap-4">
+      <Skeleton className="h-6 w-16" />
+      <Skeleton className="h-8 w-8 rounded-full" />
+      <Skeleton className="h-8 w-8 rounded-full" />
+    </div>
+  </div>
+);
 
 function Gallery({ images }: GalleryProps) {
   const [mainIndex, setMainIndex] = useState(0);
@@ -281,17 +346,32 @@ export default function Page() {
 
   if (isLoading) {
     return (
-      <div className="fixed inset-0 z-50 flex h-screen items-center justify-center bg-white">
-        <div className="text-primary mt-4">Loading...</div>
-      </div>
+      <section className="mx-auto mt-10">
+        <motion.div
+          className="flex flex-col justify-center gap-4 p-4 md:gap-8 lg:flex-row"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5 }}
+        >
+          <GallerySkeleton />
+          <DetailsSkeleton />
+        </motion.div>
+        <div className="my-40">
+          <Feature />
+        </div>
+      </section>
     );
   }
 
   if (isError) {
     return (
-      <div className="fixed inset-0 z-50 flex h-screen items-center justify-center bg-white">
-        <div className="text-primary mt-4">Error loading product</div>
-      </div>
+      <motion.div
+        className="fixed inset-0 z-50 flex h-screen items-center justify-center bg-white"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+      >
+        <div className="text-red-600">Error loading product</div>
+      </motion.div>
     );
   }
 

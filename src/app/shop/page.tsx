@@ -1,12 +1,81 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { Feature, Product, Typography } from "@/components";
+import { Feature, Product, Skeleton, Typography } from "@/components";
 import { ChevronRight, X } from "lucide-react";
 import { useProducts } from "@/actions";
 import { ProductType } from "@/types";
 import clsx from "clsx";
 import { motion, AnimatePresence } from "framer-motion";
+
+const ProductSkeleton = () => (
+  <div className="group relative m-auto w-[386px] overflow-hidden rounded-lg bg-white p-4">
+    <Skeleton className="h-[444px] w-full rounded-md" />
+    <div className="mt-3 flex items-center justify-between">
+      <Skeleton className="h-6 w-48" />
+      <Skeleton className="h-4 w-24" />
+    </div>
+    <Skeleton className="mt-2 h-4 w-32" />
+    <Skeleton className="mt-5 h-4 w-40" />
+    <div className="mt-5 flex items-center justify-between">
+      <Skeleton className="h-6 w-24" />
+      <Skeleton className="h-4 w-28" />
+    </div>
+  </div>
+);
+
+const FiltersSkeleton = () => (
+  <div className="space-y-6">
+    {["Prices", "Categories", "Brands"].map((section) => (
+      <div key={section} className="mb-6">
+        <Skeleton className="mb-4 h-6 w-32" />
+        <div className="space-y-3">
+          {[1, 2, 3, 4].map((item) => (
+            <Skeleton key={item} className="h-8 w-full" />
+          ))}
+        </div>
+      </div>
+    ))}
+  </div>
+);
+const LoadingProductList = () => (
+  <motion.div
+    className="w-full"
+    variants={containerVariants}
+    initial="hidden"
+    animate="visible"
+  >
+    <div className="mb-6 flex items-center justify-between">
+      <Skeleton className="h-8 w-32" />
+      <div className="flex gap-2">
+        <Skeleton className="h-10 w-10 rounded" />
+        <Skeleton className="h-10 w-10 rounded" />
+      </div>
+    </div>
+
+    <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+      {[1, 2, 3, 4].map((item) => (
+        <motion.div
+          key={item}
+          variants={itemVariants}
+          className="flex justify-center"
+        >
+          <ProductSkeleton />
+        </motion.div>
+      ))}
+    </div>
+  </motion.div>
+);
+
+const LoadingNavigation = () => (
+  <div className="mb-8 py-4">
+    <div className="flex items-center justify-center gap-2">
+      <Skeleton className="h-4 w-16" />
+      <Skeleton className="h-4 w-4" />
+      <Skeleton className="h-4 w-16" />
+    </div>
+  </div>
+);
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -320,13 +389,20 @@ export default function ShopPage() {
 
   if (isLoading) {
     return (
-      <motion.div
-        className="fixed inset-0 z-50 flex h-screen items-center justify-center bg-white"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-      >
-        <div className="text-primary mt-4">Loading...</div>
-      </motion.div>
+      <section className="container mx-auto mb-14 mt-10 min-h-screen px-4 lg:px-0">
+        <LoadingNavigation />
+        <div className="mb-20 flex flex-col gap-8 lg:flex-row">
+          <div className="hidden lg:block lg:w-1/4">
+            <FiltersSkeleton />
+          </div>
+          <LoadingProductList />
+        </div>
+        <div className="mt-8 flex items-center justify-center gap-4">
+          <Skeleton className="h-10 w-24 rounded" />
+          <Skeleton className="h-10 w-32 rounded" />
+          <Skeleton className="h-10 w-24 rounded" />
+        </div>
+      </section>
     );
   }
 
@@ -337,7 +413,7 @@ export default function ShopPage() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
       >
-        <div className="text-primary mt-4">Error loading products</div>
+        <div className="text-red-600">Error loading products</div>
       </motion.div>
     );
   }

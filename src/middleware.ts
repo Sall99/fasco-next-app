@@ -8,8 +8,6 @@ export async function middleware(req: NextRequest) {
   const isProtectedPath = protectedPaths.some((p) => path.startsWith(p));
 
   if (isProtectedPath) {
-    console.log(isProtectedPath, "isProtectedPath");
-
     try {
       const token = await getToken({
         req,
@@ -19,13 +17,11 @@ export async function middleware(req: NextRequest) {
 
       if (!token) {
         const loginUrl = new URL("/auth/login", req.url);
-
         loginUrl.searchParams.set("callbackUrl", path);
         return NextResponse.redirect(loginUrl);
       }
     } catch (error) {
       console.error("Error in middleware:", error);
-
       return NextResponse.next();
     }
   }
@@ -34,5 +30,5 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/login", ...protectedPaths.map((path) => `${path}/:path*`)],
+  matcher: ["/login", "/profile/:path*", "/orders/:path*", "/checkout/:path*"],
 };

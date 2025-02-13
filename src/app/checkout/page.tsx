@@ -1,16 +1,25 @@
 "use client";
 
+import { useState } from "react";
 import { FieldError, useForm } from "react-hook-form";
-import { useSelector } from "react-redux";
-import { Elements, CardElement } from "@stripe/react-stripe-js";
+import { useSelector, useDispatch } from "react-redux";
+import {
+  Elements,
+  CardElement,
+  useStripe,
+  useElements,
+} from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import {
   CartItem,
   selectCartItems,
   selectTotalPrice,
+  clearCart,
 } from "@/store/slices/cart";
 import { Button, Typography } from "@/components";
+import { toast } from "sonner";
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY!);
 
@@ -25,19 +34,81 @@ interface CheckoutFormData {
   saveInfo: boolean;
 }
 
-const CheckoutForm = ({
-  onSubmit,
-}: {
-  onSubmit: (data: CheckoutFormData) => void;
-}) => {
+const CheckoutForm = ({ totalPrice }: { totalPrice: number }) => {
+  const stripe = useStripe();
+  const elements = useElements();
+  const router = useRouter();
+  const dispatch = useDispatch();
+  const [isProcessing, setIsProcessing] = useState(false);
+  const cartItems = useSelector(selectCartItems);
+
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<CheckoutFormData>();
 
+  const handleCheckout = async (formData: CheckoutFormData) => {
+    if (!stripe || !elements) {
+      return;
+    }
+
+    try {
+      setIsProcessing(true);
+
+      const response = await fetch("/api/stripe/payment-intent", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          amount: totalPrice,
+          shipping: formData,
+          cartItems,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to create payment intent");
+      }
+
+      const { clientSecret } = await response.json();
+
+      const { error: paymentError, paymentIntent } =
+        await stripe.confirmCardPayment(clientSecret, {
+          payment_method: {
+            card: elements.getElement(CardElement)!,
+            billing_details: {
+              name: `${formData.firstName} ${formData.lastName}`,
+              email: formData.email,
+              address: {
+                line1: formData.address,
+                city: formData.city,
+                country: formData.country,
+                postal_code: formData.zipCode,
+              },
+            },
+          },
+        });
+
+      if (paymentError) {
+        throw new Error(paymentError.message);
+      }
+
+      if (paymentIntent.status === "succeeded") {
+        dispatch(clearCart());
+        toast.success("Payment successful!");
+        router.push("/checkout/success");
+      }
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Payment failed");
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+    <form onSubmit={handleSubmit(handleCheckout)} className="space-y-6">
       <Section title="Shipping Information">
         <div className="grid gap-4 sm:grid-cols-2">
           <Input
@@ -87,8 +158,8 @@ const CheckoutForm = ({
         </div>
       </Section>
 
-      <Button type="submit" className="w-full">
-        Pay
+      <Button type="submit" className="w-full" disabled={isProcessing}>
+        {isProcessing ? "Processing..." : `Pay $${totalPrice.toFixed(2)}`}
       </Button>
     </form>
   );
@@ -109,7 +180,7 @@ const OrderSummary = ({
     </div>
     <div className="mt-6 space-y-4 border-t pt-4">
       <SummaryRow label="Subtotal" value={`$${totalPrice.toFixed(2)}`} />
-      <SummaryRow label="Shipping" value="Calculated at next step" />
+      <SummaryRow label="Shipping" value="Free" />
       <SummaryRow label="Total" value={`$${totalPrice.toFixed(2)}`} bold />
     </div>
   </Section>
@@ -127,15 +198,11 @@ const CheckoutPage = () => {
     );
   }
 
-  const handleCheckout = async (data: CheckoutFormData) => {
-    console.log("Processing payment with data:", data);
-  };
-
   return (
     <Elements stripe={stripePromise}>
       <div className="mt-20 min-h-screen bg-gray-50 px-4 py-8">
         <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-2">
-          <CheckoutForm onSubmit={handleCheckout} />
+          <CheckoutForm totalPrice={totalPrice} />
           <OrderSummary cartItems={cartItems} totalPrice={totalPrice} />
         </div>
       </div>
