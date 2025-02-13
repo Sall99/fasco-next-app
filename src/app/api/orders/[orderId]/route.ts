@@ -1,13 +1,11 @@
 import { getServerSession } from "next-auth";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { authOptions } from "../../../../../libs/auth-options";
 import { prisma } from "../../../../../libs";
 import { SessionUser } from "@/types";
 
-export async function GET(
-  req: Request,
-  { params }: { params: { orderId: string } },
-) {
+export async function GET(req: NextRequest) {
+  const orderId = req.nextUrl.searchParams.get("id") || "";
   try {
     const session = (await getServerSession(authOptions)) as {
       user: SessionUser;
@@ -19,7 +17,7 @@ export async function GET(
 
     const order = await prisma.order.findFirst({
       where: {
-        id: params.orderId,
+        id: orderId,
         userId: session.user.id,
       },
       include: {
