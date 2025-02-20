@@ -50,13 +50,14 @@ export function Product({ product }: ProductProps) {
       </div>
       <div className="mt-3 flex items-center justify-between">
         <Typography variant="h6">{product.name}</Typography>
-        <StarRating average={product.rating.average} />
+        {product.rating && <StarRating average={product.rating.average} />}
       </div>
       <Typography variant="p-12" className="font-semibold text-gray-400">
         {product.brand}
       </Typography>
       <Typography variant="p-12" className="mt-5">
-        ({formatReviewCount(product.rating.reviewsCount)}) Customer Reviews
+        ({product.rating ? formatReviewCount(product.rating.reviewsCount) : 0})
+        Customer Reviews
       </Typography>
 
       <div className="mt-5 flex items-center justify-between">

@@ -1,7 +1,6 @@
+import { ResetPasswordForm } from "@/components/ui/form/reset-password-form";
 import Image from "next/image";
 import React from "react";
-
-import { ResetPasswordForm } from "@/components";
 
 export default function ResetPassword() {
   return (

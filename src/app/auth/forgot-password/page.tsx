@@ -1,7 +1,6 @@
+import { ForgotPasswordForm } from "@/components/ui/form/forgot-password-form";
 import Image from "next/image";
 import React from "react";
-
-import { ForgotPasswordForm } from "@/components";
 
 export default function ForgotPassword() {
   return (
