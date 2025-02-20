@@ -23,87 +23,67 @@ export type ProductType = {
   } | null;
 };
 
-type DistributionItem = {
+type OrderItem = {
   id: string;
-  name: string;
-  slug?: string;
-  count: number;
+  quantity: number;
+  price: number;
+  product: {
+    id: string;
+    name: string;
+    brand: string;
+    image: string | null;
+    category: {
+      name: string;
+      slug: string;
+    };
+  };
 };
 
-export type CategoriesType = {
-  total: number;
-  distribution: DistributionItem[];
+type ShippingInfo = {
+  address: string;
+  city: string;
+  postalCode: string;
+  country: string;
+  phone: string;
+  email: string;
 };
 
 export type OrderType = {
   id: string;
   totalAmount: number;
-  itemsCount: number;
   status: string;
   currency: string;
   paymentIntentId: string;
   failureReason: string | null;
-  createdAt: Date;
-  updatedAt: Date;
-  User: {
+  createdAt: string;
+  updatedAt: string;
+  customer: {
     id: string;
-    name: string | null;
+    name: string;
     email: string | null;
     phoneNumber: string | null;
   };
-  OrderItem: {
-    id: string;
-    quantity: number;
-    price: number;
-    product: {
-      id: string;
-      name: string;
-      brand: string;
-      images: string[];
-      category: {
-        name: string;
-        slug: string;
-      };
-    };
-  }[];
-  Shipping: {
-    address: string;
-    city: string;
-    postalCode: string;
-    country: string;
-    phone: string;
-    email: string;
-  }[];
-
-  customer: {
-    id: string;
-    email: string;
-    name: string;
-  };
+  items: OrderItem[];
+  shipping: ShippingInfo | null;
+  itemsCount: number;
+  totalProducts: number;
 };
 
 export type CustomerType = {
   id: string;
-  name: string | null;
-  email: string | null;
-  phoneNumber: string | null;
-  image: string | null;
+  name: string;
+  email: string;
+  phoneNumber: string;
+  image: string;
   totalOrders: number;
   totalSpent: number;
-  lastOrder: string;
-  orders: {
+  lastOrder: Date | null; // Changed from string | null to Date | null
+  orders: Array<{
     id: string;
     totalAmount: number;
     status: string;
-    createdAt: Date;
-    OrderItem: {
-      quantity: number;
-      price: number;
-      product: {
-        name: string;
-      };
-    }[];
-  }[];
+    createdAt: Date; // Changed from string to Date
+  }>;
 };
 
 export type DashboardOverview = {
@@ -128,12 +108,22 @@ export type DashboardOverview = {
   };
   orders: {
     total: number;
-    items: OrderType[];
     totalRevenue: number;
+    items: OrderType[];
   };
   customers: {
     total: number;
     new: number;
     data: CustomerType[];
   };
+};
+type DistributionItem = {
+  id: string;
+  name: string;
+  slug?: string;
+  count: number;
+};
+export type CategoriesType = {
+  total: number;
+  distribution: DistributionItem[];
 };
