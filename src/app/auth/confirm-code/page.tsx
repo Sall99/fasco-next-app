@@ -1,7 +1,6 @@
+import { ConfirmCodeForm } from "@/components/ui/form/confirmation-code-form";
 import Image from "next/image";
 import React from "react";
-
-import { ConfirmCodeForm } from "@/components";
 
 export default function ConfirmCode() {
   return (
