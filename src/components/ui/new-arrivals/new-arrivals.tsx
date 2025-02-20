@@ -2,10 +2,11 @@
 
 import React, { useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { Tabs, Typography, Button } from "@/components";
+import { Typography, Button } from "@/components";
 import { useProducts, useProductsByCategory } from "@/actions/products";
 import { motion } from "framer-motion";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Tabs } from "@/components/ui/tab-s";
 
 const ProductSkeleton = () => (
   <div className="group relative m-auto w-[386px] overflow-hidden rounded-lg bg-white p-4">
