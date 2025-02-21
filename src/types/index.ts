@@ -53,9 +53,9 @@ export type ProductType = {
     reviewsCount: number;
   } | null;
   stock: {
-    quantity: number;
-    lowStockThreshold: number;
-  } | null;
+    quantity: number | null;
+    lowStockThreshold: number | null;
+  };
 };
 
 type OrderItem = {
@@ -162,3 +162,21 @@ export type CategoriesType = {
   total: number;
   distribution: DistributionItem[];
 };
+
+export interface CreateProductRequestInterface {
+  name: string;
+  brand: string;
+  price: number;
+  description: string;
+  tags: string[];
+  images: string[];
+  category: {
+    id: string;
+    name: string;
+    slug?: string;
+  };
+  stock: {
+    quantity: number | null;
+    lowStockThreshold: number | null;
+  };
+}

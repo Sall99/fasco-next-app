@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { SetStateAction, useEffect, useState } from "react";
 import Image from "next/image";
 import {
   Dialog,
@@ -15,11 +15,18 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/button";
+import { Button as Btn } from "@/components/ui/button";
 import { X, ImagePlus } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
-import { CategoriesType, ProductType } from "@/types";
+import {
+  CategoriesType,
+  CreateProductRequestInterface,
+  ProductType,
+} from "@/types";
 import Typography from "@/components/typography";
+import { useCreateProduct } from "@/actions/admin/product";
+import { toast, Toaster } from "sonner";
 
 interface ProductModalProps {
   isOpen: boolean;
@@ -29,6 +36,56 @@ interface ProductModalProps {
   categories: CategoriesType;
 }
 
+const createProductPromise = (
+  productData: ProductType | PromiseLike<ProductType>,
+  onSubmit: (data: ProductType) => void,
+  onClose: () => void,
+  setIsLoading: (value: SetStateAction<boolean>) => void,
+) =>
+  new Promise<ProductType>((resolve, reject) => {
+    const transformedData: CreateProductRequestInterface = {
+      name: "then" in productData ? "" : productData.name,
+      brand: "then" in productData ? "" : productData.brand,
+      price: "then" in productData ? 0 : productData.price,
+      description: "then" in productData ? "" : productData.description,
+      tags: "then" in productData ? [] : productData.tags,
+      images: "then" in productData ? [] : productData.images,
+      category:
+        "then" in productData
+          ? { id: "", name: "", slug: "" }
+          : productData.category,
+      stock:
+        "then" in productData
+          ? { quantity: null, lowStockThreshold: null }
+          : productData.stock || {
+              quantity: null,
+              lowStockThreshold: null,
+            },
+    };
+
+    useCreateProduct(transformedData)
+      .then(() => {
+        if ("then" in productData) {
+          productData.then((resolvedData) => {
+            resolve(resolvedData);
+            onSubmit(resolvedData);
+            onClose();
+          });
+        } else {
+          resolve(productData);
+          onSubmit(productData);
+          onClose();
+        }
+      })
+      .catch((error) => {
+        reject(error);
+        console.error("Error creating product:", error);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  });
+
 export const ProductModal = ({
   isOpen,
   onClose,
@@ -36,6 +93,7 @@ export const ProductModal = ({
   onSubmit,
   categories,
 }: ProductModalProps) => {
+  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState<Partial<ProductType>>({
     name: "",
     brand: "",
@@ -45,8 +103,8 @@ export const ProductModal = ({
     images: [],
     category: { id: "", name: "", slug: "" },
     stock: {
-      quantity: 0,
-      lowStockThreshold: 5,
+      quantity: null,
+      lowStockThreshold: null,
     },
   });
 
@@ -104,10 +162,11 @@ export const ProductModal = ({
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
+    setIsLoading(true);
     e.preventDefault();
     if (formData.name && formData.price && formData.category) {
-      onSubmit({
+      const productData: ProductType = {
         id: initialData?.id || crypto.randomUUID(),
         name: formData.name,
         brand: formData.brand || "",
@@ -117,15 +176,25 @@ export const ProductModal = ({
         tags: formData.tags || [],
         images: formData.images || [],
         description: formData.description || "",
-        category: formData.category as Required<ProductType>["category"],
+        category: {
+          ...formData.category,
+          slug: formData.category?.slug || "",
+        } as Required<ProductType>["category"],
         rating: formData.rating || null,
-        stock: formData.stock || null,
-      });
+        stock: formData.stock || { quantity: null, lowStockThreshold: null },
+      };
+
+      toast.promise(
+        () =>
+          createProductPromise(productData, onSubmit, onClose, setIsLoading),
+        {
+          loading: "Creating product...",
+          success: (data) => `${data.name} has been created successfully`,
+          error: "Failed to create product",
+        },
+      );
     }
   };
-
-  console.log("Initial Data", initialData);
-  console.log("slug", categories);
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-[900px]">
@@ -169,11 +238,11 @@ export const ProductModal = ({
               </label>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="outline" className="w-full justify-start">
+                  <Btn variant="outline" className="w-full justify-start">
                     <Typography variant="p-14">
                       {formData.category?.name || "Select Category"}
                     </Typography>
-                  </Button>
+                  </Btn>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-[200px]">
                   {categories.distribution.map((category) => (
@@ -228,7 +297,7 @@ export const ProductModal = ({
             <div className="grid grid-cols-2 gap-4">
               <Input
                 type="number"
-                value={formData.stock?.quantity}
+                value={formData.stock?.quantity ?? ""}
                 onChange={(e) =>
                   setFormData({
                     ...formData,
@@ -243,7 +312,7 @@ export const ProductModal = ({
               />
               <Input
                 type="number"
-                value={formData.stock?.lowStockThreshold}
+                value={formData.stock?.lowStockThreshold ?? ""}
                 onChange={(e) =>
                   setFormData({
                     ...formData,
@@ -269,9 +338,9 @@ export const ProductModal = ({
                 onChange={(e) => setNewTag(e.target.value)}
                 placeholder="Add a tag"
               />
-              <Button type="button" onClick={addTag}>
+              <Btn type="button" onClick={addTag}>
                 Add
-              </Button>
+              </Btn>
             </div>
             <div className="mt-2 flex flex-wrap gap-2">
               {formData.tags?.map((tag) => (
@@ -337,12 +406,13 @@ export const ProductModal = ({
             >
               Cancel
             </Button>
-            <Button type="submit">
+            <Button type="submit" loading={isLoading}>
               {initialData ? "Save Changes" : "Create Product"}
             </Button>
           </DialogFooter>
         </form>
       </DialogContent>
+      <Toaster richColors />
     </Dialog>
   );
 };
