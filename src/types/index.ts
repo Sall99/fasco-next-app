@@ -112,12 +112,12 @@ export type CustomerType = {
   image: string;
   totalOrders: number;
   totalSpent: number;
-  lastOrder: Date | null; // Changed from string | null to Date | null
+  lastOrder: Date | null;
   orders: Array<{
     id: string;
     totalAmount: number;
     status: string;
-    createdAt: Date; // Changed from string to Date
+    createdAt: Date;
   }>;
 };
 
@@ -162,3 +162,21 @@ export type CategoriesType = {
   total: number;
   distribution: DistributionItem[];
 };
+
+export interface CreateProductRequestInterface {
+  name: string;
+  brand: string;
+  price: number;
+  description: string;
+  tags: string[];
+  images: string[];
+  category: {
+    id: string;
+    name: string;
+    slug?: string;
+  };
+  stock: {
+    quantity: number | null;
+    lowStockThreshold: number | null;
+  };
+}
