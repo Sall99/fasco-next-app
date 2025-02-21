@@ -58,8 +58,8 @@ const createProductPromise = (
         "then" in productData
           ? { quantity: null, lowStockThreshold: null }
           : productData.stock || {
-              quantity: null,
-              lowStockThreshold: null,
+              quantity: 0,
+              lowStockThreshold: 0,
             },
     };
 
@@ -103,8 +103,8 @@ export const ProductModal = ({
     images: [],
     category: { id: "", name: "", slug: "" },
     stock: {
-      quantity: null,
-      lowStockThreshold: null,
+      quantity: 0,
+      lowStockThreshold: 0,
     },
   });
 
@@ -181,7 +181,7 @@ export const ProductModal = ({
           slug: formData.category?.slug || "",
         } as Required<ProductType>["category"],
         rating: formData.rating || null,
-        stock: formData.stock || { quantity: null, lowStockThreshold: null },
+        stock: formData.stock || { quantity: 0, lowStockThreshold: 0 },
       };
 
       toast.promise(

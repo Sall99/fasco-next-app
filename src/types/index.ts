@@ -53,9 +53,9 @@ export type ProductType = {
     reviewsCount: number;
   } | null;
   stock: {
-    quantity: number | null;
-    lowStockThreshold: number | null;
-  };
+    quantity: number;
+    lowStockThreshold: number;
+  } | null;
 };
 
 type OrderItem = {
@@ -112,12 +112,12 @@ export type CustomerType = {
   image: string;
   totalOrders: number;
   totalSpent: number;
-  lastOrder: Date | null; // Changed from string | null to Date | null
+  lastOrder: Date | null;
   orders: Array<{
     id: string;
     totalAmount: number;
     status: string;
-    createdAt: Date; // Changed from string to Date
+    createdAt: Date;
   }>;
 };
 
