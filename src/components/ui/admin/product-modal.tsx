@@ -25,7 +25,7 @@ import {
   ProductType,
 } from "@/types";
 import Typography from "@/components/typography";
-import { useCreateProduct } from "@/actions/admin/product";
+import { useCreateProduct, useUpdateProduct } from "@/actions/admin/product";
 import { toast, Toaster } from "sonner";
 
 interface ProductModalProps {
@@ -36,11 +36,12 @@ interface ProductModalProps {
   categories: CategoriesType;
 }
 
-const createProductPromise = (
+const handleProductPromise = (
   productData: ProductType | PromiseLike<ProductType>,
   onSubmit: (data: ProductType) => void,
   onClose: () => void,
   setIsLoading: (value: SetStateAction<boolean>) => void,
+  isUpdate: boolean = false,
 ) =>
   new Promise<ProductType>((resolve, reject) => {
     const transformedData: CreateProductRequestInterface = {
@@ -63,7 +64,11 @@ const createProductPromise = (
             },
     };
 
-    useCreateProduct(transformedData)
+    const action = isUpdate ? useUpdateProduct : useCreateProduct;
+    const productId =
+      isUpdate && !("then" in productData) ? productData.id : undefined;
+
+    action(transformedData, productId)
       .then(() => {
         if ("then" in productData) {
           productData.then((resolvedData) => {
@@ -79,7 +84,10 @@ const createProductPromise = (
       })
       .catch((error) => {
         reject(error);
-        console.error("Error creating product:", error);
+        console.error(
+          `Error ${isUpdate ? "updating" : "creating"} product:`,
+          error,
+        );
       })
       .finally(() => {
         setIsLoading(false);
@@ -109,6 +117,7 @@ export const ProductModal = ({
   });
 
   const [newTag, setNewTag] = useState("");
+  const isUpdateMode = Boolean(initialData?.id);
 
   useEffect(() => {
     if (initialData) {
@@ -186,21 +195,29 @@ export const ProductModal = ({
 
       toast.promise(
         () =>
-          createProductPromise(productData, onSubmit, onClose, setIsLoading),
+          handleProductPromise(
+            productData,
+            onSubmit,
+            onClose,
+            setIsLoading,
+            isUpdateMode,
+          ),
         {
-          loading: "Creating product...",
-          success: (data) => `${data.name} has been created successfully`,
-          error: "Failed to create product",
+          loading: `${isUpdateMode ? "Updating" : "Creating"} product...`,
+          success: (data) =>
+            `${data.name} has been ${isUpdateMode ? "updated" : "created"} successfully`,
+          error: `Failed to ${isUpdateMode ? "update" : "create"} product`,
         },
       );
     }
   };
+
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-[900px]">
         <DialogHeader>
           <DialogTitle>
-            {initialData ? "Edit Product" : "Create Product"}
+            {isUpdateMode ? "Edit Product" : "Create Product"}
           </DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -407,7 +424,7 @@ export const ProductModal = ({
               Cancel
             </Button>
             <Button type="submit" loading={isLoading}>
-              {initialData ? "Save Changes" : "Create Product"}
+              {isUpdateMode ? "Save Changes" : "Create Product"}
             </Button>
           </DialogFooter>
         </form>
