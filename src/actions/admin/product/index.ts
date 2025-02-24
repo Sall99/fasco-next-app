@@ -20,3 +20,11 @@ export const useUpdateProduct = async (
 
   return data;
 };
+
+export const useDeleProduct = async (productId: string | undefined) => {
+  const { data } = await instance.post(`/admin/product/delete`, {
+    id: productId || "",
+  });
+
+  return data;
+};
