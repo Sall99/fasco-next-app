@@ -187,4 +187,9 @@ export const CreateCategorySchema = z.object({
   slug: z.string().min(1, "Slug is required"),
 });
 
+export const UpdateCategorySchema = z.object({
+  name: z.string().optional(),
+  slug: z.string().optional(),
+});
 export type CreateCategoryInput = z.infer<typeof CreateCategorySchema>;
+export type UpdateCategoryInput = z.infer<typeof UpdateCategorySchema>;

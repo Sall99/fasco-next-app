@@ -30,7 +30,7 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
-import { useCreateCategory, useOverview } from "@/actions";
+import { useCreateCategory, useOverview, useUpdateCategory } from "@/actions";
 import Typography from "@/components/typography";
 import { toast, Toaster } from "sonner";
 
@@ -104,6 +104,7 @@ const CategoriesSection = () => {
   });
   const { overview, mutate: refreshCategories } = useOverview();
   const createCategory = useCreateCategory;
+  const updateCategory = useUpdateCategory;
 
   const filteredCategories = useMemo(() => {
     if (!overview || !overview.categories.distribution) return [];
@@ -132,10 +133,23 @@ const CategoriesSection = () => {
     }
   };
 
-  const handleEditCategory = (e: { preventDefault: () => void }) => {
+  const handleEditCategory = async (
+    e: { preventDefault: () => void },
+    productId: string,
+  ) => {
     e.preventDefault();
-    setIsEditDialogOpen(false);
-    setEditingCategory({ id: "", name: "", slug: "" });
+    toast.promise(updateCategory(editingCategory, productId), {
+      loading: `Creating ${newCategory.name}...`,
+      success: () => {
+        setIsEditDialogOpen(false);
+        setNewCategory({ id: "", name: "", slug: "" });
+        refreshCategories();
+        return `${newCategory.name} has been created successfully`;
+      },
+      error: (err) => {
+        return `${err.response.data.error}`;
+      },
+    });
   };
 
   const handleDeleteCategory = () => {
@@ -176,7 +190,9 @@ const CategoriesSection = () => {
             <CategoryForm
               category={newCategory}
               setCategory={setNewCategory}
-              handleEditCategory={handleEditCategory}
+              handleEditCategory={(e) =>
+                handleEditCategory(e, editingCategory.id)
+              }
               handleAddCategory={handleAddCategory}
             />
             <DialogFooter>
@@ -296,7 +312,9 @@ const CategoriesSection = () => {
           <CategoryForm
             category={editingCategory}
             setCategory={setEditingCategory}
-            handleEditCategory={handleEditCategory}
+            handleEditCategory={(e) =>
+              handleEditCategory(e, editingCategory.id)
+            }
             isEdit={true}
             handleAddCategory={handleAddCategory}
           />
@@ -307,7 +325,10 @@ const CategoriesSection = () => {
             >
               Cancel
             </Button>
-            <Button type="submit" onClick={handleEditCategory}>
+            <Button
+              type="submit"
+              onClick={(e) => handleEditCategory(e, editingCategory.id)}
+            >
               Update Category
             </Button>
           </DialogFooter>
