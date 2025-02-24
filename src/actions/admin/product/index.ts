@@ -8,3 +8,23 @@ export const useCreateProduct = async (
 
   return data;
 };
+
+export const useUpdateProduct = async (
+  values: CreateProductRequestInterface,
+  productId: string | undefined,
+) => {
+  const { data } = await instance.post(`/admin/product/update`, {
+    ...values,
+    id: productId,
+  });
+
+  return data;
+};
+
+export const useDeleProduct = async (productId: string | undefined) => {
+  const { data } = await instance.post(`/admin/product/delete`, {
+    id: productId || "",
+  });
+
+  return data;
+};

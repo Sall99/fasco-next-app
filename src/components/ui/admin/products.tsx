@@ -39,6 +39,8 @@ import Typography from "@/components/typography";
 
 import { ProductType } from "@/types";
 import { ProductModal } from "./product-modal";
+import { useDeleProduct } from "@/actions/admin/product";
+import { toast } from "sonner";
 
 interface DeleteConfirmationModalProps {
   isOpen: boolean;
@@ -97,8 +99,8 @@ const ProductsSection = () => {
     null,
   );
   const { categoryStats } = useCategoryStats();
-  const { products } = useDashboardProducts();
-
+  const { products, mutate: refreshProducts } = useDashboardProducts();
+  const deleteProduct = useDeleProduct;
   const filteredProducts = useMemo(() => {
     if (!products) return [];
 
@@ -122,19 +124,29 @@ const ProductsSection = () => {
 
   const handleDelete = async () => {
     if (!selectedProduct) return;
+
     try {
-      // await deleteProduct(selectedProduct.id);
-      console.log("Deleting product:", selectedProduct.id);
-      setDeleteModalOpen(false);
+      toast.promise(deleteProduct(selectedProduct.id), {
+        loading: `Deleting ${selectedProduct.name}...`,
+        success: () => {
+          setDeleteModalOpen(false);
+          setSelectedProduct(null);
+          refreshProducts();
+          return `${selectedProduct?.name} has been deleted successfully`;
+        },
+        error: (err) => {
+          console.error("Error deleting product:", err);
+          return `Failed to delete ${selectedProduct?.name}`;
+        },
+      });
     } catch (error) {
-      console.error("Error deleting product:", error);
+      console.error("Error in delete operation:", error);
+    } finally {
     }
   };
 
-  const handleCreate = async (formData: ProductType) => {
+  const handleCreate = async () => {
     try {
-      // await createProduct(formData);
-      console.log("Creating product:", formData);
       setCreateModalOpen(false);
     } catch (error) {
       console.error("Error creating product:", error);
@@ -142,15 +154,13 @@ const ProductsSection = () => {
   };
 
   const handleUpdateClick = (product: ProductType) => {
-    setSelectedProduct(product); // Set the selected product
-    setUpdateModalOpen(true); // Open the update modal
+    setSelectedProduct(product);
+    setUpdateModalOpen(true);
   };
 
-  const handleUpdate = async (formData: ProductType) => {
+  const handleUpdate = async () => {
     if (!selectedProduct) return;
     try {
-      // await updateProduct(selectedProduct.id, formData);
-      console.log("Updating product:", selectedProduct.id, formData);
       setUpdateModalOpen(false);
     } catch (error) {
       console.error("Error updating product:", error);
