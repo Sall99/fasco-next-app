@@ -1,4 +1,5 @@
 import { CartItem } from "@/store/slices/cart";
+import { z } from "zod";
 
 export type SignupFormData = {
   fName: string;
@@ -180,3 +181,10 @@ export interface CreateProductRequestInterface {
     lowStockThreshold: number | null;
   };
 }
+
+export const CreateCategorySchema = z.object({
+  name: z.string().min(1, "Category name is required"),
+  slug: z.string().min(1, "Slug is required"),
+});
+
+export type CreateCategoryInput = z.infer<typeof CreateCategorySchema>;
