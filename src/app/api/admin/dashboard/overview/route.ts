@@ -61,7 +61,6 @@ export async function GET() {
         },
       }),
 
-      // Updated recent orders query with shipping and payment info
       prisma.order.findMany({
         select: {
           id: true,
@@ -193,11 +192,11 @@ export async function GET() {
             },
           },
         },
-        where: {
-          Order: {
-            some: {},
-          },
-        },
+        // where: {
+        //   Order: {
+        //     some: {},
+        //   },
+        // },
         orderBy: {
           Order: {
             _count: "desc",
@@ -248,18 +247,17 @@ export async function GET() {
       email: customer.email || "",
       phoneNumber: customer.phoneNumber || "",
       image: customer.image || "",
-      totalOrders: customer.Order.length,
-      totalSpent: customer.Order.reduce(
-        (sum, order) => sum + order.totalAmount,
-        0,
-      ),
-      lastOrder: customer.Order[0]?.createdAt || null,
-      orders: customer.Order.map((order) => ({
-        id: order.id,
-        totalAmount: order.totalAmount,
-        status: order.status,
-        createdAt: order.createdAt,
-      })),
+      totalOrders: customer.Order?.length || 0,
+      totalSpent:
+        customer.Order?.reduce((sum, order) => sum + order.totalAmount, 0) || 0,
+      lastOrder: customer.Order?.[0]?.createdAt || null,
+      orders:
+        customer.Order?.map((order) => ({
+          id: order.id,
+          totalAmount: order.totalAmount,
+          status: order.status,
+          createdAt: order.createdAt,
+        })) || [],
     }));
 
     const overview: DashboardOverview = {
