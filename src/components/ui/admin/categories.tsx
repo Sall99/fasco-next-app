@@ -30,8 +30,62 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
-import { useOverview } from "@/actions";
+import { useCreateCategory, useOverview } from "@/actions";
 import Typography from "@/components/typography";
+import { toast, Toaster } from "sonner";
+
+const generateSlug = (name: string) => {
+  return name
+    .toLowerCase()
+    .trim()
+    .replace(/[\s]+/g, "-")
+    .replace(/[^\w-]+/g, "")
+    .replace(/--+/g, "-");
+};
+
+const CategoryForm = ({
+  category,
+  setCategory,
+  isEdit = false,
+  handleEditCategory,
+  handleAddCategory,
+}: {
+  category: { id: string; name: string; slug: string };
+  setCategory: React.Dispatch<
+    React.SetStateAction<{ id: string; name: string; slug: string }>
+  >;
+  isEdit?: boolean;
+  handleEditCategory: (e: { preventDefault: () => void }) => void;
+  handleAddCategory: (e: { preventDefault: () => void }) => void;
+}) => (
+  <form
+    onSubmit={isEdit ? handleEditCategory : handleAddCategory}
+    className="space-y-4"
+  >
+    <div className="space-y-2">
+      <Label htmlFor="name">Category Name</Label>
+      <Input
+        id="name"
+        value={category.name}
+        required
+        onChange={(e) => {
+          const name = e.target.value;
+          setCategory({ ...category, name, slug: generateSlug(name) });
+        }}
+        placeholder="Enter category name"
+      />
+    </div>
+    <div className="space-y-2">
+      <Label htmlFor="slug">Slug</Label>
+      <Input
+        id="slug"
+        value={category.slug}
+        onChange={(e) => setCategory({ ...category, slug: e.target.value })}
+        placeholder="enter-slug-here"
+      />
+    </div>
+  </form>
+);
 
 const CategoriesSection = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -48,7 +102,8 @@ const CategoriesSection = () => {
     name: "",
     slug: "",
   });
-  const { overview } = useOverview();
+  const { overview, mutate: refreshCategories } = useOverview();
+  const createCategory = useCreateCategory;
 
   const filteredCategories = useMemo(() => {
     if (!overview || !overview.categories.distribution) return [];
@@ -57,10 +112,24 @@ const CategoriesSection = () => {
     );
   }, [overview, searchQuery]);
 
-  const handleAddCategory = (e: { preventDefault: () => void }) => {
+  const handleAddCategory = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
-    setIsAddDialogOpen(false);
-    setNewCategory({ id: "", name: "", slug: "" });
+    try {
+      toast.promise(createCategory(newCategory), {
+        loading: `Creating ${newCategory.name}...`,
+        success: () => {
+          setIsAddDialogOpen(false);
+          setNewCategory({ id: "", name: "", slug: "" });
+          refreshCategories();
+          return `${newCategory.name} has been created successfully`;
+        },
+        error: (err) => {
+          return `${err.response.data.error}`;
+        },
+      });
+    } catch (error) {
+      console.error("Error in create operation:", error);
+    }
   };
 
   const handleEditCategory = (e: { preventDefault: () => void }) => {
@@ -86,42 +155,6 @@ const CategoriesSection = () => {
     setIsEditDialogOpen(true);
   };
 
-  const CategoryForm = ({
-    category,
-    setCategory,
-    isEdit = false,
-  }: {
-    category: { id: string; name: string; slug: string };
-    setCategory: React.Dispatch<
-      React.SetStateAction<{ id: string; name: string; slug: string }>
-    >;
-    isEdit?: boolean;
-  }) => (
-    <form
-      onSubmit={isEdit ? handleEditCategory : handleAddCategory}
-      className="space-y-4"
-    >
-      <div className="space-y-2">
-        <Label htmlFor="name">Category Name</Label>
-        <Input
-          id="name"
-          value={category.name}
-          onChange={(e) => setCategory({ ...category, name: e.target.value })}
-          placeholder="Enter category name"
-        />
-      </div>
-      <div className="space-y-2">
-        <Label htmlFor="slug">Slug</Label>
-        <Input
-          id="slug"
-          value={category.slug}
-          onChange={(e) => setCategory({ ...category, slug: e.target.value })}
-          placeholder="enter-slug-here"
-        />
-      </div>
-    </form>
-  );
-
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -140,7 +173,12 @@ const CategoriesSection = () => {
                 Create a new category for your products.
               </DialogDescription>
             </DialogHeader>
-            <CategoryForm category={newCategory} setCategory={setNewCategory} />
+            <CategoryForm
+              category={newCategory}
+              setCategory={setNewCategory}
+              handleEditCategory={handleEditCategory}
+              handleAddCategory={handleAddCategory}
+            />
             <DialogFooter>
               <Button
                 variant="outline"
@@ -258,7 +296,9 @@ const CategoriesSection = () => {
           <CategoryForm
             category={editingCategory}
             setCategory={setEditingCategory}
+            handleEditCategory={handleEditCategory}
             isEdit={true}
+            handleAddCategory={handleAddCategory}
           />
           <DialogFooter>
             <Button
@@ -293,6 +333,7 @@ const CategoriesSection = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      <Toaster richColors />
     </div>
   );
 };
