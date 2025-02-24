@@ -6,3 +6,15 @@ export const useCreateCategory = async (values: CreateCategoryInput) => {
 
   return data;
 };
+
+export const useUpdateCategory = async (
+  values: CreateCategoryInput,
+  categoryId: string,
+) => {
+  const { data } = await instance.post(`/admin/category/update`, {
+    ...values,
+    id: categoryId,
+  });
+
+  return data;
+};
