@@ -18,3 +18,11 @@ export const useUpdateCategory = async (
 
   return data;
 };
+
+export const useDeleteCategory = async (categoryId: string) => {
+  const { data } = await instance.post(`/admin/category/delete`, {
+    id: categoryId,
+  });
+
+  return data;
+};

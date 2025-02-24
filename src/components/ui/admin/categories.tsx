@@ -30,7 +30,12 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
-import { useCreateCategory, useOverview, useUpdateCategory } from "@/actions";
+import {
+  useCreateCategory,
+  useDeleteCategory,
+  useOverview,
+  useUpdateCategory,
+} from "@/actions";
 import Typography from "@/components/typography";
 import { toast, Toaster } from "sonner";
 
@@ -102,9 +107,16 @@ const CategoriesSection = () => {
     name: "",
     slug: "",
   });
+  const [deletingCategory, setDeletingCategory] = useState({
+    id: "",
+    name: "",
+    slug: "",
+  });
+
   const { overview, mutate: refreshCategories } = useOverview();
   const createCategory = useCreateCategory;
   const updateCategory = useUpdateCategory;
+  const deleteCategory = useDeleteCategory;
 
   const filteredCategories = useMemo(() => {
     if (!overview || !overview.categories.distribution) return [];
@@ -139,12 +151,11 @@ const CategoriesSection = () => {
   ) => {
     e.preventDefault();
     toast.promise(updateCategory(editingCategory, productId), {
-      loading: `Creating ${newCategory.name}...`,
+      loading: `Updating ${editingCategory.name}...`,
       success: () => {
-        setIsEditDialogOpen(false);
-        setNewCategory({ id: "", name: "", slug: "" });
+        setDeleteDialogOpen(false);
         refreshCategories();
-        return `${newCategory.name} has been created successfully`;
+        return `${editingCategory.name} has been updated successfully`;
       },
       error: (err) => {
         return `${err.response.data.error}`;
@@ -153,7 +164,31 @@ const CategoriesSection = () => {
   };
 
   const handleDeleteCategory = () => {
-    setDeleteDialogOpen(false);
+    toast.promise(deleteCategory(deletingCategory.id), {
+      loading: `Deleting ${deletingCategory.name}...`,
+      success: () => {
+        setDeleteDialogOpen(false);
+        setDeletingCategory({ id: "", name: "", slug: "" });
+        refreshCategories();
+        return `${deletingCategory.name} has been deleted successfully`;
+      },
+      error: (err) => {
+        return `${err.response.data.error}`;
+      },
+    });
+  };
+
+  const handleDeleteClick = (category: {
+    id: string;
+    name: string;
+    slug: string;
+  }) => {
+    setDeletingCategory({
+      id: category.id,
+      name: category.name,
+      slug: category.slug || "",
+    });
+    setDeleteDialogOpen(true);
   };
 
   const handleEditClick = (category: {
@@ -290,7 +325,12 @@ const CategoriesSection = () => {
                     variant="ghost"
                     size="icon"
                     className="text-red-600"
-                    onClick={() => setDeleteDialogOpen(true)}
+                    onClick={() =>
+                      handleDeleteClick({
+                        ...category,
+                        slug: category.slug || "",
+                      })
+                    }
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>
