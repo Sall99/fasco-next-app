@@ -14,6 +14,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import { Package, DollarSign, Users, Tags } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { ReactElement } from "react";
 
@@ -25,16 +26,27 @@ interface MetricCardProps {
   title: string;
   value: string | number;
   subtitle?: string;
+  icon?: React.ElementType;
+  iconColor?: string;
 }
 
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
 
-const MetricCard: React.FC<MetricCardProps> = ({ title, value, subtitle }) => (
+const MetricCard: React.FC<MetricCardProps> = ({
+  title,
+  value,
+  subtitle,
+  icon: Icon,
+  iconColor = "text-gray-500",
+}) => (
   <Card>
     <CardContent className="p-4">
-      <Typography variant="h6" className="!text-sm font-medium text-gray-500">
-        {title}
-      </Typography>
+      <div className="flex items-center justify-between">
+        <Typography variant="h6" className="!text-sm font-medium text-gray-500">
+          {title}
+        </Typography>
+        {Icon && <Icon className={`h-5 w-5 ${iconColor}`} />}
+      </div>
       <Typography variant="h6" className="mt-2 text-2xl !font-semibold">
         {value}
       </Typography>
@@ -148,6 +160,8 @@ const Overview: React.FC = () => {
           title="Total Products"
           value={overview.products.total}
           subtitle={`${overview.products.lowStock} low stock items`}
+          icon={Package}
+          iconColor="text-blue-500"
         />
         <MetricCard
           title="Total Revenue"
@@ -156,13 +170,22 @@ const Overview: React.FC = () => {
             maximumFractionDigits: 2,
           })}`}
           subtitle={`${overview.orders.total} total orders`}
+          icon={DollarSign}
+          iconColor="text-green-500"
         />
         <MetricCard
           title="Customers"
           value={overview.customers.total}
           subtitle={`${overview.customers.new} new customers`}
+          icon={Users}
+          iconColor="text-purple-500"
         />
-        <MetricCard title="Categories" value={overview.categories.total} />
+        <MetricCard
+          title="Categories"
+          value={overview.categories.total}
+          icon={Tags}
+          iconColor="text-amber-500"
+        />
       </div>
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">

@@ -248,11 +248,11 @@ const CategoriesSection = () => {
       <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-3">
         <Card>
           <CardContent className="p-6">
-            <div className="flex items-center space-x-2">
-              <Tags className="h-6 w-6 text-blue-600" />
+            <div className="flex items-center justify-between space-x-2">
               <h3 className="font-poppins text-sm font-medium text-gray-600">
                 Total Categories
               </h3>
+              <Tags className="h-5 w-5 text-blue-600" />
             </div>
             <p className="mt-2 font-poppins text-2xl font-bold text-gray-600">
               {overview?.categories.total}
@@ -261,11 +261,11 @@ const CategoriesSection = () => {
         </Card>
         <Card>
           <CardContent className="p-6">
-            <div className="flex items-center space-x-2">
-              <Package className="h-6 w-6 text-green-600" />
+            <div className="flex items-center justify-between space-x-2">
               <h3 className="font-poppins text-sm font-medium text-gray-600">
                 Total Products
               </h3>
+              <Package className="h-5 w-5 text-green-600" />
             </div>
             <p className="mt-2 text-2xl font-bold text-gray-600">
               {overview?.products.total}
