@@ -31,6 +31,15 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "Product not found" }, { status: 404 });
     }
 
+    await prisma.product.update({
+      where: { id },
+      data: {
+        viewersCount: {
+          increment: 1,
+        },
+      },
+    });
+
     return NextResponse.json({
       status: 200,
       message: "success",
