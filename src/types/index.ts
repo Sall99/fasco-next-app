@@ -191,5 +191,12 @@ export const UpdateCategorySchema = z.object({
   name: z.string().optional(),
   slug: z.string().optional(),
 });
+
 export type CreateCategoryInput = z.infer<typeof CreateCategorySchema>;
 export type UpdateCategoryInput = z.infer<typeof UpdateCategorySchema>;
+
+export interface EmailRequest {
+  to: string;
+  subject: string;
+  message: string;
+}

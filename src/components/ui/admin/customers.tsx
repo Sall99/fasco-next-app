@@ -9,7 +9,6 @@ import {
   Calendar,
   ArrowUpDown,
   ChevronDown,
-  Loader2,
 } from "lucide-react";
 import {
   Table,
@@ -31,7 +30,6 @@ import {
 import {
   Dialog,
   DialogContent,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -39,9 +37,8 @@ import Image from "next/image";
 import { useOverview } from "@/actions";
 import { DashboardOverview } from "@/types";
 import { Badge } from "../badge";
-import { Form, FormControl, FormField, FormItem, FormLabel } from "../form";
-import { Textarea } from "../textarea";
-import { SubmitHandler, useForm } from "react-hook-form";
+import Typography from "@/components/typography";
+import EmailModal from "./send-mail";
 
 type Customer = DashboardOverview["customers"]["data"][0];
 type ModalType = "details" | "orders" | "email" | null;
@@ -112,108 +109,6 @@ const OrdersModal = ({
   </DialogContent>
 );
 
-const EmailModal = ({
-  customer,
-  onClose,
-}: {
-  customer: Customer;
-  onClose: () => void;
-}) => {
-  const [sending, setSending] = useState(false);
-  const form = useForm({
-    defaultValues: {
-      to: customer.email || "",
-      subject: "",
-      message: "",
-    },
-  });
-
-  const onSubmit: SubmitHandler<{
-    to: string;
-    subject: string;
-    message: string;
-  }> = async (data) => {
-    setSending(true);
-    // Simulate sending email
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    console.log("Sending email:", data);
-    setSending(false);
-    onClose();
-  };
-
-  return (
-    <DialogContent className="max-w-lg">
-      <DialogHeader>
-        <DialogTitle className="flex items-center justify-between">
-          Send Email to {customer.name}
-        </DialogTitle>
-      </DialogHeader>
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="mt-4 space-y-4">
-          <FormField
-            control={form.control}
-            name="to"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>To</FormLabel>
-                <FormControl>
-                  <Input {...field} value={field.value || ""} disabled />
-                </FormControl>
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="subject"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Subject</FormLabel>
-                <FormControl>
-                  <Input {...field} placeholder="Enter email subject..." />
-                </FormControl>
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="message"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Message</FormLabel>
-                <FormControl>
-                  <Textarea
-                    {...field}
-                    placeholder="Enter your message..."
-                    className="min-h-[200px]"
-                  />
-                </FormControl>
-              </FormItem>
-            )}
-          />
-
-          <DialogFooter>
-            <Button variant="outline" type="button" onClick={onClose}>
-              Cancel
-            </Button>
-            <Button type="submit" disabled={sending}>
-              {sending ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Sending...
-                </>
-              ) : (
-                "Send Email"
-              )}
-            </Button>
-          </DialogFooter>
-        </form>
-      </Form>
-    </DialogContent>
-  );
-};
-
 const CustomersSection = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [modalType, setModalType] = useState<ModalType>(null);
@@ -243,7 +138,7 @@ const CustomersSection = () => {
   };
 
   const CustomerDetails = ({ customer }: { customer: Customer }) => (
-    <div className="space-y-6">
+    <div className="space-y-6 font-poppins">
       <div className="flex items-center space-x-4">
         <Image
           src={customer.image || ""}
@@ -253,7 +148,9 @@ const CustomersSection = () => {
           height={32}
         />
         <div>
-          <h3 className="text-xl font-semibold">{customer.name}</h3>
+          <h3 className="text-xl font-semibold text-gray-600">
+            {customer.name}
+          </h3>
           <div className="flex space-x-4 text-sm text-gray-500">
             <span className="flex items-center">
               <Mail className="mr-1 h-4 w-4" />
@@ -267,17 +164,19 @@ const CustomersSection = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-3 gap-4 font-poppins">
         <Card>
           <CardContent className="pt-6">
             <div className="text-sm text-gray-500">Total Orders</div>
-            <div className="text-2xl font-bold">{customer.totalOrders}</div>
+            <div className="text-xl font-semibold text-gray-600">
+              {customer.totalOrders}
+            </div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-6">
             <div className="text-sm text-gray-500">Total Spent</div>
-            <div className="text-2xl font-bold">
+            <div className="text-xl font-semibold text-gray-600">
               ${customer.totalSpent.toFixed(2)}
             </div>
           </CardContent>
@@ -285,7 +184,7 @@ const CustomersSection = () => {
         <Card>
           <CardContent className="pt-6">
             <div className="text-sm text-gray-500">Last Order</div>
-            <div className="text-2xl font-bold">
+            <div className="text-xl font-semibold text-gray-600">
               {customer.lastOrder
                 ? new Date(customer.lastOrder).toLocaleDateString()
                 : "No orders"}
@@ -296,7 +195,9 @@ const CustomersSection = () => {
 
       {customer.orders && customer.orders.length > 0 && (
         <div className="mt-6">
-          <h4 className="mb-4 text-lg font-semibold">Recent Orders</h4>
+          <h4 className="mb-4 text-lg font-semibold text-gray-600">
+            Recent Orders
+          </h4>
           <Table>
             <TableHeader>
               <TableRow>
@@ -329,7 +230,7 @@ const CustomersSection = () => {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-3xl font-bold">Customers</h2>
+        <Typography variant="h4">Customers</Typography>
       </div>
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
@@ -341,7 +242,7 @@ const CustomersSection = () => {
             <Users className="h-4 w-4 text-purple-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
+            <div className="text-2xl font-bold text-gray-600">
               {overview?.customers.total}
             </div>
           </CardContent>
@@ -354,7 +255,9 @@ const CustomersSection = () => {
             <ShoppingBag className="h-4 w-4 text-sky-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{overview?.customers.new}</div>
+            <div className="text-2xl font-bold text-gray-600">
+              {overview?.customers.new}
+            </div>
           </CardContent>
         </Card>
         <Card>
@@ -363,7 +266,7 @@ const CustomersSection = () => {
             <Calendar className="h-4 w-4 text-green-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
+            <div className="text-2xl font-bold text-gray-600">
               ${stats.averageSpent.toFixed(2)}
             </div>
           </CardContent>
@@ -481,7 +384,11 @@ const CustomersSection = () => {
         )}
 
         {selectedCustomer && modalType === "email" && (
-          <EmailModal customer={selectedCustomer} onClose={handleModalClose} />
+          <EmailModal
+            customer={selectedCustomer}
+            onClose={handleModalClose}
+            open={modalType === "email"}
+          />
         )}
       </Dialog>
     </div>
