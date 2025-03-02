@@ -180,7 +180,7 @@ const AdminDashboard: React.FC = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   return (
-    <div className="flex min-h-screen bg-background">
+    <div className="mt-10 flex min-h-screen bg-background">
       <aside
         className={cn(
           "flex h-screen flex-col border-r bg-card transition-all duration-300",
