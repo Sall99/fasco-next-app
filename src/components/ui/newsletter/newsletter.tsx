@@ -1,114 +1,129 @@
 "use client";
-import { Button } from "@/components/button";
-import { motion } from "framer-motion";
+import Typography from "@/components/typography";
+import { Button } from "@/components/ui/button";
+import { Mail } from "lucide-react";
 import Image from "next/image";
-import React from "react";
-
-const fadeIn = {
-  hidden: { opacity: 0, y: 20 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.6 },
-  },
-};
-
-const imageSlide = {
-  hidden: { opacity: 0, x: -50 },
-  visible: {
-    opacity: 1,
-    x: 0,
-    transition: {
-      duration: 0.8,
-      ease: "easeOut",
-    },
-  },
-};
-
-const imageSlideRight = {
-  hidden: { opacity: 0, x: 50 },
-  visible: {
-    opacity: 1,
-    x: 0,
-    transition: {
-      duration: 0.8,
-      ease: "easeOut",
-    },
-  },
-};
+import React, { useState } from "react";
 
 export function Newsletter() {
+  const [email, setEmail] = useState("");
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSubmit = (e: { preventDefault: () => void }) => {
+    e.preventDefault();
+    if (!email) return;
+
+    setIsLoading(true);
+
+    setTimeout(() => {
+      setIsSubmitted(true);
+      setIsLoading(false);
+    }, 1500);
+  };
+
   return (
-    <section className="px-4 py-20">
-      <div className="m-auto mt-24 flex max-w-7xl flex-col items-center justify-between px-4 lg:flex-row lg:px-0">
-        <motion.div
-          className="relative h-_500 w-_337 overflow-hidden"
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          variants={imageSlide}
+    <section className="relative overflow-hidden bg-gradient-to-b from-white to-blue-50 px-4 py-24">
+      <div className="absolute inset-0 z-0 opacity-5">
+        <div className="absolute -left-10 -top-10 h-40 w-40 rounded-full bg-blue-400" />
+        <div className="absolute bottom-20 right-20 h-64 w-64 rounded-full bg-purple-400" />
+        <div className="absolute left-1/2 top-1/3 h-20 w-20 rounded-full bg-yellow-300" />
+      </div>
+
+      <div className="relative z-10 m-auto mt-8 flex max-w-6xl flex-col items-center justify-between gap-12 px-4 lg:flex-row lg:px-0">
+        <div
+          className="relative h-64 w-full max-w-xs overflow-hidden rounded-2xl shadow-xl lg:h-96"
+          style={{
+            transform: "perspective(1000px) rotateY(10deg)",
+            transition: "transform 0.5s ease-in-out",
+          }}
         >
           <Image
             src={"/imgs/newsletter-1.png"}
-            alt="Newsletter"
+            alt="Newsletter showcase"
             fill
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            className="object-contain"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 33vw, 25vw"
+            className="object-cover"
             priority
           />
-        </motion.div>
+          <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
+        </div>
 
-        <motion.div
-          className="py-10 text-center lg:py-0"
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          variants={fadeIn}
-        >
-          <motion.h2 className="font-poppins text-3xl" variants={fadeIn}>
-            Subscribe to Our Newsletter
-          </motion.h2>
+        <div className="w-full max-w-md py-8 text-center">
+          <div className="mb-8 inline-block rounded-full bg-blue-100 px-4 py-1 text-sm font-semibold text-blue-600">
+            Stay Updated
+          </div>
 
-          <motion.p className="mt-4 font-poppins text-base" variants={fadeIn}>
-            Subscribe to our newsletter to get the latest updates and special
-            offers.
-          </motion.p>
-
-          <motion.form
-            className="mt-10 flex flex-col items-center justify-center gap-5"
-            variants={fadeIn}
+          <Typography
+            variant="h2"
+            className="font-poppins text-4xl font-semibold leading-tight text-gray-900"
           >
-            <motion.input
-              type="email"
-              placeholder="Enter your email"
-              className="h-12 w-80 rounded-md border border-gray-300 px-5 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
-              whileFocus={{ scale: 1.02 }}
-              transition={{ duration: 0.2 }}
-            />
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Button variant="default" size="sm">
-                Subscribe
-              </Button>
-            </motion.div>
-          </motion.form>
-        </motion.div>
+            Join Our <span className="text-blue-600">Newsletter</span>
+          </Typography>
 
-        <motion.div
-          className="relative h-_500 w-_337 overflow-hidden"
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          variants={imageSlideRight}
+          <Typography variant="p-14" className="mt-4 text-gray-600">
+            Get exclusive updates, industry insights, and special offers
+            delivered straight to your inbox.
+          </Typography>
+
+          {!isSubmitted ? (
+            <form onSubmit={handleSubmit} className="mt-8 space-y-4">
+              <div className="relative">
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Your email address"
+                  className="h-14 w-full rounded-lg border border-gray-200 bg-white px-5 pr-12 shadow-sm focus:border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                  required
+                />
+                <div className="absolute right-4 top-4 text-gray-400">
+                  <Mail />
+                </div>
+              </div>
+
+              <Button
+                type="submit"
+                disabled={isLoading}
+                className="relative h-14 w-full rounded-lg bg-blue-600 font-medium text-white transition hover:bg-blue-700 focus:ring-2 focus:ring-blue-300 focus:ring-offset-2 disabled:opacity-70"
+              >
+                {isLoading ? "Subscribing..." : "Subscribe Now"}
+              </Button>
+
+              <p className="mt-3 text-xs text-gray-500">
+                We respect your privacy. Unsubscribe at any time.
+              </p>
+            </form>
+          ) : (
+            <div className="mt-8 rounded-lg bg-green-50 p-6 text-center">
+              <div className="mb-2 text-3xl">🎉</div>
+              <h3 className="text-xl font-semibold text-green-700">
+                Thank You!
+              </h3>
+              <p className="mt-2 text-green-600">
+                You&apos;ve successfully subscribed to our newsletter.
+              </p>
+            </div>
+          )}
+        </div>
+
+        <div
+          className="relative h-64 w-full max-w-xs overflow-hidden rounded-2xl shadow-xl lg:h-96"
+          style={{
+            transform: "perspective(1000px) rotateY(-10deg)",
+            transition: "transform 0.5s ease-in-out",
+          }}
         >
           <Image
             src={"/imgs/newsletter-2.png"}
-            alt="Newsletter"
+            alt="Newsletter benefits"
             fill
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            className="object-contain"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 33vw, 25vw"
+            className="object-cover"
             priority
           />
-        </motion.div>
+          <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
+        </div>
       </div>
     </section>
   );
