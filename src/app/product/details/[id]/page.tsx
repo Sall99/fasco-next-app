@@ -1,6 +1,6 @@
 "use client";
 import { motion, AnimatePresence } from "framer-motion";
-import { Minus, Plus } from "lucide-react";
+import { Minus, Plus, Heart, Share2 } from "lucide-react";
 import { FaTwitter, FaFacebookF } from "react-icons/fa";
 
 import Image from "next/image";
@@ -40,14 +40,14 @@ interface DetailsProps {
 }
 
 const GallerySkeleton = () => (
-  <div className="flex flex-col justify-center gap-4 md:flex-row md:gap-4">
+  <div className="flex flex-col justify-center gap-4 md:flex-row md:gap-6">
     <motion.div
-      className="flex gap-2 overflow-x-auto md:max-h-[600px] md:flex-col md:overflow-y-auto"
+      className="flex gap-3 overflow-x-auto md:max-h-[600px] md:flex-col md:overflow-y-auto"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
     >
       {[1, 2, 3, 4].map((index) => (
-        <Skeleton key={index} className="h-20 w-20 flex-shrink-0" />
+        <Skeleton key={index} className="h-20 w-20 flex-shrink-0 rounded-lg" />
       ))}
     </motion.div>
 
@@ -56,28 +56,28 @@ const GallerySkeleton = () => (
       animate={{ opacity: 1 }}
       className="relative"
     >
-      <Skeleton className="aspect-[3/4] w-full md:w-_438 lg:h-_570" />
+      <Skeleton className="aspect-[3/4] w-full rounded-2xl md:w-[500px] lg:h-[600px]" />
     </motion.div>
   </div>
 );
 
 const DetailsSkeleton = () => (
-  <div className="space-y-4 lg:w-_500">
-    <Skeleton className="h-4 w-24" />
-    <Skeleton className="h-4 w-32" />
-    <Skeleton className="h-8 w-3/4" />
+  <div className="space-y-5 lg:w-[500px]">
+    <Skeleton className="h-4 w-24 rounded-full" />
+    <Skeleton className="h-4 w-32 rounded-full" />
+    <Skeleton className="h-8 w-3/4 rounded-lg" />
 
-    <div className="flex items-center gap-2">
-      <Skeleton className="h-4 w-32" />
-      <Skeleton className="h-4 w-24" />
+    <div className="flex items-center gap-3">
+      <Skeleton className="h-4 w-32 rounded-full" />
+      <Skeleton className="h-4 w-24 rounded-full" />
     </div>
 
-    <Skeleton className="h-6 w-24" />
+    <Skeleton className="h-6 w-24 rounded-lg" />
 
-    <div className="space-y-2">
-      <Skeleton className="h-4 w-full" />
-      <Skeleton className="h-4 w-5/6" />
-      <Skeleton className="h-4 w-4/6" />
+    <div className="space-y-3">
+      <Skeleton className="h-4 w-full rounded-full" />
+      <Skeleton className="h-4 w-5/6 rounded-full" />
+      <Skeleton className="h-4 w-4/6 rounded-full" />
     </div>
 
     <div className="flex flex-wrap gap-2">
@@ -86,20 +86,20 @@ const DetailsSkeleton = () => (
       ))}
     </div>
 
-    <div className="flex flex-wrap items-center gap-2">
-      <Skeleton className="h-8 w-32" />
-      <Skeleton className="h-8 w-24" />
+    <div className="flex flex-wrap items-center gap-3">
+      <Skeleton className="h-8 w-32 rounded-lg" />
+      <Skeleton className="h-8 w-24 rounded-lg" />
     </div>
 
     <div className="flex items-center gap-4">
-      <Skeleton className="h-10 w-32" />
-      <Skeleton className="h-10 w-full" />
+      <Skeleton className="h-12 w-36 rounded-lg" />
+      <Skeleton className="h-12 w-full rounded-lg" />
     </div>
 
     <div className="flex items-center gap-4">
-      <Skeleton className="h-6 w-16" />
-      <Skeleton className="h-8 w-8 rounded-full" />
-      <Skeleton className="h-8 w-8 rounded-full" />
+      <Skeleton className="h-6 w-16 rounded-full" />
+      <Skeleton className="h-10 w-10 rounded-full" />
+      <Skeleton className="h-10 w-10 rounded-full" />
     </div>
   </div>
 );
@@ -112,9 +112,9 @@ function Gallery({ images }: GalleryProps) {
   };
 
   return (
-    <div className="flex flex-col justify-center gap-4 md:flex-row md:gap-4">
+    <div className="flex flex-col justify-center gap-6 md:flex-row">
       <motion.div
-        className="flex gap-2 overflow-x-auto md:max-h-[600px] md:flex-col md:overflow-y-auto"
+        className="flex gap-3 overflow-x-auto md:max-h-[600px] md:flex-col md:overflow-y-auto"
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.5 }}
@@ -123,11 +123,12 @@ function Gallery({ images }: GalleryProps) {
           <motion.button
             key={index}
             onClick={() => handleThumbnailClick(index)}
-            className={`relative h-20 w-20 flex-shrink-0 border-2 transition-all ${
+            className={`relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-lg border-2 transition-all ${
               mainIndex === index
-                ? "border-primary opacity-100 shadow-md"
-                : "border-transparent"
+                ? "border-primary shadow-lg"
+                : "border-transparent opacity-70 hover:opacity-100"
             }`}
+            whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -153,7 +154,7 @@ function Gallery({ images }: GalleryProps) {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
       >
-        <div className="mx-auto flex h-full overflow-hidden md:w-_438 lg:h-_570">
+        <div className="group mx-auto flex h-full overflow-hidden rounded-2xl bg-gray-50 md:w-[500px] lg:h-[600px]">
           <AnimatePresence mode="wait">
             <motion.div
               key={mainIndex}
@@ -170,9 +171,16 @@ function Gallery({ images }: GalleryProps) {
                 src={images[mainIndex]}
                 alt="Product main image"
                 fill
-                className="object-cover"
+                className="object-cover transition-transform duration-700 group-hover:scale-105"
                 priority
               />
+              <motion.div
+                className="absolute right-4 top-4 rounded-full bg-white p-2 shadow-md"
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+              >
+                <Heart size={20} className="text-gray-500 hover:text-red-500" />
+              </motion.div>
             </motion.div>
           </AnimatePresence>
         </div>
@@ -186,7 +194,6 @@ const Details = ({
   name,
   brand,
   price,
-  viewersCount,
   tags,
   description,
   category,
@@ -196,6 +203,7 @@ const Details = ({
 }: DetailsProps) => {
   const [quantity, setQuantity] = useState(1);
   const dispatch = useDispatch();
+  const [showShareOptions, setShowShareOptions] = useState(false);
 
   const handleAddToCart = () => {
     dispatch(
@@ -210,11 +218,15 @@ const Details = ({
   };
 
   const handleIncrement = () => {
-    setQuantity(quantity + 1);
+    if (quantity < stock.quantity) {
+      setQuantity(quantity + 1);
+    }
   };
 
   const handleDecrement = () => {
-    setQuantity(quantity - 1);
+    if (quantity > 1) {
+      setQuantity(quantity - 1);
+    }
   };
 
   const handleTwitterShare = () => {
@@ -231,38 +243,67 @@ const Details = ({
     );
   };
 
+  const toggleShareOptions = () => {
+    setShowShareOptions(!showShareOptions);
+  };
+
+  const isLowStock =
+    stock.quantity <= stock.lowStockThreshold && stock.quantity > 0;
+
   return (
-    <div className="lg:w-_500">
-      <Typography variant="p-12" className="text-primary">
-        {category.name}
-      </Typography>
-      <Typography variant="p-12" className="text-primary">
-        {brand}
-      </Typography>
-      <Typography variant="h5" className="text-primary mb-4" font={"primary"}>
+    <div className="lg:w-[500px]">
+      <div className="mb-1 flex items-center gap-2">
+        <Typography
+          variant="p-12"
+          className="rounded-full bg-primary/10 px-3 py-1 font-medium text-primary"
+        >
+          {category.name}
+        </Typography>
+        <Typography
+          variant="p-12"
+          className="rounded-full bg-gray-100 px-3 py-1 text-gray-600"
+        >
+          {brand}
+        </Typography>
+      </div>
+
+      <Typography variant="h5" className="mb-4 font-bold text-primary">
         {name}
       </Typography>
-      <div className="mb-4 flex items-center gap-2">
+
+      <div className="mb-6 flex items-center gap-3">
         <StarRating average={rating.average} />
         {rating.reviewsCount > 0 && (
-          <Typography variant="p-12" className="text-primary">
-            ({rating.reviewsCount} reviews)
+          <Typography variant="p-12" className="text-gray-600">
+            <span className="font-semibold">{rating.reviewsCount}</span> reviews
           </Typography>
         )}
+        {/* <div className="text-gray-400">•</div>
+        <Typography
+          variant="p-12"
+          className="flex items-center gap-1 text-emerald-600"
+        >
+          <span className="inline-block h-2 w-2 rounded-full bg-emerald-500"></span>
+          <span>{viewersCount} viewing now</span>
+        </Typography> */}
       </div>
-      <Typography variant="h6" className="text-primary">
-        ${price}
-      </Typography>
-      <Typography variant="p-12" className="text-primary mt-4">
-        {description}
+
+      <Typography variant="h5" className="mb-6 font-bold text-primary">
+        ${price.toFixed(2)}
       </Typography>
 
-      <div className="mt-4 flex flex-wrap gap-2">
+      <div className="mb-6 rounded-lg bg-gray-50 p-4">
+        <Typography variant="p-14" className="leading-relaxed text-gray-700">
+          {description}
+        </Typography>
+      </div>
+
+      <div className="mb-6 flex flex-wrap gap-2">
         {tags.map((tag, index) => (
           <Typography
             key={index}
             variant="p-12"
-            className="text-primary rounded-full bg-gray-200 px-2 py-1"
+            className="rounded-full bg-gray-100 px-3 py-1 text-gray-600 transition-colors hover:bg-gray-200"
           >
             {tag}
           </Typography>
@@ -270,71 +311,121 @@ const Details = ({
 
         <Typography
           variant="p-12"
-          className="text-primary rounded-full bg-gray-200 px-2 py-1"
+          className="rounded-full bg-primary/10 px-3 py-1 text-primary/80"
         >
           {category.slug}
         </Typography>
       </div>
 
-      <div className="mt-4 flex flex-wrap items-center gap-2">
-        <Typography variant="p-12" className="text-primary">
-          Stock:
-        </Typography>
-        <Typography variant="p-12" className="text-primary">
-          {stock.quantity}
-        </Typography>
-
-        <Typography variant="p-12" className="text-primary">
-          Low stock threshold:
-        </Typography>
-        <Typography variant="p-12" className="text-primary">
-          {stock.lowStockThreshold}
-        </Typography>
-
-        <Typography variant="p-12" className="text-primary">
-          Viewers:
-        </Typography>
-        <Typography variant="p-12" className="text-primary flex gap-2">
-          <span>{viewersCount}</span>
-          <span>are viewing this product right now</span>
-        </Typography>
-      </div>
-
-      <div className="mt-4 flex flex-col gap-2">
-        <div className="flex items-center gap-2">
-          <button
-            className="rounded-md bg-gray-600 px-4 py-2 text-white"
-            onClick={handleDecrement}
-          >
-            <Minus size={10} />
-          </button>
-          <div className="flex w-8 items-center justify-center">
-            <Typography variant="p-12" className="text-primary">
-              {quantity}
-            </Typography>
-          </div>
-          <button
-            className="rounded-md bg-gray-600 px-4 py-2 text-white"
-            disabled={stock.quantity === 0}
-            onClick={handleIncrement}
-          >
-            <Plus size={10} />
-          </button>
+      <div className="mb-6 rounded-lg border border-gray-200 p-4">
+        <div className="flex flex-wrap items-center gap-2">
+          {stock.quantity > 0 ? (
+            <div
+              className={`flex items-center gap-2 ${isLowStock ? "text-amber-500" : "text-emerald-600"}`}
+            >
+              <div
+                className={`h-3 w-3 rounded-full ${isLowStock ? "bg-amber-500" : "bg-emerald-500"}`}
+              ></div>
+              <Typography variant="p-12" className="font-medium">
+                {isLowStock ? "Low Stock" : "In Stock"}
+              </Typography>
+              <Typography variant="p-12" className="text-gray-600">
+                ({stock.quantity} available)
+              </Typography>
+            </div>
+          ) : (
+            <div className="flex items-center gap-2 text-red-500">
+              <div className="h-3 w-3 rounded-full bg-red-500"></div>
+              <Typography variant="p-12" className="font-medium">
+                Out of Stock
+              </Typography>
+            </div>
+          )}
         </div>
-        <Button size="sm" className="mt-4" onClick={handleAddToCart}>
-          Add to cart
-        </Button>
       </div>
-      <div className="mt-4 flex gap-4">
-        <Typography variant="p-12" className="text-primary">
+
+      <div className="mb-6">
+        <div className="flex items-center gap-4">
+          <div className="flex items-center overflow-hidden rounded-lg border border-gray-200">
+            <motion.button
+              className="flex h-12 w-12 items-center justify-center border-r border-gray-200 bg-white text-gray-600 transition-colors hover:bg-gray-50 disabled:opacity-50"
+              whileTap={{ scale: 0.95 }}
+              onClick={handleDecrement}
+              disabled={quantity <= 1}
+            >
+              <Minus size={16} />
+            </motion.button>
+            <div className="flex h-12 w-12 items-center justify-center bg-white">
+              <Typography variant="p-12" className="font-medium text-primary">
+                {quantity}
+              </Typography>
+            </div>
+            <motion.button
+              className="flex h-12 w-12 items-center justify-center border-l border-gray-200 bg-white text-gray-600 transition-colors hover:bg-gray-50 disabled:opacity-50"
+              whileTap={{ scale: 0.95 }}
+              onClick={handleIncrement}
+              disabled={stock.quantity === 0 || quantity >= stock.quantity}
+            >
+              <Plus size={16} />
+            </motion.button>
+          </div>
+
+          <motion.div className="w-full" whileTap={{ scale: 0.98 }}>
+            <Button
+              size="md"
+              className="w-full"
+              onClick={handleAddToCart}
+              disabled={stock.quantity === 0}
+            >
+              {stock.quantity === 0 ? "Out of Stock" : "Add to Cart"}
+            </Button>
+          </motion.div>
+        </div>
+      </div>
+
+      <div className="flex items-center gap-4">
+        <Typography variant="p-12" className="text-gray-600">
           Share:
         </Typography>
-        <button className="text-primary" onClick={handleTwitterShare}>
-          <FaTwitter size={20} />
-        </button>
-        <button className="text-primary" onClick={handleFacebookShare}>
-          <FaFacebookF size={20} />
-        </button>
+
+        <div className="relative">
+          <motion.button
+            className="flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 text-gray-600 hover:bg-gray-50"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={toggleShareOptions}
+          >
+            <Share2 size={18} />
+          </motion.button>
+
+          <AnimatePresence>
+            {showShareOptions && (
+              <motion.div
+                className="absolute -right-2 top-12 z-10 flex rounded-lg border border-gray-200 bg-white p-2 shadow-lg"
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+              >
+                <motion.button
+                  className="flex h-9 w-9 items-center justify-center rounded-full text-[#1DA1F2] hover:bg-gray-100"
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  onClick={handleTwitterShare}
+                >
+                  <FaTwitter size={18} />
+                </motion.button>
+                <motion.button
+                  className="flex h-9 w-9 items-center justify-center rounded-full text-[#4267B2] hover:bg-gray-100"
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  onClick={handleFacebookShare}
+                >
+                  <FaFacebookF size={18} />
+                </motion.button>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       </div>
     </div>
   );
@@ -346,9 +437,9 @@ export default function Page() {
 
   if (isLoading) {
     return (
-      <section className="mx-auto mt-10">
+      <section className="mx-auto max-w-7xl px-4 py-12">
         <motion.div
-          className="flex flex-col justify-center gap-4 p-4 md:gap-8 lg:flex-row"
+          className="flex flex-col justify-center gap-8 lg:flex-row"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5 }}
@@ -356,7 +447,7 @@ export default function Page() {
           <GallerySkeleton />
           <DetailsSkeleton />
         </motion.div>
-        <div className="my-40">
+        <div className="my-24">
           <Feature />
         </div>
       </section>
@@ -370,7 +461,30 @@ export default function Page() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
       >
-        <div className="text-red-600">Error loading product</div>
+        <div className="rounded-lg bg-red-50 p-8 text-center shadow-lg">
+          <div className="mb-4 inline-flex h-16 w-16 items-center justify-center rounded-full bg-red-100">
+            <svg
+              className="h-8 w-8 text-red-600"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+          </div>
+          <h3 className="mb-2 text-lg font-medium text-red-800">
+            Error Loading Product
+          </h3>
+          <p className="text-red-600">
+            We couldn&apos;t load the product information. Please try again
+            later.
+          </p>
+        </div>
       </motion.div>
     );
   }
@@ -378,8 +492,8 @@ export default function Page() {
   const product = data?.data;
 
   return (
-    <section className="mx-auto mt-10">
-      <div className="flex flex-col justify-center gap-4 p-4 md:gap-8 lg:flex-row">
+    <section className="mx-auto max-w-7xl px-4 py-12">
+      <div className="flex flex-col justify-center gap-12 lg:flex-row">
         <Gallery images={product?.images} />
         <Details
           id={product?.id}
@@ -395,7 +509,7 @@ export default function Page() {
           images={product?.images}
         />
       </div>
-      <div className="my-40">
+      <div className="my-24">
         <Feature />
       </div>
     </section>
