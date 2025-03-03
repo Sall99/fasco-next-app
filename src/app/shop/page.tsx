@@ -7,6 +7,10 @@ import { useProducts } from "@/actions";
 import { ProductType } from "@/types";
 import clsx from "clsx";
 import { motion, AnimatePresence } from "framer-motion";
+import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
 
 const ProductSkeleton = () => (
   <div className="group relative m-auto w-[386px] overflow-hidden rounded-lg bg-white p-4">
@@ -179,79 +183,107 @@ const MobileFilters = () => {
     </>
   );
 };
+
 const FilterContent = () => {
   const priceRanges = ["$0 - $50", "$50 - $100", "$100 - $200", "$200+"];
   const categories = ["Electronics", "Clothing", "Books", "Home & Garden"];
   const brands = ["Apple", "Samsung", "Nike", "Adidas"];
 
   return (
-    <div className="space-y-6">
-      <motion.div
-        className="mb-6"
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-      >
-        <h3 className="mb-2 text-lg font-semibold">Prices</h3>
-        <div className="space-y-2">
-          {priceRanges.map((range) => (
-            <motion.label
-              key={range}
-              className="flex items-center space-x-2"
-              variants={itemVariants}
-            >
-              <input type="checkbox" className="cursor-pointer rounded" />
-              <span>{range}</span>
-            </motion.label>
-          ))}
-        </div>
-      </motion.div>
+    <div className="w-64 bg-white">
+      <CardHeader className="pb-3">
+        <CardTitle className="text-xl font-semibold text-primary">
+          Filters
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-6">
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+        >
+          <h3 className="mb-3 font-poppins text-sm font-medium text-gray-700">
+            Price Range
+          </h3>
+          <div className="space-y-3">
+            {priceRanges.map((range) => (
+              <motion.div
+                key={range}
+                className="flex items-center space-x-2"
+                variants={itemVariants}
+              >
+                <Checkbox
+                  id={`price-${range}`}
+                  className="data-[state=checked]:bg-primary"
+                />
+                <label
+                  htmlFor={`price-${range}`}
+                  className="font-poppins text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                >
+                  {range}
+                </label>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
 
-      <motion.div
-        className="mb-6"
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-      >
-        <h3 className="mb-2 text-lg font-semibold">Categories</h3>
-        <ul className="space-y-2">
-          {categories.map((category) => (
-            <motion.li
-              key={category}
-              className="flex cursor-pointer items-center space-x-2"
-              variants={itemVariants}
-              whileHover={{ scale: 1.05 }}
-            >
-              <span className="rounded-full bg-gray-200 px-2 py-1">
-                {category}
-              </span>
-            </motion.li>
-          ))}
-        </ul>
-      </motion.div>
+        <Separator className="my-4" />
 
-      <motion.div
-        className="mb-6"
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-      >
-        <h3 className="mb-2 text-lg font-semibold">Brands</h3>
-        <ul className="space-y-2">
-          {brands.map((brand) => (
-            <motion.li
-              key={brand}
-              className="flex cursor-pointer items-center space-x-2"
-              variants={itemVariants}
-              whileHover={{ scale: 1.05 }}
-            >
-              <span className="rounded-full bg-gray-200 px-2 py-1">
-                {brand}
-              </span>
-            </motion.li>
-          ))}
-        </ul>
-      </motion.div>
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+        >
+          <h3 className="mb-3 font-poppins text-sm font-medium text-gray-700">
+            Categories
+          </h3>
+          <div className="flex flex-wrap gap-2">
+            {categories.map((category) => (
+              <motion.div
+                key={category}
+                variants={itemVariants}
+                whileHover={{ scale: 1.05 }}
+                className="transition-all"
+              >
+                <Badge
+                  variant="outline"
+                  className="cursor-pointer hover:bg-primary/10 hover:text-primary"
+                >
+                  <span className="font-poppins font-semibold text-gray-700">
+                    {category}
+                  </span>
+                </Badge>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+
+        <Separator className="my-4" />
+
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+        >
+          <h3 className="mb-3 font-poppins text-sm font-medium text-gray-700">
+            Brands
+          </h3>
+          <div className="flex flex-wrap gap-2">
+            {brands.map((brand) => (
+              <motion.div
+                key={brand}
+                variants={itemVariants}
+                whileHover={{ scale: 1.05 }}
+                className="transition-all"
+              >
+                <Badge className="cursor-pointer bg-gray-500 hover:bg-primary">
+                  {brand}
+                </Badge>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+      </CardContent>
     </div>
   );
 };
