@@ -2,7 +2,6 @@ import {
   Hero,
   Logos,
   NewArrivals,
-  Feature,
   Gallery,
   Testimonials,
   Newsletter,
@@ -14,7 +13,6 @@ export default function Home() {
       <Hero />
       <Logos />
       <NewArrivals />
-      <Feature />
       <Gallery />
       <Testimonials />
       <Newsletter />
