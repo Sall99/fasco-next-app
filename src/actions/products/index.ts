@@ -66,8 +66,8 @@ export const useCreateReview = async (
   score: number,
   title: string,
   comment: string,
-  pros: string,
-  cons: string,
+  pros: string[],
+  cons: string[],
 ) => {
   const { data } = await instance.post(
     `/products/product/${productId}/reviews/create`,

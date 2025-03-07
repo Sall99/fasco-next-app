@@ -17,6 +17,7 @@ import {
 import { StarRating } from "@/components/ui/star-rating";
 import { useDispatch } from "react-redux";
 import { addToCart } from "@/store/slices/cart";
+import { Toaster } from "sonner";
 
 interface GalleryProps {
   images: string[];
@@ -510,6 +511,7 @@ export default function Page() {
       <div className="mt-12">
         <ProductReviews productId={product?.id} />
       </div>
+      <Toaster richColors />
     </section>
   );
 }
