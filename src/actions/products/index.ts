@@ -43,3 +43,42 @@ export const useGetProduct = (id: string) => {
     isError: error,
   };
 };
+
+export const useGetProductReviews = (
+  productId: string,
+  page: number,
+  limit: number,
+) => {
+  const { data, error } = useSWR(
+    `/products/product/${productId}/reviews?page=${page}&limit=${limit}`,
+    fetcher,
+  );
+  return {
+    reviews: data?.reviews,
+    pagination: data?.pagination,
+    isLoading: !error && !data,
+    isError: error,
+  };
+};
+
+export const useCreateReview = async (
+  productId: string,
+  score: number,
+  title: string,
+  comment: string,
+  pros: string,
+  cons: string,
+) => {
+  const { data } = await instance.post(
+    `/products/product/${productId}/reviews/create`,
+    {
+      score,
+      title,
+      comment,
+      pros,
+      cons,
+    },
+  );
+
+  return data;
+};

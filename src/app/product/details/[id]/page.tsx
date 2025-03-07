@@ -7,7 +7,13 @@ import Image from "next/image";
 import { useParams } from "next/navigation";
 import React, { useState } from "react";
 import { useGetProduct } from "@/actions";
-import { Button, Feature, Skeleton, Typography } from "@/components";
+import {
+  Button,
+  Feature,
+  ProductReviews,
+  Skeleton,
+  Typography,
+} from "@/components";
 import { StarRating } from "@/components/ui/star-rating";
 import { useDispatch } from "react-redux";
 import { addToCart } from "@/store/slices/cart";
@@ -272,20 +278,12 @@ const Details = ({
       </Typography>
 
       <div className="mb-6 flex items-center gap-3">
-        <StarRating average={rating.average} />
-        {rating.reviewsCount > 0 && (
+        <StarRating average={rating?.average} />
+        {rating?.reviewsCount > 0 && (
           <Typography variant="p-12" className="text-gray-600">
             <span className="font-semibold">{rating.reviewsCount}</span> reviews
           </Typography>
         )}
-        {/* <div className="text-gray-400">•</div>
-        <Typography
-          variant="p-12"
-          className="flex items-center gap-1 text-emerald-600"
-        >
-          <span className="inline-block h-2 w-2 rounded-full bg-emerald-500"></span>
-          <span>{viewersCount} viewing now</span>
-        </Typography> */}
       </div>
 
       <Typography variant="h5" className="mb-6 font-bold text-primary">
@@ -509,8 +507,8 @@ export default function Page() {
           images={product?.images}
         />
       </div>
-      <div className="my-24">
-        <Feature />
+      <div className="mt-12">
+        <ProductReviews productId={product?.id} />
       </div>
     </section>
   );

@@ -24,7 +24,15 @@ export async function GET(req: NextRequest) {
       include: {
         category: true,
         stock: true,
-        rating: true,
+        rating: {
+          include: {
+            reviews: {
+              include: {
+                user: true,
+              },
+            },
+          },
+        },
       },
     });
 
