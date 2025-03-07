@@ -7,6 +7,8 @@ import { MessageSquare, Send, ThumbsUp, ThumbsDown } from "lucide-react";
 import Image from "next/image";
 import { useCreateReview, useGetProductReviews } from "@/actions";
 import { useSession } from "next-auth/react";
+import { AxiosError } from "axios";
+import { toast } from "sonner";
 
 interface Review {
   id: string;
@@ -44,7 +46,6 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({
 
   const { reviews, isLoading } = useGetProductReviews(productId, 1, 10);
   const reviewsData = reviews || initialReviews;
-  console.log(reviewsData);
   const createReview = useCreateReview;
 
   const hasUserReviewed = React.useMemo(
@@ -68,25 +69,56 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({
 
   const submitReview = async () => {
     try {
-      await createReview(
-        productId,
-        newReview.score,
-        newReview.title,
-        newReview.comment,
-        newReview.pros,
-        newReview.cons,
-      );
+      const prosArray = newReview.pros
+        ? newReview.pros
+            .split(",")
+            .map((item) => item.trim())
+            .filter(Boolean)
+        : [];
 
-      setNewReview({
-        score: 0,
-        title: "",
-        comment: "",
-        pros: "",
-        cons: "",
-      });
+      const consArray = newReview.cons
+        ? newReview.cons
+            .split(",")
+            .map((item) => item.trim())
+            .filter(Boolean)
+        : [];
+
+      toast.promise(
+        createReview(
+          productId,
+          newReview.score,
+          newReview.title,
+          newReview.comment,
+          prosArray,
+          consArray,
+        ),
+        {
+          success: () => {
+            setNewReview({
+              score: 0,
+              title: "",
+              comment: "",
+              pros: "",
+              cons: "",
+            });
+
+            return "Review submitted successfully";
+          },
+          error: (error) => {
+            if (error instanceof AxiosError) {
+              return error.response?.data.error || "Failed to submit review";
+            }
+            return "Failed to submit review";
+          },
+        },
+      );
       setShowReviewForm(false);
     } catch (error) {
-      console.error("Error submitting review:", error);
+      if (error instanceof AxiosError) {
+        toast.error(error.response?.data.error || "Failed to submit review");
+      } else {
+        toast.error("Failed to submit review");
+      }
     }
   };
 
@@ -151,7 +183,7 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({
                   name="pros"
                   className="mb-4 w-full resize-none rounded-lg border p-3 focus:outline-primary"
                   rows={2}
-                  placeholder="What did you like about the product?"
+                  placeholder="What did you like about the product? (Separate multiple pros with commas)"
                   value={newReview.pros}
                   onChange={handleInputChange}
                 />
@@ -164,7 +196,7 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({
                   name="cons"
                   className="mb-4 w-full resize-none rounded-lg border p-3 focus:outline-primary"
                   rows={2}
-                  placeholder="What could be improved?"
+                  placeholder="What could be improved? (Separate multiple cons with commas)"
                   value={newReview.cons}
                   onChange={handleInputChange}
                 />

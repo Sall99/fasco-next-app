@@ -62,12 +62,23 @@ export async function POST(
       },
     });
 
+    console.log("verifiedPurchase", verifiedPurchase);
+
+    if (!verifiedPurchase) {
+      return NextResponse.json(
+        {
+          error: "You must have purchased this product to review it",
+        },
+        { status: 400 },
+      );
+    }
+
     const existingRating = await prisma.rating.findFirst({
       where: {
         productId: productId,
       },
     });
-
+    console.log("existingRating", existingRating);
     const ratingId = existingRating
       ? existingRating.id
       : (
@@ -79,6 +90,7 @@ export async function POST(
             },
           })
         ).id;
+    console.log("ratingId", ratingId);
 
     const review = await prisma.review.create({
       data: {
@@ -101,6 +113,8 @@ export async function POST(
         },
       },
     });
+
+    console.log("review", review);
 
     await prisma.rating.update({
       where: { id: ratingId },
