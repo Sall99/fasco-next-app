@@ -9,21 +9,8 @@ import { useCreateReview, useGetProductReviews } from "@/actions";
 import { useSession } from "next-auth/react";
 import { AxiosError } from "axios";
 import { toast } from "sonner";
-
-interface Review {
-  id: string;
-  user: {
-    id: string;
-    name: string;
-    image?: string;
-  };
-  score: number;
-  comment: string;
-  title: string;
-  pros: string[];
-  cons: string[];
-  createdAt: string;
-}
+import { TagInput } from "../tag-input";
+import { Review } from "@/types";
 
 interface ProductReviewsProps {
   productId: string;
@@ -36,12 +23,18 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({
 }) => {
   const { data: session } = useSession();
   const [showReviewForm, setShowReviewForm] = useState(false);
-  const [newReview, setNewReview] = useState({
+  const [newReview, setNewReview] = useState<{
+    score: number;
+    title: string;
+    comment: string;
+    pros: string[];
+    cons: string[];
+  }>({
     score: 0,
     title: "",
     comment: "",
-    pros: "",
-    cons: "",
+    pros: [],
+    cons: [],
   });
 
   const { reviews, isLoading } = useGetProductReviews(productId, 1, 10);
@@ -69,28 +62,14 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({
 
   const submitReview = async () => {
     try {
-      const prosArray = newReview.pros
-        ? newReview.pros
-            .split(",")
-            .map((item) => item.trim())
-            .filter(Boolean)
-        : [];
-
-      const consArray = newReview.cons
-        ? newReview.cons
-            .split(",")
-            .map((item) => item.trim())
-            .filter(Boolean)
-        : [];
-
       toast.promise(
         createReview(
           productId,
           newReview.score,
           newReview.title,
           newReview.comment,
-          prosArray,
-          consArray,
+          newReview.pros,
+          newReview.cons,
         ),
         {
           success: () => {
@@ -98,10 +77,10 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({
               score: 0,
               title: "",
               comment: "",
-              pros: "",
-              cons: "",
+              pros: [],
+              cons: [],
             });
-
+            setShowReviewForm(false);
             return "Review submitted successfully";
           },
           error: (error) => {
@@ -112,14 +91,7 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({
           },
         },
       );
-      setShowReviewForm(false);
-    } catch (error) {
-      if (error instanceof AxiosError) {
-        toast.error(error.response?.data.error || "Failed to submit review");
-      } else {
-        toast.error("Failed to submit review");
-      }
-    }
+    } catch {}
   };
 
   return (
@@ -179,26 +151,27 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({
                 <Typography variant="p-14" className="mb-2">
                   Pros (optional)
                 </Typography>
-                <textarea
-                  name="pros"
-                  className="mb-4 w-full resize-none rounded-lg border p-3 focus:outline-primary"
-                  rows={2}
-                  placeholder="What did you like about the product? (Separate multiple pros with commas)"
-                  value={newReview.pros}
-                  onChange={handleInputChange}
+                <TagInput
+                  tags={newReview.pros}
+                  setTags={(pros) =>
+                    setNewReview((prev) => ({ ...prev, pros }))
+                  }
+                  placeholder="Type a pro and press Enter (e.g., 'Great quality')"
+                  className="mb-4"
                 />
               </div>
+
               <div className="mb-4">
                 <Typography variant="p-14" className="mb-2">
                   Cons (optional)
                 </Typography>
-                <textarea
-                  name="cons"
-                  className="mb-4 w-full resize-none rounded-lg border p-3 focus:outline-primary"
-                  rows={2}
-                  placeholder="What could be improved? (Separate multiple cons with commas)"
-                  value={newReview.cons}
-                  onChange={handleInputChange}
+                <TagInput
+                  tags={newReview.cons}
+                  setTags={(cons) =>
+                    setNewReview((prev) => ({ ...prev, cons }))
+                  }
+                  placeholder="Type a con and press Enter (e.g., 'Expensive')"
+                  className="mb-4"
                 />
               </div>
               <div className="flex justify-end">
