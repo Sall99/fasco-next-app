@@ -172,6 +172,8 @@ export interface Review {
   title: string;
   pros: string[];
   cons: string[];
+  verifiedPurchase: boolean;
+  helpfulCount: number;
   createdAt: string;
 }
 
