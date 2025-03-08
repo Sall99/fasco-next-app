@@ -62,8 +62,6 @@ export async function POST(
       },
     });
 
-    console.log("verifiedPurchase", verifiedPurchase);
-
     if (!verifiedPurchase) {
       return NextResponse.json(
         {
@@ -78,7 +76,6 @@ export async function POST(
         productId: productId,
       },
     });
-    console.log("existingRating", existingRating);
     const ratingId = existingRating
       ? existingRating.id
       : (
@@ -86,11 +83,10 @@ export async function POST(
             data: {
               productId: productId,
               average: score,
-              reviewsCount: 1,
+              reviewsCount: 0,
             },
           })
         ).id;
-    console.log("ratingId", ratingId);
 
     const review = await prisma.review.create({
       data: {
@@ -113,8 +109,6 @@ export async function POST(
         },
       },
     });
-
-    console.log("review", review);
 
     await prisma.rating.update({
       where: { id: ratingId },

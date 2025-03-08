@@ -69,6 +69,7 @@ export const StarRating: React.FC<StarRatingProps> = ({
           );
         })}
       </div>
+
       {(rating || average) && (
         <Typography variant="p-12" className="text-gray-600">
           ({(rating || average || 0).toFixed(1)}/5)

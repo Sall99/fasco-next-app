@@ -153,12 +153,28 @@ export type DashboardOverview = {
     data: CustomerType[];
   };
 };
+
 type DistributionItem = {
   id: string;
   name: string;
   slug?: string;
   count: number;
 };
+export interface Review {
+  id: string;
+  user: {
+    id: string;
+    name: string;
+    image?: string;
+  };
+  score: number;
+  comment: string;
+  title: string;
+  pros: string[];
+  cons: string[];
+  createdAt: string;
+}
+
 export type CategoriesType = {
   total: number;
   distribution: DistributionItem[];
