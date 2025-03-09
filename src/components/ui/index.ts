@@ -11,3 +11,4 @@ export * from "./testimonials";
 export * from "./newsletter";
 export * from "./skeleton";
 export * from "./admin";
+export * from "./reviews";
