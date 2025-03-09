@@ -1,8 +1,18 @@
+"use client";
 import { motion } from "framer-motion";
 import Image from "next/image";
-import { ThumbsUp, ThumbsDown, Calendar, CheckCircle } from "lucide-react";
+import {
+  ThumbsUp,
+  ThumbsDown,
+  Calendar,
+  CheckCircle,
+  ChevronDown,
+  ChevronUp,
+} from "lucide-react";
+import { useState } from "react";
 import { Review } from "@/types";
 import { HelpfulButton } from "../helpful/helpful";
+import Typography from "@/components/typography";
 
 interface ReviewCardProps {
   review: Review;
@@ -15,12 +25,24 @@ export const ReviewCard = ({
   voteData,
   onVoteChange,
 }: ReviewCardProps) => {
+  const [expanded, setExpanded] = useState(false);
   const userVote = voteData.find((vote) => vote.reviewId === review.id);
   const isHelpful = userVote?.isHelpful || false;
 
   const handleVoteChange = (newCount: number) => {
     onVoteChange(review.id, newCount);
   };
+
+  const truncateText = (text: string, maxLength: number) => {
+    if (text.length <= maxLength) return text;
+    return text.substring(0, maxLength) + "...";
+  };
+
+  const isLongComment = review.comment.length > 150;
+  const displayComment =
+    expanded || !isLongComment
+      ? review.comment
+      : truncateText(review.comment, 150);
 
   return (
     <motion.div
@@ -48,11 +70,11 @@ export const ReviewCard = ({
             </div>
           )}
           <div>
-            <h4 className="font-semibold text-gray-800">
+            <Typography variant="h5" className="font-semibold text-gray-800">
               {review.user.name || "Anonymous User"}
-            </h4>
+            </Typography>
             {review.verifiedPurchase && (
-              <div className="mt-1 flex items-center text-xs text-green-600">
+              <div className="mt-1 flex items-center font-poppins text-xs text-green-600">
                 <CheckCircle size={12} className="mr-1" />
                 <span>Verified Purchase</span>
               </div>
@@ -86,18 +108,50 @@ export const ReviewCard = ({
       </div>
 
       <div className="space-y-4">
-        <h3 className="text-lg font-bold text-gray-900">{review.title}</h3>
+        <Typography variant="h6" className="text-lg font-bold text-gray-900">
+          {review.title}
+        </Typography>
 
-        <p className="leading-relaxed text-gray-700">{review.comment}</p>
+        <div>
+          <Typography variant="p-14" className="leading-relaxed text-gray-700">
+            {displayComment}
+          </Typography>
 
-        <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
+          {isLongComment && (
+            <button
+              onClick={() => setExpanded(!expanded)}
+              className="mt-2 inline-flex items-center text-sm font-medium text-primary hover:text-primary/80 focus:outline-none"
+            >
+              {expanded ? (
+                <>
+                  <span className="font-poppins">Show less</span>
+                  <ChevronUp size={16} className="ml-1" />
+                </>
+              ) : (
+                <>
+                  <span className="font-poppins">Read more</span>
+                  <ChevronDown size={16} className="ml-1" />
+                </>
+              )}
+            </button>
+          )}
+        </div>
+
+        <div
+          className={`mt-6 grid grid-cols-1 gap-4 md:grid-cols-2 ${expanded || !isLongComment ? "block" : "hidden md:block"}`}
+        >
           {review.pros && review.pros.length > 0 && (
             <div className="rounded-lg bg-green-50 p-4">
               <div className="mb-2 flex items-center">
                 <ThumbsUp className="mr-2 text-green-600" size={18} />
-                <h4 className="font-semibold text-green-800">Pros</h4>
+                <Typography
+                  variant="h6"
+                  className="font-semibold text-green-800"
+                >
+                  Pros
+                </Typography>
               </div>
-              <ul className="space-y-2">
+              <ul className="space-y-2 font-poppins">
                 {review.pros.map((pro, index) => (
                   <li key={index} className="flex text-sm text-green-700">
                     <span className="mr-2">•</span>
@@ -112,11 +166,16 @@ export const ReviewCard = ({
             <div className="rounded-lg bg-red-50 p-4">
               <div className="mb-2 flex items-center">
                 <ThumbsDown className="mr-2 text-red-600" size={18} />
-                <h4 className="font-semibold text-red-800">Cons</h4>
+                <Typography variant="h6" className="font-semibold text-red-800">
+                  Cons
+                </Typography>
               </div>
               <ul className="space-y-2">
                 {review.cons.map((con, index) => (
-                  <li key={index} className="flex text-sm text-red-700">
+                  <li
+                    key={index}
+                    className="flex font-poppins text-sm text-red-700"
+                  >
                     <span className="mr-2">•</span>
                     <span>{con}</span>
                   </li>
