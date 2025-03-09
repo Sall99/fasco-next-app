@@ -82,3 +82,36 @@ export const useCreateReview = async (
 
   return data;
 };
+
+export const useHelpfulVote = async (reviewId: string, isHelpful: boolean) => {
+  const { data } = await instance.post(`/reviews/${reviewId}/helpful`, {
+    isHelpful,
+  });
+
+  return data;
+};
+
+export const useGetHelpfulVote = (reviewId: string) => {
+  const { data, error } = useSWR(`/reviews/${reviewId}/get-helpful`, fetcher);
+  return {
+    data,
+    isLoading: !error && !data,
+    isError: error,
+  };
+};
+
+export const useGetHelpfulVotes = (reviewIds: string[]) => {
+  const shouldFetch = reviewIds && reviewIds.length > 0;
+
+  const queryString = shouldFetch
+    ? `/helpful-votes?reviewIds=${reviewIds.join(",")}`
+    : null;
+
+  const { data, error } = useSWR(queryString, fetcher);
+
+  return {
+    data: data?.votes || [],
+    isLoading: shouldFetch && !error && !data,
+    isError: error,
+  };
+};
