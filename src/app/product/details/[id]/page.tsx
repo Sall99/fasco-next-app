@@ -7,13 +7,7 @@ import Image from "next/image";
 import { useParams } from "next/navigation";
 import React, { useState } from "react";
 import { useGetProduct } from "@/actions";
-import {
-  Button,
-  Feature,
-  ProductReviews,
-  Skeleton,
-  Typography,
-} from "@/components";
+import { Button, ProductReviews, Skeleton, Typography } from "@/components";
 import { StarRating } from "@/components/ui/star-rating";
 import { useDispatch } from "react-redux";
 import { addToCart } from "@/store/slices/cart";
@@ -446,9 +440,6 @@ export default function Page() {
           <GallerySkeleton />
           <DetailsSkeleton />
         </motion.div>
-        <div className="my-24">
-          <Feature />
-        </div>
       </section>
     );
   }

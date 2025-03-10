@@ -115,7 +115,7 @@ export async function POST(
       data: {
         reviewsCount: { increment: 1 },
         average: {
-          set: await calculateProductRatingAverage(productId),
+          set: await calculateProductRatingAverage(ratingId),
         },
       },
     });

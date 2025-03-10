@@ -23,6 +23,5 @@ export async function calculateProductRatingAverage(
     where: { ratingId },
     _avg: { score: true },
   });
-
   return averageRating._avg.score || 0;
 }
