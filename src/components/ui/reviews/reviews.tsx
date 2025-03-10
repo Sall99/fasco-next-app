@@ -72,6 +72,7 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({
           newReview.cons,
         ),
         {
+          loading: "Submitting review...",
           success: () => {
             setNewReview({
               score: 0,
