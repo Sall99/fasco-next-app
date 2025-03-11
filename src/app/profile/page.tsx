@@ -29,7 +29,6 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-  CardFooter,
   CardDescription,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -42,9 +41,10 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
+import { useUserGetOrders } from "@/actions";
+import { DashboardTab, OrdersTab } from "@/components";
 
 type Tab =
   | "dashboard"
@@ -55,17 +55,16 @@ type Tab =
   | "logout";
 type Address = yup.InferType<typeof addressSchema>;
 type Profile = yup.InferType<typeof profileSchema>;
-type Order = {
-  id: number;
-  date: string;
-  total: number;
-  status: string;
-};
 
 interface NavItem {
   id: Tab;
   label: string;
   icon: React.ReactNode;
+}
+
+interface FormProps<T extends FieldValues> {
+  register: UseFormRegister<T>;
+  errors: FieldErrors<T>;
 }
 
 const NAV_ITEMS: NavItem[] = [
@@ -105,10 +104,7 @@ const ProfilePage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<Tab>("dashboard");
   const [addresses, setAddresses] = useState<Address[]>([]);
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const [orders] = useState<Order[]>([
-    { id: 1, date: "2023-01-15", total: 99.99, status: "Delivered" },
-    { id: 2, date: "2023-02-20", total: 149.99, status: "Processing" },
-  ]);
+  const { orders, recentOrdersCount } = useUserGetOrders();
 
   const {
     register: profileRegister,
@@ -141,74 +137,10 @@ const ProfilePage: React.FC = () => {
   const renderTabContent = () => {
     switch (activeTab) {
       case "dashboard":
-        return (
-          <div className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>Recent Activity</CardTitle>
-                <CardDescription>
-                  Overview of your recent actions
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="font-poppins text-sm text-muted-foreground">
-                  Welcome back! You have {orders.length} recent orders.
-                </p>
-              </CardContent>
-            </Card>
-          </div>
-        );
+        return <DashboardTab recentOrdersCount={recentOrdersCount} />;
 
       case "orders":
-        return (
-          <div className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>Order History</CardTitle>
-                <CardDescription>Your recent purchases</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid gap-4 sm:grid-cols-1 lg:grid-cols-2">
-                  {orders.map((order) => (
-                    <Card key={order.id}>
-                      <CardHeader className="pb-2">
-                        <div className="flex items-center justify-between">
-                          <CardTitle className="text-base">
-                            Order #{order.id}
-                          </CardTitle>
-                          <Badge
-                            variant={
-                              order.status === "Delivered"
-                                ? "secondary"
-                                : "outline"
-                            }
-                          >
-                            <span className="font-poppins">{order.status}</span>
-                          </Badge>
-                        </div>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="flex items-center justify-between text-sm">
-                          <span className="font-poppins text-muted-foreground">
-                            {order.date}
-                          </span>
-                          <span className="font-poppins font-medium">
-                            ${order.total.toFixed(2)}
-                          </span>
-                        </div>
-                      </CardContent>
-                      <CardFooter className="pt-2">
-                        <Button variant="outline" size="sm" className="w-full">
-                          <span className="font-poppins">View Details</span>
-                        </Button>
-                      </CardFooter>
-                    </Card>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        );
+        return <OrdersTab orders={orders} />;
 
       case "addresses":
         return (
@@ -495,11 +427,6 @@ const ProfilePage: React.FC = () => {
     </div>
   );
 };
-
-interface FormProps<T extends FieldValues> {
-  register: UseFormRegister<T>;
-  errors: FieldErrors<T>;
-}
 
 const AddressForm: React.FC<FormProps<Address>> = ({ register, errors }) => (
   <div className="grid gap-4 sm:grid-cols-2">

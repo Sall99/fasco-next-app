@@ -1,4 +1,4 @@
-import { instance } from "@/config";
+import { fetcher, instance } from "@/config";
 import useSWR from "swr";
 
 export interface OrderItem {
@@ -122,4 +122,18 @@ export const formatOrderAmount = (amount: number, currency: string) => {
     style: "currency",
     currency: currency.toUpperCase(),
   }).format(amount);
+};
+
+export const useUserGetOrders = () => {
+  const { data, error } = useSWR("/users/orders", fetcher);
+
+  return {
+    orders: data?.allOrders,
+    recentOrders: data?.recentOrders,
+    totalOrders: data?.totalOrders,
+    recentOrdersCount: data?.recentOrdersCount,
+    totalOrdersCount: data?.totalOrders,
+    isLoading: !error && !data,
+    isError: error,
+  };
 };
