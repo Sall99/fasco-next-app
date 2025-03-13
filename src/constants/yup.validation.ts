@@ -98,4 +98,5 @@ export const addressSchema = yup.object().shape({
   state: yup.string().required("State is required"),
   zipCode: yup.string().required("Zip code is required"),
   country: yup.string().required("Country is required"),
+  isDefault: yup.boolean().optional().default(false),
 });

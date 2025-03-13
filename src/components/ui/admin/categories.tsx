@@ -37,7 +37,7 @@ import {
   useUpdateCategory,
 } from "@/actions";
 import Typography from "@/components/typography";
-import { toast, Toaster } from "sonner";
+import { toast } from "sonner";
 
 const generateSlug = (name: string) => {
   return name
@@ -394,7 +394,6 @@ const CategoriesSection = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-      <Toaster richColors />
     </div>
   );
 };
