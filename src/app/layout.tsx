@@ -5,6 +5,7 @@ import "./globals.css";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { Toaster } from "react-hot-toast";
+import { Toaster as SonnerToaster } from "sonner";
 import { Footer, Header } from "@/components";
 import StoreProvider from "@/store/provider";
 import { SessionWrapper } from "../../libs";
@@ -99,6 +100,7 @@ export default async function RootLayout({
             <Header />
             {children}
             <Toaster />
+            <SonnerToaster richColors />
             <Footer />
           </SessionWrapper>
         </StoreProvider>

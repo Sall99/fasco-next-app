@@ -26,7 +26,7 @@ import {
 } from "@/types";
 import Typography from "@/components/typography";
 import { useCreateProduct, useUpdateProduct } from "@/actions/admin/product";
-import { toast, Toaster } from "sonner";
+import { toast } from "sonner";
 
 interface ProductModalProps {
   isOpen: boolean;
@@ -429,7 +429,6 @@ export const ProductModal = ({
           </DialogFooter>
         </form>
       </DialogContent>
-      <Toaster richColors />
     </Dialog>
   );
 };

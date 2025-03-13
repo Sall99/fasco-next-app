@@ -3,13 +3,13 @@ import React, { useState } from "react";
 import {
   useForm,
   SubmitHandler,
+  UseFormRegister,
   FieldErrors,
   FieldValues,
-  UseFormRegister,
 } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import { addressSchema, profileSchema } from "@/constants";
+import { profileSchema } from "@/constants";
 import {
   Menu,
   Home,
@@ -22,7 +22,6 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { signOut } from "next-auth/react";
-
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -44,7 +43,7 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { useUserGetOrders } from "@/actions";
-import { DashboardTab, OrdersTab } from "@/components";
+import { AddressTab, DashboardTab, OrdersTab } from "@/components";
 
 type Tab =
   | "dashboard"
@@ -53,18 +52,16 @@ type Tab =
   | "account"
   | "wishlist"
   | "logout";
-type Address = yup.InferType<typeof addressSchema>;
 type Profile = yup.InferType<typeof profileSchema>;
+interface FormProps<T extends FieldValues> {
+  register: UseFormRegister<T>;
+  errors: FieldErrors<T>;
+}
 
 interface NavItem {
   id: Tab;
   label: string;
   icon: React.ReactNode;
-}
-
-interface FormProps<T extends FieldValues> {
-  register: UseFormRegister<T>;
-  errors: FieldErrors<T>;
 }
 
 const NAV_ITEMS: NavItem[] = [
@@ -102,7 +99,7 @@ const NAV_ITEMS: NavItem[] = [
 
 const ProfilePage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<Tab>("dashboard");
-  const [addresses, setAddresses] = useState<Address[]>([]);
+
   const [isCollapsed, setIsCollapsed] = useState(false);
   const { orders, recentOrdersCount } = useUserGetOrders();
 
@@ -115,23 +112,8 @@ const ProfilePage: React.FC = () => {
     mode: "onBlur",
   });
 
-  const {
-    register: addressRegister,
-    handleSubmit: handleAddressSubmit,
-    formState: { errors: addressErrors, isSubmitting: isAddressSubmitting },
-    reset: resetAddressForm,
-  } = useForm<Address>({
-    resolver: yupResolver(addressSchema),
-    mode: "onBlur",
-  });
-
   const handleProfileUpdate: SubmitHandler<Profile> = (data) => {
     console.log("Profile updated:", data);
-  };
-
-  const handleAddAddress: SubmitHandler<Address> = (data) => {
-    setAddresses([...addresses, data]);
-    resetAddressForm();
   };
 
   const renderTabContent = () => {
@@ -143,52 +125,7 @@ const ProfilePage: React.FC = () => {
         return <OrdersTab orders={orders} />;
 
       case "addresses":
-        return (
-          <div className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Add New Address</CardTitle>
-                <CardDescription>
-                  Enter your delivery address details
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <form
-                  onSubmit={handleAddressSubmit(handleAddAddress)}
-                  className="space-y-4"
-                >
-                  <AddressForm
-                    register={addressRegister}
-                    errors={addressErrors}
-                  />
-                  <Button type="submit" disabled={isAddressSubmitting}>
-                    Add Address
-                  </Button>
-                </form>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Saved Addresses</CardTitle>
-                <CardDescription>Your delivery locations</CardDescription>
-              </CardHeader>
-              <CardContent>
-                {addresses.length > 0 ? (
-                  <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-2">
-                    {addresses.map((address, index) => (
-                      <AddressCard key={index} address={address} />
-                    ))}
-                  </div>
-                ) : (
-                  <p className="py-8 text-center text-sm text-muted-foreground">
-                    No saved addresses yet
-                  </p>
-                )}
-              </CardContent>
-            </Card>
-          </div>
-        );
+        return <AddressTab />;
 
       case "account":
         return (
@@ -428,30 +365,6 @@ const ProfilePage: React.FC = () => {
   );
 };
 
-const AddressForm: React.FC<FormProps<Address>> = ({ register, errors }) => (
-  <div className="grid gap-4 sm:grid-cols-2">
-    {Object.keys(addressSchema.fields).map((field) => (
-      <div key={field} className="space-y-2">
-        <Label htmlFor={field} className="capitalize">
-          {field
-            .replace(/([A-Z])/g, " $1")
-            .replace(/^./, (str) => str.toUpperCase())}
-        </Label>
-        <Input
-          id={field}
-          {...register(field as keyof Address)}
-          className={errors[field as keyof Address] ? "border-destructive" : ""}
-        />
-        {errors[field as keyof Address] && (
-          <p className="text-xs text-destructive">
-            {errors[field as keyof Address]?.message}
-          </p>
-        )}
-      </div>
-    ))}
-  </div>
-);
-
 const ProfileForm: React.FC<FormProps<Profile>> = ({ register, errors }) => (
   <div className="grid gap-4 sm:grid-cols-2">
     {Object.keys(profileSchema.fields).map((field) => (
@@ -474,28 +387,6 @@ const ProfileForm: React.FC<FormProps<Profile>> = ({ register, errors }) => (
       </div>
     ))}
   </div>
-);
-
-const AddressCard = ({ address }: { address: Address }) => (
-  <Card>
-    <CardContent className="p-4">
-      <div className="space-y-1">
-        <p className="font-medium">{address.street}</p>
-        <p className="text-sm">
-          {address.city}, {address.state} {address.zipCode}
-        </p>
-        <p className="text-sm text-muted-foreground">{address.country}</p>
-      </div>
-      <div className="mt-4 flex gap-2">
-        <Button variant="outline" size="sm" className="w-full">
-          Edit
-        </Button>
-        <Button variant="outline" size="sm" className="w-full">
-          Delete
-        </Button>
-      </div>
-    </CardContent>
-  </Card>
 );
 
 export default ProfilePage;

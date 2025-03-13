@@ -1,2 +1,3 @@
 export * from "./orders-tab";
-export * from "./dashboard-tabs";
+export * from "./dashboard-tab";
+export * from "./address-tab";
