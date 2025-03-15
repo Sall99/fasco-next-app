@@ -2,8 +2,7 @@ import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
 import { prisma } from "../../../../../libs";
-import { CartItem } from "@/store/slices/cart";
-import { MinimalCartItem } from "@/types";
+import { CartItem, MinimalCartItem } from "@/types";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
   apiVersion: "2025-01-27.acacia",
