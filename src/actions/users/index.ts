@@ -84,3 +84,57 @@ export function useAddresses() {
     deleteAddress,
   };
 }
+
+export const useAuthType = () => {
+  const { data, error, isLoading } = useSWR<{ isOAuthUser: boolean }>(
+    "/users/auth-type",
+    fetcher,
+    {
+      revalidateOnFocus: false,
+      dedupingInterval: 5000,
+    },
+  );
+
+  return {
+    isOAuthUser: data?.isOAuthUser,
+    isLoading,
+    error,
+  };
+};
+
+export function useProfile() {
+  const { data, error, isLoading } = useSWR("/users/profile", fetcher, {
+    revalidateOnFocus: false,
+    dedupingInterval: 5000,
+  });
+
+  const updateProfile = async (
+    name: string,
+    currentPassword?: string,
+    newPassword?: string,
+  ) => {
+    try {
+      const response = await instance.put("/users/account/update", {
+        name,
+        currentPassword,
+        newPassword,
+      });
+
+      await mutate("/users/profile");
+      toast.success("Profile updated successfully");
+      return response.data;
+    } catch (error) {
+      const errorMessage = getErrorMessage(error, "Failed to update profile");
+      console.error("Error updating profile:", errorMessage);
+      toast.error(errorMessage);
+      throw error;
+    }
+  };
+
+  return {
+    userData: data,
+    isLoading,
+    error,
+    updateProfile,
+  };
+}

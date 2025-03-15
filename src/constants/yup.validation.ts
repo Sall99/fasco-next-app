@@ -100,3 +100,20 @@ export const addressSchema = yup.object().shape({
   country: yup.string().required("Country is required"),
   isDefault: yup.boolean().optional().default(false),
 });
+
+export const passwordSchema = yup.object({
+  name: yup.string().required("Name is required"),
+  currentPassword: yup.string().required("Current password is required"),
+  newPassword: yup
+    .string()
+    .min(8, "Password must be at least 8 characters")
+    .matches(
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/,
+      "Password must include uppercase, lowercase, number and special character",
+    )
+    .required("New password is required"),
+  confirmPassword: yup
+    .string()
+    .oneOf([yup.ref("newPassword")], "Passwords must match")
+    .required("Please confirm your password"),
+});
