@@ -5,16 +5,24 @@ import { FaTwitter, FaFacebookF } from "react-icons/fa";
 
 import Image from "next/image";
 import { useParams } from "next/navigation";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useGetProduct } from "@/actions";
 import { Button, ProductReviews, Skeleton, Typography } from "@/components";
 import { StarRating } from "@/components/ui/star-rating";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { addToCart } from "@/store/slices/cart";
-import { Toaster } from "sonner";
+import { toast, Toaster } from "sonner";
+import {
+  addToWishlist,
+  removeFromWishlist,
+  selectWishlistItems,
+} from "@/store/slices/wishlist";
 
 interface GalleryProps {
   images: string[];
+  productId: string;
+  name: string;
+  price: number;
 }
 
 interface DetailsProps {
@@ -105,11 +113,38 @@ const DetailsSkeleton = () => (
   </div>
 );
 
-function Gallery({ images }: GalleryProps) {
+function Gallery({ images, productId, name, price }: GalleryProps) {
   const [mainIndex, setMainIndex] = useState(0);
+  const wishlistItems = useSelector(selectWishlistItems);
+  const [isInWishlist, setIsInWishlist] = useState(false);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    const inWishlist = wishlistItems.some(
+      (item) => item.productId === productId,
+    );
+    setIsInWishlist(inWishlist);
+  }, [wishlistItems, productId]);
 
   const handleThumbnailClick = (index: number) => {
     setMainIndex(index);
+  };
+
+  const toggleWishlist = () => {
+    if (isInWishlist) {
+      dispatch(removeFromWishlist(productId));
+      toast.success("Removed from wishlist");
+    } else {
+      const product = {
+        productId,
+        name,
+        price,
+        image: images[0],
+        addedAt: Date.now(),
+      };
+      dispatch(addToWishlist(product));
+      toast.success("Added to wishlist");
+    }
   };
 
   return (
@@ -176,11 +211,19 @@ function Gallery({ images }: GalleryProps) {
                 priority
               />
               <motion.div
-                className="absolute right-4 top-4 rounded-full bg-white p-2 shadow-md"
+                className="absolute right-4 top-4 cursor-pointer rounded-full bg-white p-2 shadow-md"
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
+                onClick={toggleWishlist}
               >
-                <Heart size={20} className="text-gray-500 hover:text-red-500" />
+                <Heart
+                  size={20}
+                  className={
+                    isInWishlist
+                      ? "fill-red-500 text-red-500"
+                      : "text-gray-500 hover:text-red-500"
+                  }
+                />
               </motion.div>
             </motion.div>
           </AnimatePresence>
@@ -484,7 +527,12 @@ export default function Page() {
   return (
     <section className="mx-auto max-w-7xl px-4 py-12">
       <div className="flex flex-col justify-center gap-12 lg:flex-row">
-        <Gallery images={product?.images} />
+        <Gallery
+          images={product?.images}
+          productId={product?.id}
+          name={product?.name}
+          price={product?.price}
+        />
         <Details
           id={product?.id}
           name={product?.name}

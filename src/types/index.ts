@@ -1,6 +1,12 @@
-import { CartItem } from "@/store/slices/cart";
 import { z } from "zod";
 
+export type CartItem = {
+  productId: string;
+  quantity: number;
+  price: number;
+  name: string;
+  image: string;
+};
 export type SignupFormData = {
   fName: string;
   lName: string;

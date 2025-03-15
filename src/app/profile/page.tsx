@@ -31,7 +31,13 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { useUserGetOrders } from "@/actions";
-import { AccountTab, AddressTab, DashboardTab, OrdersTab } from "@/components";
+import {
+  AccountTab,
+  AddressTab,
+  DashboardTab,
+  OrdersTab,
+  WishlistTab,
+} from "@/components";
 
 type Tab =
   | "dashboard"
@@ -101,23 +107,7 @@ const ProfilePage: React.FC = () => {
         return <AccountTab />;
 
       case "wishlist":
-        return (
-          <div className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Your Wishlist</CardTitle>
-                <CardDescription>
-                  Items you&apos;ve saved for later
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="py-12 text-center text-sm text-muted-foreground">
-                  Your wishlist is empty
-                </p>
-              </CardContent>
-            </Card>
-          </div>
-        );
+        return <WishlistTab />;
 
       case "logout":
         return (
