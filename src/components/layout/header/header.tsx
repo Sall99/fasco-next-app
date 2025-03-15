@@ -13,7 +13,6 @@ import {
   updateQuantity,
 } from "@/store/slices/cart";
 import Image from "next/image";
-import { useSession } from "next-auth/react";
 import { CartItem } from "@/types";
 
 const Links = [
@@ -35,6 +34,13 @@ const getLinks = (isAuthenticated: boolean) => [
 interface CartItemActions {
   handleUpdateQuantity: (productId: string, quantity: number) => void;
   handleDecreaseQuantity: (productId: string) => void;
+}
+
+interface HeaderProps {
+  user: {
+    name: string;
+    email: string;
+  } | null;
 }
 
 const Items = ({
@@ -277,15 +283,14 @@ const headerVariants = {
   },
 };
 
-export const Header = () => {
+export const Header = ({ user }: HeaderProps) => {
   const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const dispatch = useDispatch();
-  const { data: session, status } = useSession();
-  const isAuthenticated = status === "authenticated";
+  const isAuthenticated = !!user?.email;
 
-  console.log(session, isAuthenticated);
+  console.log(user, "user");
 
   const cartItems = useSelector(selectCartItems);
   const cartTotalPrice = useSelector(selectTotalPrice);
