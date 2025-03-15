@@ -3,7 +3,8 @@ export function getErrorMessage(
   fallbackMessage: string,
 ): string {
   if (error instanceof Error) {
-    return error.message;
+    const err = error as { response?: { data: { message: string } } };
+    return err.response?.data.message || fallbackMessage;
   }
   return fallbackMessage;
 }

@@ -1,5 +1,4 @@
 "use client";
-
 import { usePathname, useRouter } from "next/navigation";
 import React, { useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -8,7 +7,6 @@ import { Button, Typography } from "@/components";
 import Link from "next/link";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  CartItem,
   decreaseQuantity,
   selectCartItems,
   selectTotalPrice,
@@ -16,6 +14,7 @@ import {
 } from "@/store/slices/cart";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
+import { CartItem } from "@/types";
 
 const Links = [
   { title: "Home", path: "/" },

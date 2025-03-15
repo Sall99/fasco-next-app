@@ -4,6 +4,7 @@ import createWebStorage from "redux-persist/lib/storage/createWebStorage";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 
 import cartReducer from "./slices/cart";
+import wishlistReducer from "./slices/wishlist";
 
 const createNoopStorage = () => {
   return {
@@ -31,6 +32,7 @@ const persistConfig = {
 
 const rootReducer = combineReducers({
   cart: persistReducer(persistConfig, cartReducer),
+  wishlist: persistReducer(persistConfig, wishlistReducer),
 });
 
 export const store = configureStore({

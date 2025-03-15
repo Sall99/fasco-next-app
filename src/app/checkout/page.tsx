@@ -13,13 +13,13 @@ import { loadStripe } from "@stripe/stripe-js";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import {
-  CartItem,
   selectCartItems,
   selectTotalPrice,
   clearCart,
 } from "@/store/slices/cart";
 import { Button, Typography } from "@/components";
 import { toast } from "sonner";
+import { CartItem } from "@/types";
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY!);
 

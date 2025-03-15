@@ -1,16 +1,6 @@
 "use client";
 import React, { useState } from "react";
 import {
-  useForm,
-  SubmitHandler,
-  UseFormRegister,
-  FieldErrors,
-  FieldValues,
-} from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
-import { profileSchema } from "@/constants";
-import {
   Menu,
   Home,
   ShoppingBag,
@@ -30,8 +20,6 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -43,7 +31,13 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { useUserGetOrders } from "@/actions";
-import { AddressTab, DashboardTab, OrdersTab } from "@/components";
+import {
+  AccountTab,
+  AddressTab,
+  DashboardTab,
+  OrdersTab,
+  WishlistTab,
+} from "@/components";
 
 type Tab =
   | "dashboard"
@@ -52,11 +46,6 @@ type Tab =
   | "account"
   | "wishlist"
   | "logout";
-type Profile = yup.InferType<typeof profileSchema>;
-interface FormProps<T extends FieldValues> {
-  register: UseFormRegister<T>;
-  errors: FieldErrors<T>;
-}
 
 interface NavItem {
   id: Tab;
@@ -103,19 +92,6 @@ const ProfilePage: React.FC = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const { orders, recentOrdersCount } = useUserGetOrders();
 
-  const {
-    register: profileRegister,
-    handleSubmit: handleProfileSubmit,
-    formState: { errors: profileErrors, isSubmitting: isProfileSubmitting },
-  } = useForm<Profile>({
-    resolver: yupResolver(profileSchema),
-    mode: "onBlur",
-  });
-
-  const handleProfileUpdate: SubmitHandler<Profile> = (data) => {
-    console.log("Profile updated:", data);
-  };
-
   const renderTabContent = () => {
     switch (activeTab) {
       case "dashboard":
@@ -128,49 +104,10 @@ const ProfilePage: React.FC = () => {
         return <AddressTab />;
 
       case "account":
-        return (
-          <div className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Profile Information</CardTitle>
-                <CardDescription>Update your personal details</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <form
-                  onSubmit={handleProfileSubmit(handleProfileUpdate)}
-                  className="space-y-4"
-                >
-                  <ProfileForm
-                    register={profileRegister}
-                    errors={profileErrors}
-                  />
-                  <Button type="submit" disabled={isProfileSubmitting}>
-                    Update Profile
-                  </Button>
-                </form>
-              </CardContent>
-            </Card>
-          </div>
-        );
+        return <AccountTab />;
 
       case "wishlist":
-        return (
-          <div className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Your Wishlist</CardTitle>
-                <CardDescription>
-                  Items you&apos;ve saved for later
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="py-12 text-center text-sm text-muted-foreground">
-                  Your wishlist is empty
-                </p>
-              </CardContent>
-            </Card>
-          </div>
-        );
+        return <WishlistTab />;
 
       case "logout":
         return (
@@ -364,29 +301,5 @@ const ProfilePage: React.FC = () => {
     </div>
   );
 };
-
-const ProfileForm: React.FC<FormProps<Profile>> = ({ register, errors }) => (
-  <div className="grid gap-4 sm:grid-cols-2">
-    {Object.keys(profileSchema.fields).map((field) => (
-      <div key={field} className="space-y-2">
-        <Label htmlFor={field} className="capitalize">
-          {field
-            .replace(/([A-Z])/g, " $1")
-            .replace(/^./, (str) => str.toUpperCase())}
-        </Label>
-        <Input
-          id={field}
-          {...register(field as keyof Profile)}
-          className={errors[field as keyof Profile] ? "border-destructive" : ""}
-        />
-        {errors[field as keyof Profile] && (
-          <p className="text-xs text-destructive">
-            {errors[field as keyof Profile]?.message}
-          </p>
-        )}
-      </div>
-    ))}
-  </div>
-);
 
 export default ProfilePage;
