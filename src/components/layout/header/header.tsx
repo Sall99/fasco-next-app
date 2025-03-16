@@ -104,13 +104,13 @@ const CartModal = ({
     className="fixed right-0 top-0 z-[80] h-screen w-full bg-white px-6 pt-20 md:w-96"
   >
     <div className="flex items-center justify-between pb-6">
-      <Typography variant="h4">Your Cart</Typography>
+      <Typography variant="h5">Your Cart</Typography>
       <motion.button
         onClick={toggleCart}
         whileTap={{ scale: 0.9 }}
         className="rounded-full p-2 hover:bg-gray-100"
       >
-        <X size={24} />
+        <X size={20} />
       </motion.button>
     </div>
 
@@ -121,6 +121,7 @@ const CartModal = ({
         cartItems={cartItems}
         cartTotalPrice={cartTotalPrice}
         actions={actions}
+        toggleCart={toggleCart}
       />
     )}
   </motion.div>
@@ -143,10 +144,12 @@ const CartContent = ({
   cartItems,
   cartTotalPrice,
   actions,
+  toggleCart,
 }: {
   cartItems: CartItem[];
   cartTotalPrice: number;
   actions: CartItemActions;
+  toggleCart: () => void;
 }) => (
   <div className="flex h-[calc(100vh-200px)] flex-col justify-between">
     <div className="flex-1 space-y-4 overflow-y-auto">
@@ -154,12 +157,24 @@ const CartContent = ({
         <Items key={key} item={item} actions={actions} />
       ))}
     </div>
-    <CartTotal cartTotalPrice={cartTotalPrice} />
+    <CartTotal cartTotalPrice={cartTotalPrice} toggleCart={toggleCart} />
   </div>
 );
 
-const CartTotal = ({ cartTotalPrice }: { cartTotalPrice: number }) => {
+const CartTotal = ({
+  cartTotalPrice,
+  toggleCart,
+}: {
+  cartTotalPrice: number;
+  toggleCart: () => void;
+}) => {
   const router = useRouter();
+
+  const handleCheckout = () => {
+    toggleCart();
+    router.push("/checkout");
+  };
+
   return (
     <div className="border-t border-gray-200 py-4">
       <div className="mb-4 flex justify-between">
@@ -168,7 +183,7 @@ const CartTotal = ({ cartTotalPrice }: { cartTotalPrice: number }) => {
           ${cartTotalPrice.toFixed(2)}
         </Typography>
       </div>
-      <Button className="w-full" onClick={() => router.push("/checkout")}>
+      <Button className="w-full" onClick={handleCheckout}>
         Checkout
       </Button>
     </div>
@@ -190,7 +205,7 @@ const NavLink = ({
     <Link
       href={path}
       onClick={onClick}
-      className={`text-gray-700 transition-colors hover:text-primary-600 ${className}`}
+      className={`font-medium text-gray-700 transition-colors hover:text-primary-600 ${className}`}
     >
       {title}
     </Link>
@@ -289,8 +304,6 @@ export const Header = ({ user }: HeaderProps) => {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const dispatch = useDispatch();
   const isAuthenticated = !!user?.email;
-
-  console.log(user, "user");
 
   const cartItems = useSelector(selectCartItems);
   const cartTotalPrice = useSelector(selectTotalPrice);
