@@ -6,7 +6,7 @@ import { Typography, Button } from "@/components";
 
 const CheckoutSuccessPage = () => {
   return (
-    <div className="mt-20 flex min-h-screen items-center justify-center bg-gray-50 px-4">
+    <div className="mt-20 flex min-h-screen items-center justify-center px-4">
       <div className="w-full max-w-md rounded-lg bg-white p-8 shadow-sm">
         <div className="flex flex-col items-center space-y-4 text-center">
           <div className="rounded-full bg-green-100 p-3">
@@ -17,7 +17,11 @@ const CheckoutSuccessPage = () => {
             Payment Successful!
           </Typography>
 
-          <Typography variant="p-16" className="text-gray-600">
+          <Typography
+            variant="p-14"
+            className="text-gray-600"
+            alignment="center"
+          >
             Thank you for your purchase. We&apos;ll send you a confirmation
             email with your order details shortly.
           </Typography>
@@ -46,7 +50,7 @@ const CheckoutSuccessPage = () => {
                 href="mailto:support@yourstore.com"
                 className="text-blue-600 hover:text-blue-700"
               >
-                support@yourstore.com
+                support@fasco.com
               </a>
             </Typography>
           </div>

@@ -11,15 +11,7 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
-import { signOut } from "next-auth/react";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -35,9 +27,11 @@ import {
   AccountTab,
   AddressTab,
   DashboardTab,
+  LogOutTab,
   OrdersTab,
   WishlistTab,
 } from "@/components";
+import { Typography } from "@/components/typography";
 
 type Tab =
   | "dashboard"
@@ -110,30 +104,7 @@ const ProfilePage: React.FC = () => {
         return <WishlistTab />;
 
       case "logout":
-        return (
-          <Card>
-            <CardHeader>
-              <CardTitle>Log Out</CardTitle>
-              <CardDescription>Sign out of your account</CardDescription>
-            </CardHeader>
-            <CardContent className="flex flex-col items-center justify-center py-8">
-              <p className="mb-6 text-center">
-                Are you sure you want to logout?
-              </p>
-              <Button
-                variant="destructive"
-                onClick={() => {
-                  signOut();
-                }}
-              >
-                Logout
-              </Button>
-              <p className="mt-4 text-center text-xs text-muted-foreground">
-                You will be redirected to the login page
-              </p>
-            </CardContent>
-          </Card>
-        );
+        return <LogOutTab />;
 
       default:
         return null;
@@ -160,7 +131,9 @@ const ProfilePage: React.FC = () => {
                 <AvatarImage src="/profile.png" alt="Profile" />
                 <AvatarFallback>UP</AvatarFallback>
               </Avatar>
-              <span className="font-semibold">My Profile</span>
+              <Typography variant="h6" className="font-medium">
+                My Profile
+              </Typography>
             </div>
           )}
           <Button
@@ -213,7 +186,9 @@ const ProfilePage: React.FC = () => {
                   onClick={() => setActiveTab(item.id)}
                 >
                   {item.icon}
-                  <span>{item.label}</span>
+                  <Typography variant="p-14" className="font-semibold">
+                    {item.label}
+                  </Typography>
                 </Button>
               );
             })}
@@ -254,7 +229,9 @@ const ProfilePage: React.FC = () => {
               <AvatarImage src="/profile.png" alt="Profile" />
               <AvatarFallback>UP</AvatarFallback>
             </Avatar>
-            <span className="font-poppins font-semibold">My Profile</span>
+            <Typography variant="h6" className="font-poppins font-semibold">
+              My Profile
+            </Typography>
           </div>
 
           <ScrollArea className="h-[calc(100vh-200px)]">
@@ -267,7 +244,7 @@ const ProfilePage: React.FC = () => {
                   onClick={() => setActiveTab(item.id)}
                 >
                   {item.icon}
-                  <span className="font-poppins">{item.label}</span>
+                  <Typography variant="p-14">{item.label}</Typography>
                 </Button>
               ))}
             </div>
@@ -292,9 +269,9 @@ const ProfilePage: React.FC = () => {
 
       <main className="flex-1 overflow-auto p-4 sm:p-6 lg:p-8">
         <div className="mx-auto">
-          <h1 className="mb-6 font-poppins text-2xl font-semibold tracking-tight">
+          <Typography variant="h5" className="mb-6">
             {NAV_ITEMS.find((item) => item.id === activeTab)?.label}
-          </h1>
+          </Typography>
           {renderTabContent()}
         </div>
       </main>
