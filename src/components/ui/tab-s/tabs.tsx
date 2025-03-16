@@ -14,7 +14,6 @@ interface TabsProps {
 }
 
 export function Tabs({ categories }: TabsProps) {
-  console.log(categories);
   return (
     <div className="container mx-auto px-4 pt-24">
       <TabGroup>
