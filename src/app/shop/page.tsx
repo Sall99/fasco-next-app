@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { Feature, Product, Skeleton, Typography } from "@/components";
+import { Product, Skeleton, Typography } from "@/components";
 import { ChevronRight, X } from "lucide-react";
 import { useProducts } from "@/actions";
 import { ProductType } from "@/types";
@@ -490,7 +490,6 @@ export default function ShopPage() {
           </div>
         </div>
       </div>
-      <Feature />
     </section>
   );
 }

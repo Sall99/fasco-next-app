@@ -1,3 +1,4 @@
+import Typography from "@/components/typography";
 import {
   Card,
   CardContent,
@@ -21,11 +22,11 @@ export const DashboardTab: React.FC<DashboardProps> = ({
           <CardDescription>Overview of your recent actions</CardDescription>
         </CardHeader>
         <CardContent>
-          <p className="font-poppins text-sm text-muted-foreground">
-            Welcome back! You have
+          <Typography variant="p-14">
+            Welcome back! You have{" "}
             <span className="font-semibold">{recentOrdersCount}</span> recent
             orders.
-          </p>
+          </Typography>
         </CardContent>
       </Card>
     </div>

@@ -22,6 +22,7 @@ import { Badge } from "../badge";
 import { Button } from "../button";
 import { formatPrice } from "@/utils";
 import Image from "next/image";
+import Typography from "@/components/typography";
 
 interface Product {
   id: string;
@@ -101,52 +102,53 @@ export const OrdersTab: React.FC<OrdersTabProps> = ({ orders }) => {
         </CardHeader>
         <CardContent>
           <div className="grid gap-4 sm:grid-cols-1 lg:grid-cols-2">
-            {orders.map((order: Order) => (
-              <Card
-                key={order.id}
-                className="shadow-sm transition-shadow hover:shadow"
-              >
-                <CardHeader className="pb-2">
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-base">
-                      Order #{order.id.slice(-8)}
-                    </CardTitle>
-                    <Badge
-                      variant={
-                        order.status === "delivered" ? "secondary" : "outline"
-                      }
-                      className="capitalize"
+            {orders &&
+              orders.map((order: Order) => (
+                <Card
+                  key={order.id}
+                  className="shadow-sm transition-shadow hover:shadow"
+                >
+                  <CardHeader className="pb-2">
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="text-base">
+                        Order #{order.id.slice(-8)}
+                      </CardTitle>
+                      <Badge
+                        variant={
+                          order.status === "delivered" ? "secondary" : "outline"
+                        }
+                        className="capitalize"
+                      >
+                        <span className="font-poppins">{order.status}</span>
+                      </Badge>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="font-poppins text-muted-foreground">
+                        {new Date(order.createdAt).toLocaleDateString()}
+                      </span>
+                      <span className="font-poppins font-medium">
+                        {formatCurrency(order.totalAmount, order.currency)}
+                      </span>
+                    </div>
+                    <div className="mt-2 text-sm text-muted-foreground">
+                      {order.OrderItem.length}{" "}
+                      {order.OrderItem.length === 1 ? "item" : "items"}
+                    </div>
+                  </CardContent>
+                  <CardFooter className="pt-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="w-full"
+                      onClick={() => handleViewDetails(order)}
                     >
-                      <span className="font-poppins">{order.status}</span>
-                    </Badge>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="font-poppins text-muted-foreground">
-                      {new Date(order.createdAt).toLocaleDateString()}
-                    </span>
-                    <span className="font-poppins font-medium">
-                      {formatCurrency(order.totalAmount, order.currency)}
-                    </span>
-                  </div>
-                  <div className="mt-2 text-sm text-muted-foreground">
-                    {order.OrderItem.length}{" "}
-                    {order.OrderItem.length === 1 ? "item" : "items"}
-                  </div>
-                </CardContent>
-                <CardFooter className="pt-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="w-full"
-                    onClick={() => handleViewDetails(order)}
-                  >
-                    <span className="font-poppins">View Details</span>
-                  </Button>
-                </CardFooter>
-              </Card>
-            ))}
+                      <span className="font-poppins">View Details</span>
+                    </Button>
+                  </CardFooter>
+                </Card>
+              ))}
           </div>
         </CardContent>
       </Card>
@@ -198,7 +200,7 @@ export const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({
           <DialogDescription>Placed on {formattedDate}</DialogDescription>
         </DialogHeader>
 
-        <div className="py-4">
+        <div className="py-4 font-poppins text-primary-600">
           <div className="mb-2 flex justify-between">
             <span className="text-sm font-medium">Order Total</span>
             <span className="font-semibold">
@@ -211,15 +213,26 @@ export const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({
           {shipping && (
             <>
               <div className="mb-4">
-                <h4 className="mb-2 text-sm font-semibold">Shipping Address</h4>
+                <Typography variant="h6" className="mb-2 text-sm font-semibold">
+                  Shipping Address
+                </Typography>
                 <div className="text-sm text-muted-foreground">
-                  <p>{shipping.address}</p>
-                  <p>
+                  <Typography variant="p-14" className="font-medium">
+                    {shipping.address}
+                  </Typography>
+                  <Typography variant="p-14" className="font-medium">
                     {shipping.city}, {shipping.postalCode}
-                  </p>
-                  <p>{shipping.country}</p>
-                  {shipping.phone && <p>Phone: {shipping.phone}</p>}
-                  <p>Email: {shipping.email}</p>
+                  </Typography>
+                  <Typography variant="p-14" className="font-medium">
+                    {shipping.country}
+                  </Typography>
+                  <Typography variant="p-14" className="font-medium">
+                    {shipping.phone && <p>Phone: {shipping.phone}</p>}
+                  </Typography>
+
+                  <Typography variant="p-14" className="font-medium">
+                    Email: {shipping.email}
+                  </Typography>
                 </div>
               </div>
               <Separator className="my-4" />
@@ -227,7 +240,9 @@ export const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({
           )}
 
           <div>
-            <h4 className="mb-2 text-sm font-semibold">Items</h4>
+            <Typography variant="h6" className="mb-2 text-sm font-semibold">
+              Items
+            </Typography>
             <ScrollArea className="h-48">
               {order.OrderItem && order.OrderItem.length > 0 ? (
                 <div className="space-y-4">
@@ -248,19 +263,29 @@ export const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({
                       <div className="flex-1">
                         <div className="font-medium">{item.product.name}</div>
                         <div className="text-xs text-muted-foreground">
-                          Brand: {item.product.brand}
+                          <Typography variant="p-14">
+                            Brand: {item.product.brand}
+                          </Typography>
                         </div>
                         <div className="text-xs text-muted-foreground">
-                          Qty: {item.quantity}
+                          <Typography variant="p-14">
+                            Qty: {item.quantity}
+                          </Typography>
                         </div>
                       </div>
                       <div className="font-medium">
-                        {formatPrice(item.price)}
+                        <Typography variant="p-14" className="font-semibold">
+                          {formatPrice(item.price)}
+                        </Typography>
                         <div className="text-xs text-muted-foreground">
-                          per unit
+                          <Typography variant="p-14" className="font-medium">
+                            per unit
+                          </Typography>
                         </div>
                         <div className="mt-1 text-sm font-semibold">
-                          {formatPrice(item.price * item.quantity)}
+                          <Typography variant="p-14" className="font-semibold">
+                            {formatPrice(item.price * item.quantity)}
+                          </Typography>
                         </div>
                       </div>
                     </div>

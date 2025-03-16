@@ -3,3 +3,4 @@ export * from "./dashboard-tab";
 export * from "./address-tab";
 export * from "./account-tab";
 export * from "./wishlist-tab";
+export * from "./logout-tab";
