@@ -63,7 +63,7 @@ export function LoginForm() {
   };
 
   return (
-    <Card className="w-full max-w-md border-none font-poppins shadow-none">
+    <Card className="w-full max-w-lg border-none font-poppins shadow-none">
       <CardHeader className="space-y-2 text-center">
         <div className="flex items-center justify-center space-x-2">
           <ShoppingBag className="h-8 w-8 text-primary" />
