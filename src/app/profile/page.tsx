@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/tooltip";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
-import { useUserGetOrders } from "@/actions";
+import { useProfile, useUserGetOrders } from "@/actions";
 import {
   AccountTab,
   AddressTab,
@@ -82,6 +82,7 @@ const NAV_ITEMS: NavItem[] = [
 
 const ProfilePage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<Tab>("dashboard");
+  const { userData } = useProfile();
 
   const [isCollapsed, setIsCollapsed] = useState(false);
   const { orders, recentOrdersCount } = useUserGetOrders();
@@ -111,6 +112,11 @@ const ProfilePage: React.FC = () => {
     }
   };
 
+  const avatarFallback = userData?.name
+    ?.split(" ")
+    .map((n: string) => n[0])
+    .join("");
+
   return (
     <div className="mt-10 flex min-h-screen bg-background">
       <aside
@@ -129,7 +135,7 @@ const ProfilePage: React.FC = () => {
             <div className="flex items-center gap-2">
               <Avatar className="h-8 w-8">
                 <AvatarImage src="/profile.png" alt="Profile" />
-                <AvatarFallback>UP</AvatarFallback>
+                <AvatarFallback>{avatarFallback}</AvatarFallback>
               </Avatar>
               <Typography variant="h6" className="font-medium">
                 My Profile
@@ -200,13 +206,15 @@ const ProfilePage: React.FC = () => {
             <div className="flex items-center gap-3">
               <Avatar>
                 <AvatarImage src="/avatar.png" />
-                <AvatarFallback>JD</AvatarFallback>
+                <AvatarFallback>{avatarFallback}</AvatarFallback>
               </Avatar>
               <div className="space-y-1">
-                <p className="text-sm font-medium">John Doe</p>
-                <p className="text-xs text-muted-foreground">
-                  john@example.com
-                </p>
+                <Typography variant="p-14" className="font-medium">
+                  {userData?.name || ""}
+                </Typography>
+                <Typography variant="p-12" className="text-muted-foreground">
+                  {userData?.email || ""}
+                </Typography>
               </div>
             </div>
           </div>
@@ -226,8 +234,11 @@ const ProfilePage: React.FC = () => {
         <SheetContent side="left" className="w-64 pt-10">
           <div className="mb-8 flex items-center gap-2">
             <Avatar className="h-8 w-8">
-              <AvatarImage src="/profile.png" alt="Profile" />
-              <AvatarFallback>UP</AvatarFallback>
+              <AvatarImage
+                src={userData?.image || "/profile.png"}
+                alt="Profile"
+              />
+              <AvatarFallback>{avatarFallback}</AvatarFallback>
             </Avatar>
             <Typography variant="h6" className="font-poppins font-semibold">
               My Profile
@@ -257,10 +268,15 @@ const ProfilePage: React.FC = () => {
                 <AvatarFallback>JD</AvatarFallback>
               </Avatar>
               <div className="space-y-1">
-                <p className="text-sm font-medium">John Doe</p>
-                <p className="text-xs text-muted-foreground">
-                  john@example.com
-                </p>
+                <Typography variant="p-14" className="text-sm font-medium">
+                  {userData?.name || ""}
+                </Typography>
+                <Typography
+                  variant="p-12"
+                  className="text-xs text-muted-foreground"
+                >
+                  {userData?.email || ""}
+                </Typography>
               </div>
             </div>
           </div>
