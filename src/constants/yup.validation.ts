@@ -40,7 +40,7 @@ export const resetPasswordSchema = yup.object().shape({
 
 export const confirmationCodeSchema = yup.object().shape({
   confirmationCode: yup
-    .number()
+    .string()
     .typeError("Confirmation code must be a valid number")
     .required("Confirmation code is required")
     .test(
