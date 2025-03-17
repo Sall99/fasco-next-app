@@ -124,7 +124,7 @@ export const OrdersTab: React.FC<OrdersTabProps> = ({ orders }) => {
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <div className="flex items-center justify-between text-sm">
+                    <div className="flex items-center justify-between text-sm text-primary-600">
                       <span className="font-poppins text-muted-foreground">
                         {new Date(order.createdAt).toLocaleDateString()}
                       </span>
@@ -144,7 +144,9 @@ export const OrdersTab: React.FC<OrdersTabProps> = ({ orders }) => {
                       className="w-full"
                       onClick={() => handleViewDetails(order)}
                     >
-                      <span className="font-poppins">View Details</span>
+                      <span className="font-poppins text-primary-600">
+                        View Details
+                      </span>
                     </Button>
                   </CardFooter>
                 </Card>
@@ -192,7 +194,7 @@ export const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({
             <span>Order #{order.id.slice(-8)}</span>
             <Badge
               variant={order.status === "delivered" ? "secondary" : "outline"}
-              className="capitalize"
+              className="mr-4 capitalize"
             >
               {order.status}
             </Badge>
