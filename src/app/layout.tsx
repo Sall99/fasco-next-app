@@ -6,11 +6,12 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { Toaster } from "react-hot-toast";
 import { Toaster as SonnerToaster } from "sonner";
-import { Footer, Header } from "@/components";
+import { Header } from "@/components";
 import StoreProvider from "@/store/provider";
 import { SessionWrapper } from "../../libs";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../libs/auth-options";
+import { ClientLayout } from "@/utils/client-route";
 
 const DigitalNumbers = localFont({
   src: "./fonts/DigitalNumbers-Regular.ttf",
@@ -109,10 +110,11 @@ export default async function RootLayout({
         <StoreProvider>
           <SessionWrapper>
             <Header user={user} />
-            {children}
-            <Toaster />
-            <SonnerToaster richColors />
-            <Footer />
+            <ClientLayout>
+              {children}
+              <Toaster />
+              <SonnerToaster richColors />
+            </ClientLayout>
           </SessionWrapper>
         </StoreProvider>
       </body>
