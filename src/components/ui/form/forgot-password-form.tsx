@@ -1,10 +1,9 @@
 "use client";
-import React, { useState } from "react";
+import React from "react";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import toast from "react-hot-toast";
-import { useRouter } from "next/navigation";
+
 import { forgotPasswordSchema } from "@/constants";
 
 import {
@@ -19,44 +18,28 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ShoppingBag, Mail, KeyRound, ArrowRight } from "lucide-react";
+import { useForgotPassword } from "@/actions";
+import { useRouter } from "next/navigation";
 
 type FormData = {
   email: string;
 };
 
 export function ForgotPasswordForm() {
-  const [isLoading, setIsLoading] = useState(false);
+  const sendForgotPasswordCode = useForgotPassword;
   const router = useRouter();
 
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting: isRequesting },
   } = useForm<FormData>({
     resolver: yupResolver(forgotPasswordSchema),
   });
 
-  const saveSettings = async () => {
-    setIsLoading(true);
-    try {
-      await new Promise((resolve) => {
-        setTimeout(() => {
-          resolve("Success");
-          router.push("/auth/confirm-code");
-        }, 1000);
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   const onSubmit = async (data: FormData) => {
-    console.log(data);
-    toast.promise(saveSettings(), {
-      loading: "Sending recovery link...",
-      success: <b>Recovery email sent successfully!</b>,
-      error: <b>Failed to send recovery email. Please try again.</b>,
-    });
+    await sendForgotPasswordCode(data.email);
+    router.push("/auth/confirm-code");
   };
 
   return (
@@ -103,8 +86,8 @@ export function ForgotPasswordForm() {
           </div>
 
           <div className="pt-2">
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? (
+            <Button type="submit" className="w-full" disabled={isRequesting}>
+              {isRequesting ? (
                 <span className="flex items-center gap-2">
                   <span className="h-4 w-4 animate-spin rounded-full border-2 border-r-transparent"></span>
                   Sending recovery link...
