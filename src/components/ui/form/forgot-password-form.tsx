@@ -39,7 +39,7 @@ export function ForgotPasswordForm() {
 
   const onSubmit = async (data: FormData) => {
     await sendForgotPasswordCode(data.email);
-    router.push("/auth/confirm-code");
+    router.push(`/auth/confirm-code?email=${encodeURIComponent(data.email)}`);
   };
 
   return (

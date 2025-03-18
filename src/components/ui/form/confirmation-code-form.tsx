@@ -1,10 +1,10 @@
 "use client";
-import React, { useState } from "react";
+import React from "react";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import toast from "react-hot-toast";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { confirmationCodeSchema } from "@/constants";
 
 import {
@@ -19,44 +19,38 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ShoppingBag, KeyRound, ArrowRight } from "lucide-react";
+import { useConfirmCode } from "@/actions";
 
 type FormData = {
   confirmationCode: string;
 };
 
 export function ConfirmCodeForm() {
-  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const email = searchParams.get("email");
+  const requestConfirmCode = useConfirmCode;
 
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<FormData>({
     resolver: yupResolver(confirmationCodeSchema),
   });
 
-  const saveSettings = async () => {
-    setIsLoading(true);
-    try {
-      await new Promise((resolve) => {
-        setTimeout(() => {
-          resolve("Success");
-          router.push("/auth/reset-password");
-        }, 1000);
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   const onSubmit = async (data: FormData) => {
-    console.log(data);
-    toast.promise(saveSettings(), {
-      loading: "Verifying confirmation code...",
-      success: <b>Verified!</b>,
-      error: <b>Failed to verify the code. Try again!</b>,
-    });
+    if (!email) {
+      toast.error("Email is required");
+      return;
+    }
+    const response = await requestConfirmCode(email, data.confirmationCode);
+
+    if (response?.resetToken) {
+      router.push(
+        `/auth/reset-password?email=${encodeURIComponent(email)}&token=${encodeURIComponent(response.resetToken)}`,
+      );
+    }
   };
 
   return (
@@ -102,8 +96,8 @@ export function ConfirmCodeForm() {
           </div>
 
           <div className="pt-2">
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? (
+            <Button type="submit" className="w-full" disabled={isSubmitting}>
+              {isSubmitting ? (
                 <span className="flex items-center gap-2">
                   <span className="h-4 w-4 animate-spin rounded-full border-2 border-r-transparent"></span>
                   Verifying code...

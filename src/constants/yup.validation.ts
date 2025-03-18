@@ -45,8 +45,8 @@ export const confirmationCodeSchema = yup.object().shape({
     .required("Confirmation code is required")
     .test(
       "len",
-      "Confirmation code must be exactly 4 digits",
-      (value) => value?.toString().length === 4,
+      "Confirmation code must be exactly 6 digits",
+      (value) => value?.toString().length === 6,
     ),
 });
 
