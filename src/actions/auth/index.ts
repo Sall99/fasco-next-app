@@ -37,3 +37,26 @@ export const useConfirmCode = async (
     toast.error(errorMessage);
   }
 };
+
+export const useResetPassword = async (
+  email: string,
+  resetToken: string,
+  password: string,
+) => {
+  try {
+    const { data } = await instance.post("/auth/reset-password", {
+      email,
+      resetToken,
+      password,
+    });
+
+    console.log(data, "data");
+
+    toast.success(data.message);
+    return data;
+  } catch (error) {
+    console.log(error, "error");
+    const errorMessage = getErrorMessage(error, "Failed to reset password");
+    toast.error(errorMessage);
+  }
+};

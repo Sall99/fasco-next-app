@@ -1,10 +1,10 @@
 "use client";
-import React, { useState } from "react";
+import React from "react";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import toast from "react-hot-toast";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { resetPasswordSchema } from "@/constants";
 
 import {
@@ -19,6 +19,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ShoppingBag, Lock, KeyRound, ArrowRight } from "lucide-react";
+import { useResetPassword } from "@/actions";
 
 type FormData = {
   password: string;
@@ -26,38 +27,36 @@ type FormData = {
 };
 
 export function ResetPasswordForm() {
-  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const email = searchParams.get("email");
+  const resetToken = searchParams.get("token");
+  const requestResetPassword = useResetPassword;
 
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<FormData>({
     resolver: yupResolver(resetPasswordSchema),
   });
 
-  const saveSettings = async () => {
-    setIsLoading(true);
-    try {
-      await new Promise((resolve) => {
-        setTimeout(() => {
-          resolve("Success");
-          router.push("/auth/confirm-code");
-        }, 1000);
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   const onSubmit = async (data: FormData) => {
-    console.log(data);
-    toast.promise(saveSettings(), {
-      loading: "Updating your password...",
-      success: <b>Password updated successfully!</b>,
-      error: <b>Failed to update password. Please try again.</b>,
-    });
+    if (!email || !resetToken) {
+      const missingField = !email ? "Email" : "Reset token";
+      toast.error(`${missingField} is required`);
+      return;
+    }
+
+    const response = await requestResetPassword(
+      email,
+      resetToken,
+      data.password,
+    );
+
+    if (response?.success) {
+      router.push("/auth/login");
+    }
   };
 
   return (
@@ -124,8 +123,8 @@ export function ResetPasswordForm() {
           </div>
 
           <div className="pt-2">
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? (
+            <Button type="submit" className="w-full" disabled={isSubmitting}>
+              {isSubmitting ? (
                 <span className="flex items-center gap-2">
                   <span className="h-4 w-4 animate-spin rounded-full border-2 border-r-transparent"></span>
                   Updating password...
