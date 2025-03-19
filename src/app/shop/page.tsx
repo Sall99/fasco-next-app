@@ -12,6 +12,13 @@ import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 
+export type ProductSize = "sm" | "md";
+interface ProductListProps {
+  products: ProductType[];
+  title?: string;
+  size?: ProductSize;
+}
+
 const ProductSkeleton = () => (
   <div className="group relative m-auto w-[386px] overflow-hidden rounded-lg bg-white p-4">
     <Skeleton className="h-[444px] w-full rounded-md" />
@@ -288,11 +295,11 @@ const FilterContent = () => {
   );
 };
 
-interface ProductListProps {
-  products: ProductType[];
-}
-
-const ProductList = ({ products }: ProductListProps) => {
+export function ProductList({
+  products,
+  title = "All Products",
+  size = "md",
+}: ProductListProps) {
   const [display, setDisplay] = useState("grid");
 
   return (
@@ -303,48 +310,61 @@ const ProductList = ({ products }: ProductListProps) => {
       transition={{ duration: 0.5 }}
     >
       <div className="mb-6 flex items-center justify-between">
-        <Typography variant="h6">All Products</Typography>
-        <div className="flex gap-2">
-          <motion.button
-            className="rounded p-2 hover:bg-gray-100"
-            onClick={() => setDisplay("grid")}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <svg
-              className="h-5 w-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
+        <Typography variant="h6">{title}</Typography>
+        <div className="flex items-center gap-4">
+          <div className="text-sm text-gray-500">
+            {products.length} products
+          </div>
+          <div className="flex gap-2">
+            <motion.button
+              className={clsx(
+                "rounded p-2 hover:bg-gray-100",
+                display === "grid" && "bg-gray-100",
+              )}
+              onClick={() => setDisplay("grid")}
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+              aria-label="Grid view"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M3 3h7v7H3V3zm0 11h7v7H3v-7zm11 0h7v7h-7v-7zm0-11h7v7h-7V3z"
-              />
-            </svg>
-          </motion.button>
-          <motion.button
-            className="rounded p-2 hover:bg-gray-100"
-            onClick={() => setDisplay("list")}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <svg
-              className="h-5 w-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
+              <svg
+                className="h-5 w-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M3 3h7v7H3V3zm0 11h7v7H3v-7zm11 0h7v7h-7v-7zm0-11h7v7h-7V3z"
+                />
+              </svg>
+            </motion.button>
+            <motion.button
+              className={clsx(
+                "rounded p-2 hover:bg-gray-100",
+                display === "list" && "bg-gray-100",
+              )}
+              onClick={() => setDisplay("list")}
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+              aria-label="List view"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M4 6h16M4 12h16M4 18h16"
-              />
-            </svg>
-          </motion.button>
+              <svg
+                className="h-5 w-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 6h16M4 12h16M4 18h16"
+                />
+              </svg>
+            </motion.button>
+          </div>
         </div>
       </div>
 
@@ -353,8 +373,12 @@ const ProductList = ({ products }: ProductListProps) => {
           key={display}
           className={clsx(
             display === "grid" &&
-              "grid grid-cols-1 justify-center gap-6 md:grid-cols-2",
-            display === "list" && "flex flex-col gap-6",
+              size === "md" &&
+              "grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3",
+            display === "grid" &&
+              size === "sm" &&
+              "grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5",
+            display === "list" && "flex flex-col gap-4",
           )}
           variants={containerVariants}
           initial="hidden"
@@ -364,13 +388,15 @@ const ProductList = ({ products }: ProductListProps) => {
           {products.map((product: ProductType) => (
             <motion.li
               key={product.id}
-              className="flex justify-center"
               variants={itemVariants}
-              whileHover={{ scale: 1.02 }}
-              transition={{ duration: 0.2 }}
+              className={clsx(display === "list" && "w-full")}
             >
-              <Link href={`/product/details/${product.id}`}>
-                <Product product={product} />
+              <Link href={`/product/details/${product.id}`} className="block">
+                <Product
+                  product={product}
+                  size={size}
+                  className={display === "list" ? "flex max-w-none gap-4" : ""}
+                />
               </Link>
             </motion.li>
           ))}
@@ -378,7 +404,7 @@ const ProductList = ({ products }: ProductListProps) => {
       </AnimatePresence>
     </motion.div>
   );
-};
+}
 
 const Navigation = () => {
   return (
