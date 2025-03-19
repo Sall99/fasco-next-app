@@ -295,7 +295,7 @@ const FilterContent = () => {
   );
 };
 
-export function ProductList({
+function ProductList({
   products,
   title = "All Products",
   size = "md",
