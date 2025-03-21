@@ -1,13 +1,23 @@
 "use client";
 
 import Image from "next/image";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ProductType } from "@/types";
 import { Typography } from "@/components";
 import { StarRating } from "../star-rating";
 import { formatReviewCount } from "@/utils";
 import clsx from "clsx";
+import { useDispatch, useSelector } from "react-redux";
+import { addToCart } from "@/store/slices/cart";
+import {
+  addToWishlist,
+  removeFromWishlist,
+  selectWishlistItems,
+} from "@/store/slices/wishlist";
+import { toast } from "sonner";
+import { Heart } from "lucide-react";
+import Link from "next/link";
 
 export type ProductSize = "sm" | "md";
 
@@ -19,10 +29,50 @@ interface ProductProps {
 
 export function Product({ product, size = "md", className }: ProductProps) {
   const [isHovered, setIsHovered] = useState(false);
-
+  const [isInWishlist, setIsInWishlist] = useState(false);
+  const dispatch = useDispatch();
   const primaryImage = product.images[0];
   const hoverImage =
     product.images.length > 1 ? product.images[1] : primaryImage;
+  const productId = product.id;
+  const wishlistItems = useSelector(selectWishlistItems);
+
+  useEffect(() => {
+    const inWishlist = wishlistItems.some(
+      (item) => item.productId === productId,
+    );
+    setIsInWishlist(inWishlist);
+  }, [wishlistItems, productId]);
+
+  const handleAddToCart = () => {
+    dispatch(
+      addToCart({
+        productId,
+        name: product.name,
+        price: product.price,
+        quantity: 1,
+        image: product.images[0],
+      }),
+    );
+    toast.success("Added to cart");
+  };
+
+  const toggleWishlist = () => {
+    if (isInWishlist) {
+      dispatch(removeFromWishlist(productId));
+      toast.success("Removed from wishlist");
+    } else {
+      const productData = {
+        productId,
+        name: product.name,
+        price: product.price,
+        image: product.images[0],
+        addedAt: Date.now(),
+      };
+      dispatch(addToWishlist(productData));
+      toast.success("Added to wishlist");
+    }
+  };
 
   return (
     <div
@@ -46,20 +96,16 @@ export function Product({ product, size = "md", className }: ProductProps) {
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.95 }}
           aria-label="Add to wishlist"
+          onClick={toggleWishlist}
         >
-          <svg
-            className="h-4 w-4 text-gray-700"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-            />
-          </svg>
+          <Heart
+            size={20}
+            className={
+              isInWishlist
+                ? "fill-red-500 text-red-500"
+                : "text-gray-500 hover:text-red-500"
+            }
+          />
         </motion.button>
         <motion.button
           className="rounded-full bg-white p-2 shadow-md"
@@ -104,22 +150,23 @@ export function Product({ product, size = "md", className }: ProductProps) {
             transition={{ duration: 0.2 }}
             className="absolute inset-0"
           >
-            <Image
-              src={isHovered ? hoverImage : primaryImage}
-              alt={product.name}
-              fill
-              sizes={
-                size === "sm"
-                  ? "(max-width: 768px) 100vw, 33vw"
-                  : "(max-width: 768px) 100vw, 50vw"
-              }
-              className="object-cover object-top hover:cursor-pointer"
-              priority={size === "md"}
-            />
+            <Link href={`/product/details/${product.id}`}>
+              <Image
+                src={isHovered ? hoverImage : primaryImage}
+                alt={product.name}
+                fill
+                sizes={
+                  size === "sm"
+                    ? "(max-width: 768px) 100vw, 33vw"
+                    : "(max-width: 768px) 100vw, 50vw"
+                }
+                className="object-cover object-top hover:cursor-pointer"
+                priority={size === "md"}
+              />
+            </Link>
           </motion.div>
         </AnimatePresence>
 
-        {/* Add to cart button overlay */}
         <div
           className={clsx(
             "absolute inset-x-0 bottom-0 translate-y-full opacity-0 transition-all duration-300",
@@ -130,13 +177,13 @@ export function Product({ product, size = "md", className }: ProductProps) {
             className="flex w-full items-center justify-center bg-black py-2 text-sm font-medium text-white"
             whileHover={{ backgroundColor: "#333" }}
             whileTap={{ scale: 0.98 }}
+            onClick={handleAddToCart}
           >
             Add to Cart
           </motion.button>
         </div>
       </div>
 
-      {/* Product info with fixed height */}
       <div
         className={clsx(
           "mt-3 flex flex-col justify-between",
@@ -159,7 +206,6 @@ export function Product({ product, size = "md", className }: ProductProps) {
         </div>
 
         <div className="flex flex-col gap-1">
-          {/* Rating area with consistent height */}
           <div className="h-6">
             {product.rating ? (
               <div className="flex items-center gap-2">
