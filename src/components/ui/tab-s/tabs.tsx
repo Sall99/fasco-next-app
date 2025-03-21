@@ -3,7 +3,6 @@
 import { ProductType } from "@/types";
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@headlessui/react";
 import { Product } from "../product";
-import Link from "next/link";
 import { motion } from "framer-motion";
 
 interface TabsProps {
@@ -70,12 +69,7 @@ export function Tabs({ categories, size = "md" }: TabsProps) {
                       whileHover={{ scale: 1.02 }}
                       transition={{ duration: 0.2 }}
                     >
-                      <Link
-                        href={`/product/details/${product.id}`}
-                        className="block w-full"
-                      >
-                        <Product product={product} size={size} />
-                      </Link>
+                      <Product product={product} size={size} />
                     </motion.li>
                   ))}
                 </motion.ul>
