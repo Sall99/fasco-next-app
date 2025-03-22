@@ -18,6 +18,7 @@ import {
 import { toast } from "sonner";
 import { Heart } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export type ProductSize = "sm" | "md";
 
@@ -36,6 +37,7 @@ export function Product({ product, size = "md", className }: ProductProps) {
     product.images.length > 1 ? product.images[1] : primaryImage;
   const productId = product.id;
   const wishlistItems = useSelector(selectWishlistItems);
+  const router = useRouter();
 
   useEffect(() => {
     const inWishlist = wishlistItems.some(
@@ -112,6 +114,7 @@ export function Product({ product, size = "md", className }: ProductProps) {
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.95 }}
           aria-label="Quick view"
+          onClick={() => router.push(`/product/details/${product.id}`)}
         >
           <svg
             className="h-4 w-4 text-gray-700"

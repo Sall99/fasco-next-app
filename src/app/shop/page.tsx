@@ -1,91 +1,101 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
-import Link from "next/link";
-import { Product, Skeleton, Typography } from "@/components";
-import { ChevronRight, X } from "lucide-react";
 import { useProducts } from "@/actions";
-import { ProductType } from "@/types";
-import clsx from "clsx";
 import { motion, AnimatePresence } from "framer-motion";
-import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+  SheetFooter,
+  SheetClose,
+} from "@/components/ui/sheet";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
+import { Button } from "@/components/ui/button";
+import { LayoutGrid, List, ChevronRight, Filter, Star } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Slider } from "@/components/ui/slider";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { cn } from "@/lib/utils";
+import { ProductType } from "@/types";
+import { Product } from "@/components";
 
-type ProductSize = "sm" | "md";
-interface ProductListProps {
-  products: ProductType[];
-  title?: string;
-  size?: ProductSize;
-}
-
-const ProductSkeleton = () => (
-  <div className="group relative m-auto w-[386px] overflow-hidden rounded-lg bg-white p-4">
-    <Skeleton className="h-[444px] w-full rounded-md" />
-    <div className="mt-3 flex items-center justify-between">
-      <Skeleton className="h-6 w-48" />
-      <Skeleton className="h-4 w-24" />
+const ProductSkeleton = ({ size = "md" }) => (
+  <Card className="h-full border-none shadow-sm">
+    <div className="relative">
+      <Skeleton className="aspect-square w-full rounded-t-lg" />
     </div>
-    <Skeleton className="mt-2 h-4 w-32" />
-    <Skeleton className="mt-5 h-4 w-40" />
-    <div className="mt-5 flex items-center justify-between">
-      <Skeleton className="h-6 w-24" />
-      <Skeleton className="h-4 w-28" />
-    </div>
-  </div>
-);
-
-const FiltersSkeleton = () => (
-  <div className="space-y-6">
-    {["Prices", "Categories", "Brands"].map((section) => (
-      <div key={section} className="mb-6">
-        <Skeleton className="mb-4 h-6 w-32" />
-        <div className="space-y-3">
-          {[1, 2, 3, 4].map((item) => (
-            <Skeleton key={item} className="h-8 w-full" />
-          ))}
-        </div>
+    <CardContent className="p-4">
+      <div className="flex items-center justify-between">
+        <Skeleton className="h-5 w-20 rounded" />
+        <Skeleton className="h-4 w-10 rounded" />
       </div>
-    ))}
-  </div>
+      <Skeleton className="mt-2 h-6 w-full rounded" />
+      <div className="mt-2 flex items-baseline gap-2">
+        <Skeleton className="h-6 w-16 rounded" />
+        <Skeleton className="h-4 w-12 rounded" />
+      </div>
+      {size === "md" && <Skeleton className="mt-2 h-10 w-full rounded" />}
+    </CardContent>
+  </Card>
 );
+
 const LoadingProductList = () => (
-  <motion.div
-    className="w-full"
-    variants={containerVariants}
-    initial="hidden"
-    animate="visible"
-  >
+  <motion.div className="w-full">
     <div className="mb-6 flex items-center justify-between">
       <Skeleton className="h-8 w-32" />
       <div className="flex gap-2">
+        <Skeleton className="h-10 w-32 rounded" />
         <Skeleton className="h-10 w-10 rounded" />
         <Skeleton className="h-10 w-10 rounded" />
       </div>
     </div>
 
-    <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-      {[1, 2, 3, 4].map((item) => (
-        <motion.div
-          key={item}
-          variants={itemVariants}
-          className="flex justify-center"
-        >
-          <ProductSkeleton />
-        </motion.div>
-      ))}
+    <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      {Array(8)
+        .fill(0)
+        .map((_, index) => (
+          <ProductSkeleton key={index} />
+        ))}
     </div>
   </motion.div>
-);
-
-const LoadingNavigation = () => (
-  <div className="mb-8 py-4">
-    <div className="flex items-center justify-center gap-2">
-      <Skeleton className="h-4 w-16" />
-      <Skeleton className="h-4 w-4" />
-      <Skeleton className="h-4 w-16" />
-    </div>
-  </div>
 );
 
 const containerVariants = {
@@ -106,192 +116,259 @@ const itemVariants = {
   },
 };
 
-const MobileFilters = () => {
-  const [isOpen, setIsOpen] = useState(false);
-
-  const drawerVariants = {
-    closed: {
-      x: "100%",
-      transition: {
-        type: "spring",
-        stiffness: 400,
-        damping: 40,
-      },
-    },
-    open: {
-      x: 0,
-      transition: {
-        type: "spring",
-        stiffness: 400,
-        damping: 40,
-      },
-    },
-  };
+const PriceRangeFilter = () => {
+  const [range, setRange] = useState([0, 1000]);
 
   return (
-    <>
-      <div className="fixed bottom-4 left-4 right-4 z-50 lg:hidden">
-        <button
-          onClick={() => setIsOpen(true)}
-          className="w-full rounded-lg bg-black p-4 text-white shadow-lg"
-        >
-          Open Filters
-        </button>
+    <div className="space-y-3">
+      <div className="mb-4">
+        <Slider
+          defaultValue={[0, 1000]}
+          max={1000}
+          step={10}
+          value={range}
+          onValueChange={setRange}
+          className="py-4"
+        />
       </div>
-
-      <div className="hidden lg:block lg:w-1/4">
-        <FilterContent />
+      <div className="flex items-center justify-between">
+        <span className="text-sm font-medium">${range[0]}</span>
+        <span className="text-sm font-medium">${range[1]}</span>
       </div>
-
-      <AnimatePresence>
-        {isOpen && (
-          <>
-            <motion.div
-              className="fixed inset-0 z-50 bg-black bg-opacity-50"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setIsOpen(false)}
-            />
-
-            <motion.div
-              className="fixed bottom-0 left-0 right-0 z-50 h-[90vh] rounded-t-3xl bg-white p-6"
-              variants={drawerVariants}
-              initial="closed"
-              animate="open"
-              exit="closed"
-            >
-              <div className="flex items-center justify-between pb-4">
-                <h2 className="text-xl font-bold">Filters</h2>
-                <button
-                  onClick={() => setIsOpen(false)}
-                  className="rounded-full p-2 hover:bg-gray-100"
-                >
-                  <X className="h-6 w-6" />
-                </button>
-              </div>
-
-              <div className="h-full overflow-y-auto pb-20">
-                <FilterContent />
-              </div>
-
-              <div className="absolute bottom-0 left-0 right-0 border-t bg-white p-4">
-                <button
-                  onClick={() => setIsOpen(false)}
-                  className="w-full rounded-lg bg-black p-4 text-white"
-                >
-                  Apply Filters
-                </button>
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
-    </>
+    </div>
   );
 };
 
-const FilterContent = () => {
-  const priceRanges = ["$0 - $50", "$50 - $100", "$100 - $200", "$200+"];
-  const categories = ["Electronics", "Clothing", "Books", "Home & Garden"];
-  const brands = ["Apple", "Samsung", "Nike", "Adidas"];
+const FilterSidebar = () => {
+  const categories = [
+    { id: "women's-fashion", label: "Women's Fashion" },
+    { id: "men's-fashion", label: "Men's Fashion" },
+    { id: "women-accessories", label: "Women Accessories" },
+    { id: "men-accessories", label: "Men Accessories" },
+  ];
+
+  const brands = [
+    { id: "Al Karam", label: "Al Karam" },
+    { id: "Adidas", label: "Adidas" },
+    { id: "Dokotoo", label: "Dokotoo" },
+    { id: "Exlura", label: "Exlura" },
+    { id: "Donna Karan", label: "Donna Karan" },
+  ];
+
+  const ratings = [5, 4, 3, 2, 1];
 
   return (
-    <div className="w-64 bg-white">
-      <CardHeader className="pb-3">
-        <CardTitle className="text-xl font-semibold text-primary">
-          Filters
-        </CardTitle>
+    <Card className="sticky top-24 h-fit">
+      <CardHeader className="pb-2">
+        <CardTitle className="text-xl">Filters</CardTitle>
       </CardHeader>
-      <CardContent className="space-y-6">
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
+
+      <CardContent className="space-y-4">
+        <Accordion
+          type="multiple"
+          defaultValue={["price", "categories", "brands", "ratings"]}
         >
-          <h3 className="mb-3 font-poppins text-sm font-medium text-gray-700">
-            Price Range
-          </h3>
-          <div className="space-y-3">
-            {priceRanges.map((range) => (
-              <motion.div
-                key={range}
-                className="flex items-center space-x-2"
-                variants={itemVariants}
-              >
-                <Checkbox
-                  id={`price-${range}`}
-                  className="data-[state=checked]:bg-primary"
-                />
-                <label
-                  htmlFor={`price-${range}`}
-                  className="font-poppins text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                >
-                  {range}
-                </label>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
+          <AccordionItem value="price">
+            <AccordionTrigger>Price Range</AccordionTrigger>
+            <AccordionContent>
+              <PriceRangeFilter />
+            </AccordionContent>
+          </AccordionItem>
 
-        <Separator className="my-4" />
+          <AccordionItem value="categories">
+            <AccordionTrigger>Categories</AccordionTrigger>
+            <AccordionContent>
+              <div className="space-y-2">
+                {categories.map((category) => (
+                  <div
+                    key={category.id}
+                    className="flex items-center space-x-2"
+                  >
+                    <Checkbox id={`category-${category.id}`} />
+                    <label
+                      htmlFor={`category-${category.id}`}
+                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    >
+                      {category.label}
+                    </label>
+                  </div>
+                ))}
+              </div>
+            </AccordionContent>
+          </AccordionItem>
 
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-        >
-          <h3 className="mb-3 font-poppins text-sm font-medium text-gray-700">
-            Categories
-          </h3>
-          <div className="flex flex-wrap gap-2">
-            {categories.map((category) => (
-              <motion.div
-                key={category}
-                variants={itemVariants}
-                whileHover={{ scale: 1.05 }}
-                className="transition-all"
-              >
-                <Badge
-                  variant="outline"
-                  className="cursor-pointer hover:bg-primary/10 hover:text-primary"
-                >
-                  <span className="font-poppins font-semibold text-gray-700">
-                    {category}
-                  </span>
-                </Badge>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
+          <AccordionItem value="brands">
+            <AccordionTrigger>Brands</AccordionTrigger>
+            <AccordionContent>
+              <div className="flex flex-wrap gap-2">
+                {brands.map((brand) => (
+                  <Badge
+                    key={brand.id}
+                    variant="outline"
+                    className="cursor-pointer hover:bg-primary/10 hover:text-primary"
+                  >
+                    {brand.label}
+                  </Badge>
+                ))}
+              </div>
+            </AccordionContent>
+          </AccordionItem>
 
-        <Separator className="my-4" />
-
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-        >
-          <h3 className="mb-3 font-poppins text-sm font-medium text-gray-700">
-            Brands
-          </h3>
-          <div className="flex flex-wrap gap-2">
-            {brands.map((brand) => (
-              <motion.div
-                key={brand}
-                variants={itemVariants}
-                whileHover={{ scale: 1.05 }}
-                className="transition-all"
-              >
-                <Badge className="cursor-pointer bg-gray-500 hover:bg-primary">
-                  {brand}
-                </Badge>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
+          <AccordionItem value="ratings">
+            <AccordionTrigger>Ratings</AccordionTrigger>
+            <AccordionContent>
+              <div className="space-y-2">
+                {ratings.map((rating) => (
+                  <div key={rating} className="flex items-center space-x-2">
+                    <Checkbox id={`rating-${rating}`} />
+                    <label
+                      htmlFor={`rating-${rating}`}
+                      className="flex items-center text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    >
+                      {Array(rating)
+                        .fill(0)
+                        .map((_, i) => (
+                          <Star
+                            key={i}
+                            className="h-4 w-4 fill-amber-500 text-amber-500"
+                          />
+                        ))}
+                      {Array(5 - rating)
+                        .fill(0)
+                        .map((_, i) => (
+                          <Star key={i} className="h-4 w-4 text-gray-300" />
+                        ))}
+                    </label>
+                  </div>
+                ))}
+              </div>
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
       </CardContent>
-    </div>
+
+      <CardFooter className="flex-col gap-2">
+        <Button className="w-full">Apply Filters</Button>
+        <Button variant="outline" className="w-full">
+          Reset
+        </Button>
+      </CardFooter>
+    </Card>
+  );
+};
+
+const MobileFilters = () => {
+  return (
+    <Sheet>
+      <SheetTrigger asChild>
+        <Button variant="outline" size="sm" className="lg:hidden">
+          <Filter className="mr-2 h-4 w-4" />
+          Filters
+        </Button>
+      </SheetTrigger>
+      <SheetContent side="left" className="w-[300px] sm:w-[400px]">
+        <SheetHeader>
+          <SheetTitle>Filters</SheetTitle>
+          <SheetDescription>
+            Narrow down products to find exactly what you&apos;re looking for.
+          </SheetDescription>
+        </SheetHeader>
+        <div className="mt-6 h-[calc(100vh-180px)] overflow-y-auto pr-4">
+          <Accordion
+            type="multiple"
+            defaultValue={["price", "categories", "brands", "ratings"]}
+          >
+            <AccordionItem value="price">
+              <AccordionTrigger>Price Range</AccordionTrigger>
+              <AccordionContent>
+                <PriceRangeFilter />
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem value="categories">
+              <AccordionTrigger>Categories</AccordionTrigger>
+              <AccordionContent>
+                <div className="space-y-2">
+                  {[
+                    "Electronics",
+                    "Clothing",
+                    "Home & Garden",
+                    "Beauty",
+                    "Sports",
+                    "Toys",
+                  ].map((category) => (
+                    <div key={category} className="flex items-center space-x-2">
+                      <Checkbox id={`mobile-category-${category}`} />
+                      <label
+                        htmlFor={`mobile-category-${category}`}
+                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                      >
+                        {category}
+                      </label>
+                    </div>
+                  ))}
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem value="brands">
+              <AccordionTrigger>Brands</AccordionTrigger>
+              <AccordionContent>
+                <div className="flex flex-wrap gap-2">
+                  {["Apple", "Samsung", "Nike", "Adidas", "Sony"].map(
+                    (brand) => (
+                      <Badge
+                        key={brand}
+                        variant="outline"
+                        className="cursor-pointer hover:bg-primary/10 hover:text-primary"
+                      >
+                        {brand}
+                      </Badge>
+                    ),
+                  )}
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem value="ratings">
+              <AccordionTrigger>Ratings</AccordionTrigger>
+              <AccordionContent>
+                <div className="space-y-2">
+                  {[5, 4, 3, 2, 1].map((rating) => (
+                    <div key={rating} className="flex items-center space-x-2">
+                      <Checkbox id={`mobile-rating-${rating}`} />
+                      <label
+                        htmlFor={`mobile-rating-${rating}`}
+                        className="flex items-center text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                      >
+                        {Array(rating)
+                          .fill(0)
+                          .map((_, i) => (
+                            <Star
+                              key={i}
+                              className="h-4 w-4 fill-amber-500 text-amber-500"
+                            />
+                          ))}
+                        {Array(5 - rating)
+                          .fill(0)
+                          .map((_, i) => (
+                            <Star key={i} className="h-4 w-4 text-gray-300" />
+                          ))}
+                      </label>
+                    </div>
+                  ))}
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+        </div>
+        <SheetFooter className="mt-4">
+          <SheetClose asChild>
+            <Button className="w-full">Apply Filters</Button>
+          </SheetClose>
+        </SheetFooter>
+      </SheetContent>
+    </Sheet>
   );
 };
 
@@ -299,85 +376,77 @@ function ProductList({
   products,
   title = "All Products",
   size = "md",
-}: ProductListProps) {
+}: {
+  products: ProductType[];
+  title?: string;
+  size?: "md" | "sm";
+}) {
   const [display, setDisplay] = useState("grid");
+  const [sortBy, setSortBy] = useState("featured");
 
   return (
     <motion.div
       className="w-full"
-      initial={{ x: 50, opacity: 0 }}
+      initial={{ x: 20, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
-      transition={{ duration: 0.5 }}
+      transition={{ duration: 0.3 }}
     >
-      <div className="mb-6 flex items-center justify-between">
-        <Typography variant="h6">{title}</Typography>
-        <div className="flex items-center gap-4">
-          <div className="text-sm text-gray-500">
-            {products.length} products
-          </div>
-          <div className="flex gap-2">
-            <motion.button
-              className={clsx(
-                "rounded p-2 hover:bg-gray-100",
-                display === "grid" && "bg-gray-100",
-              )}
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <h2 className="text-xl font-bold">{title}</h2>
+          <Badge variant="outline">{products.length} products</Badge>
+        </div>
+
+        <div className="flex items-center gap-3">
+          <MobileFilters />
+
+          <Select value={sortBy} onValueChange={setSortBy}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Sort by" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="featured">Featured</SelectItem>
+              <SelectItem value="price-asc">Price: Low to High</SelectItem>
+              <SelectItem value="price-desc">Price: High to Low</SelectItem>
+              <SelectItem value="newest">Newest Arrivals</SelectItem>
+              <SelectItem value="rating">Top Rated</SelectItem>
+            </SelectContent>
+          </Select>
+
+          <div className="hidden items-center rounded-md border p-1 md:flex">
+            <Button
+              variant={display === "grid" ? "default" : "ghost"}
+              size="sm"
+              className="h-8 w-8 p-0"
               onClick={() => setDisplay("grid")}
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
               aria-label="Grid view"
             >
-              <svg
-                className="h-5 w-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M3 3h7v7H3V3zm0 11h7v7H3v-7zm11 0h7v7h-7v-7zm0-11h7v7h-7V3z"
-                />
-              </svg>
-            </motion.button>
-            <motion.button
-              className={clsx(
-                "rounded p-2 hover:bg-gray-100",
-                display === "list" && "bg-gray-100",
-              )}
+              <LayoutGrid className="h-4 w-4" />
+            </Button>
+            <Button
+              variant={display === "list" ? "default" : "ghost"}
+              size="sm"
+              className="h-8 w-8 p-0"
               onClick={() => setDisplay("list")}
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
               aria-label="List view"
             >
-              <svg
-                className="h-5 w-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M4 6h16M4 12h16M4 18h16"
-                />
-              </svg>
-            </motion.button>
+              <List className="h-4 w-4" />
+            </Button>
           </div>
         </div>
       </div>
 
       <AnimatePresence mode="wait">
-        <motion.ul
+        <motion.div
           key={display}
-          className={clsx(
+          className={cn(
+            display === "grid" && "grid gap-6",
             display === "grid" &&
               size === "md" &&
-              "grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3",
+              "grid-cols-1 lg:grid-cols-2 xl:grid-cols-3",
             display === "grid" &&
               size === "sm" &&
-              "grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5",
+              "grid-cols-1 lg:grid-cols-2 xl:grid-cols-3",
             display === "list" && "flex flex-col gap-4",
           )}
           variants={containerVariants}
@@ -385,53 +454,66 @@ function ProductList({
           animate="visible"
           exit={{ opacity: 0 }}
         >
-          {products.map((product: ProductType) => (
-            <motion.li
+          {products.map((product) => (
+            <motion.div
               key={product.id}
               variants={itemVariants}
-              className={clsx(display === "list" && "w-full")}
+              className={cn(display === "list" && "w-full")}
             >
-              <Link href={`/product/details/${product.id}`} className="block">
-                <Product
-                  product={product}
-                  size={size}
-                  className={display === "list" ? "flex max-w-none gap-4" : ""}
-                />
-              </Link>
-            </motion.li>
+              <Product
+                product={product}
+                size={size}
+                className={display === "list" ? "flex max-w-none gap-4" : ""}
+              />
+            </motion.div>
           ))}
-        </motion.ul>
+        </motion.div>
       </AnimatePresence>
+
+      {products.length === 0 && (
+        <div className="flex h-60 flex-col items-center justify-center rounded-lg border border-dashed p-8 text-center">
+          <div className="text-3xl">😢</div>
+          <h3 className="mt-2 text-lg font-medium">No products found</h3>
+          <p className="mt-1 text-sm text-gray-500">
+            Try adjusting your filters or search terms
+          </p>
+          <Button variant="outline" className="mt-4">
+            Reset Filters
+          </Button>
+        </div>
+      )}
     </motion.div>
   );
 }
 
 const Navigation = () => {
   return (
-    <motion.nav
-      className="mb-8 py-4"
-      initial={{ y: -20, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.5 }}
-    >
-      <div className="flex items-center justify-center gap-2 text-sm text-gray-500">
-        <Link href="/" className="hover:text-gray-700">
-          <Typography variant="p-12">Home</Typography>
-        </Link>
-        <span>
-          <ChevronRight />
-        </span>
-        <span className="text-gray-700">
-          <Typography variant="h6">Shop</Typography>
-        </span>
-      </div>
-    </motion.nav>
+    <div className="mb-8">
+      <Breadcrumb>
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink
+              href="/"
+              className="text-gray-500 hover:text-gray-900"
+            >
+              Home
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator>
+            <ChevronRight className="h-4 w-4" />
+          </BreadcrumbSeparator>
+          <BreadcrumbItem>
+            <span className="font-medium">Shop</span>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
+    </div>
   );
 };
 
 export default function ShopPage() {
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 26;
+  const itemsPerPage = 12;
   const prevPageRef = useRef(currentPage);
   const { products, isLoading, isError, total, isValidating } = useProducts(
     currentPage,
@@ -447,18 +529,18 @@ export default function ShopPage() {
 
   if (isLoading) {
     return (
-      <section className="container mx-auto mb-14 mt-10 min-h-screen px-4 lg:px-0">
-        <LoadingNavigation />
-        <div className="mb-20 flex flex-col gap-8 lg:flex-row">
-          <div className="hidden lg:block lg:w-1/4">
-            <FiltersSkeleton />
+      <section className="container mx-auto mb-14 mt-10 min-h-screen px-4 lg:px-6">
+        <Skeleton className="mb-8 h-10 w-64" />
+        <div className="mb-12 grid grid-cols-1 gap-8 lg:grid-cols-4">
+          <div className="hidden lg:block">
+            <Skeleton className="h-[600px] w-full rounded-lg" />
           </div>
-          <LoadingProductList />
+          <div className="lg:col-span-3">
+            <LoadingProductList />
+          </div>
         </div>
-        <div className="mt-8 flex items-center justify-center gap-4">
-          <Skeleton className="h-10 w-24 rounded" />
-          <Skeleton className="h-10 w-32 rounded" />
-          <Skeleton className="h-10 w-24 rounded" />
+        <div className="mt-8 flex items-center justify-center">
+          <Skeleton className="h-10 w-64 rounded-lg" />
         </div>
       </section>
     );
@@ -467,11 +549,20 @@ export default function ShopPage() {
   if (isError) {
     return (
       <motion.div
-        className="fixed inset-0 z-50 flex h-screen items-center justify-center bg-white"
+        className="container mx-auto flex h-96 flex-col items-center justify-center px-4 text-center"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
       >
-        <div className="text-red-600">Error loading products</div>
+        <div className="text-5xl">😕</div>
+        <h2 className="mt-4 text-2xl font-bold text-gray-800">
+          Something went wrong
+        </h2>
+        <p className="mt-2 text-gray-600">
+          We couldn&apos;t load the products. Please try again later.
+        </p>
+        <Button className="mt-6" onClick={() => window.location.reload()}>
+          Refresh Page
+        </Button>
       </motion.div>
     );
   }
@@ -479,40 +570,71 @@ export default function ShopPage() {
   const productsData = products;
   const totalPages = Math.ceil(total / itemsPerPage);
 
-  const handlePrevious = () => {
-    if (currentPage > 1) setCurrentPage((prev) => prev - 1);
-  };
-
-  const handleNext = () => {
-    if (currentPage < totalPages) setCurrentPage((prev) => prev + 1);
-  };
-
   return (
-    <section className="container mx-auto mb-14 mt-10 min-h-screen px-4 lg:px-0">
+    <section className="container mx-auto mb-14 mt-10 min-h-screen px-4 lg:px-6">
       <Navigation />
-      <div className="mb-20 flex flex-col gap-8 lg:flex-row">
-        <MobileFilters />
-        <div className="w-full">
+
+      <div className="mb-12 grid grid-cols-1 gap-8 lg:grid-cols-4">
+        <div className="hidden lg:block">
+          <FilterSidebar />
+        </div>
+
+        <div className="lg:col-span-3">
           <ProductList products={productsData} />
 
-          <div className="mt-8 flex items-center justify-center gap-4">
-            <button
-              onClick={handlePrevious}
-              disabled={currentPage === 1}
-              className="rounded bg-gray-200 px-2 py-2 disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              <Typography variant="p-12">Previous</Typography>
-            </button>
-            <Typography variant="p-12">
-              Page {currentPage} of {totalPages}
-            </Typography>
-            <button
-              onClick={handleNext}
-              disabled={currentPage >= totalPages}
-              className="rounded bg-gray-200 px-2 py-2 disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              <Typography variant="p-12">Next</Typography>
-            </button>
+          <div className="mt-8">
+            <Pagination>
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious
+                    onClick={() =>
+                      currentPage > 1 && setCurrentPage(currentPage - 1)
+                    }
+                    className={
+                      currentPage === 1 ? "pointer-events-none opacity-50" : ""
+                    }
+                  />
+                </PaginationItem>
+
+                {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
+                  let pageNum;
+                  if (totalPages <= 5) {
+                    pageNum = i + 1;
+                  } else if (currentPage <= 3) {
+                    pageNum = i + 1;
+                  } else if (currentPage >= totalPages - 2) {
+                    pageNum = totalPages - 4 + i;
+                  } else {
+                    pageNum = currentPage - 2 + i;
+                  }
+
+                  return (
+                    <PaginationItem key={pageNum}>
+                      <PaginationLink
+                        isActive={currentPage === pageNum}
+                        onClick={() => setCurrentPage(pageNum)}
+                      >
+                        {pageNum}
+                      </PaginationLink>
+                    </PaginationItem>
+                  );
+                })}
+
+                <PaginationItem>
+                  <PaginationNext
+                    onClick={() =>
+                      currentPage < totalPages &&
+                      setCurrentPage(currentPage + 1)
+                    }
+                    className={
+                      currentPage === totalPages
+                        ? "pointer-events-none opacity-50"
+                        : ""
+                    }
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
           </div>
         </div>
       </div>
