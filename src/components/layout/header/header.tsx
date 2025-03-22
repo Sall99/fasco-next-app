@@ -416,10 +416,9 @@ const DesktopNavigation = ({
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
       className="flex items-center gap-4"
+      onClick={toggleCart}
     >
-      <button onClick={toggleCart}>
-        <CartIcon itemCount={cartItems.length} />
-      </button>
+      <CartIcon itemCount={cartItems.length} />
     </motion.div>
   </div>
 );
@@ -436,13 +435,13 @@ const MobileNavigation = ({
   isMobileMenuOpen: boolean;
 }) => (
   <div className="flex items-center gap-4 lg:hidden">
-    <motion.button
+    <motion.div
       onClick={toggleCart}
       whileTap={{ scale: 0.9 }}
       className="relative z-50"
     >
       <CartIcon itemCount={cartItems.length} />
-    </motion.button>
+    </motion.div>
     <MenuToggleButton isOpen={isMobileMenuOpen} toggle={toggleMobileMenu} />
   </div>
 );
