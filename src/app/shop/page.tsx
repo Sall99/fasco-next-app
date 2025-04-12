@@ -56,6 +56,7 @@ import {
 import { cn } from "@/lib/utils";
 import { ProductType } from "@/types";
 import { Product } from "@/components";
+import { useRouter, useSearchParams } from "next/navigation";
 
 const ProductSkeleton = ({ size = "md" }) => (
   <Card className="h-full border-none shadow-sm">
@@ -131,7 +132,7 @@ const PriceRangeFilter = () => {
           className="py-4"
         />
       </div>
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between text-primary-600">
         <span className="text-sm font-medium">${range[0]}</span>
         <span className="text-sm font-medium">${range[1]}</span>
       </div>
@@ -187,7 +188,7 @@ const FilterSidebar = () => {
                     <Checkbox id={`category-${category.id}`} />
                     <label
                       htmlFor={`category-${category.id}`}
-                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                      className="text-sm font-medium leading-none text-primary-600 peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                     >
                       {category.label}
                     </label>
@@ -205,7 +206,7 @@ const FilterSidebar = () => {
                   <Badge
                     key={brand.id}
                     variant="outline"
-                    className="cursor-pointer hover:bg-primary/10 hover:text-primary"
+                    className="cursor-pointer text-primary-600 hover:bg-primary/10 hover:text-primary"
                   >
                     {brand.label}
                   </Badge>
@@ -376,10 +377,12 @@ function ProductList({
   products,
   title = "All Products",
   size = "md",
+  isLoading = false,
 }: {
   products: ProductType[];
   title?: string;
   size?: "md" | "sm";
+  isLoading?: boolean;
 }) {
   const [display, setDisplay] = useState("grid");
   const [sortBy, setSortBy] = useState("featured");
@@ -393,7 +396,7 @@ function ProductList({
     >
       <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <h2 className="text-xl font-bold">{title}</h2>
+          <h2 className="text-xl font-bold text-primary-600">{title}</h2>
           <Badge variant="outline">{products.length} products</Badge>
         </div>
 
@@ -436,41 +439,51 @@ function ProductList({
         </div>
       </div>
 
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={display}
-          className={cn(
-            display === "grid" && "grid gap-6",
-            display === "grid" &&
-              size === "md" &&
-              "grid-cols-1 lg:grid-cols-2 xl:grid-cols-3",
-            display === "grid" &&
-              size === "sm" &&
-              "grid-cols-1 lg:grid-cols-2 xl:grid-cols-3",
-            display === "list" && "flex flex-col gap-4",
-          )}
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-          exit={{ opacity: 0 }}
-        >
-          {products.map((product) => (
-            <motion.div
-              key={product.id}
-              variants={itemVariants}
-              className={cn(display === "list" && "w-full")}
-            >
-              <Product
-                product={product}
-                size={size}
-                className={display === "list" ? "flex max-w-none gap-4" : ""}
-              />
-            </motion.div>
-          ))}
-        </motion.div>
-      </AnimatePresence>
+      {isLoading ? (
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {Array(8)
+            .fill(0)
+            .map((_, index) => (
+              <ProductSkeleton key={index} />
+            ))}
+        </div>
+      ) : (
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={display}
+            className={cn(
+              display === "grid" && "grid gap-6",
+              display === "grid" &&
+                size === "md" &&
+                "grid-cols-1 lg:grid-cols-2 xl:grid-cols-3",
+              display === "grid" &&
+                size === "sm" &&
+                "grid-cols-1 lg:grid-cols-2 xl:grid-cols-3",
+              display === "list" && "flex flex-col gap-4",
+            )}
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+            exit={{ opacity: 0 }}
+          >
+            {products.map((product) => (
+              <motion.div
+                key={product.id}
+                variants={itemVariants}
+                className={cn(display === "list" && "w-full")}
+              >
+                <Product
+                  product={product}
+                  size={size}
+                  className={display === "list" ? "flex max-w-none gap-4" : ""}
+                />
+              </motion.div>
+            ))}
+          </motion.div>
+        </AnimatePresence>
+      )}
 
-      {products.length === 0 && (
+      {!isLoading && products.length === 0 && (
         <div className="flex h-60 flex-col items-center justify-center rounded-lg border border-dashed p-8 text-center">
           <div className="text-3xl">😢</div>
           <h3 className="mt-2 text-lg font-medium">No products found</h3>
@@ -512,13 +525,48 @@ const Navigation = () => {
 };
 
 export default function ShopPage() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useState(
+    searchParams.get("query") || "",
+  );
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 1000]);
+  const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
+  const [sortBy, setSortBy] = useState("featured");
+
+  // Keep track of previous data to prevent UI flashing
+  const [cachedProducts, setCachedProducts] = useState<ProductType[]>([]);
+  const [initialLoadComplete, setInitialLoadComplete] = useState(false);
+
   const itemsPerPage = 12;
   const prevPageRef = useRef(currentPage);
-  const { products, isLoading, isError, total, isValidating } = useProducts(
-    currentPage,
-    itemsPerPage,
-  );
+
+  // Initialize query parameters
+  const queryParamsRef = useRef({
+    query: searchParams.get("query") || "",
+    page: currentPage,
+  });
+
+  // Use cached query parameters for data fetching to prevent loading state
+  // while typing, we'll only update these when form is submitted
+  const { products, isLoading, isError, total, isValidating } = useProducts({
+    page: currentPage,
+    limit: itemsPerPage,
+    query: queryParamsRef.current.query,
+    brand: selectedBrands,
+    priceRange:
+      priceRange[0] > 0 || priceRange[1] < 1000 ? priceRange : undefined,
+    sortBy,
+  });
+
+  // Save products to cache when they're loaded
+  useEffect(() => {
+    if (products && products.length > 0) {
+      setCachedProducts(products);
+      setInitialLoadComplete(true);
+    }
+  }, [products]);
 
   useEffect(() => {
     if (prevPageRef.current !== currentPage && !isValidating) {
@@ -527,7 +575,32 @@ export default function ShopPage() {
     }
   }, [isValidating, currentPage]);
 
-  if (isLoading) {
+  // Handle search input changes without triggering API calls
+  const handleSearchInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+  };
+
+  // Only update the query params when the form is submitted
+  const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    queryParamsRef.current.query = searchQuery;
+    router.push(`?query=${searchQuery}`);
+    setCurrentPage(1);
+  };
+
+  // Update local state when URL params change
+  useEffect(() => {
+    if (searchParams.get("query") !== null) {
+      const urlQuery = searchParams.get("query") || "";
+      setSearchQuery(urlQuery);
+      queryParamsRef.current.query = urlQuery;
+    }
+  }, [searchParams]);
+
+  // Only show full loading state on initial load
+  const showInitialLoading = isLoading && !initialLoadComplete;
+
+  if (showInitialLoading) {
     return (
       <section className="container mx-auto mb-14 mt-10 min-h-screen px-4 lg:px-6">
         <Skeleton className="mb-8 h-10 w-64" />
@@ -567,12 +640,30 @@ export default function ShopPage() {
     );
   }
 
-  const productsData = products;
+  // Use cached products if available, otherwise use the latest data
+  const productsToDisplay = initialLoadComplete
+    ? products || cachedProducts
+    : [];
   const totalPages = Math.ceil(total / itemsPerPage);
 
+  // Show loading state in product list only when page changes, not for typing
+  const showProductsLoading =
+    isValidating && !isLoading && currentPage !== prevPageRef.current;
+
   return (
-    <section className="container mx-auto mb-14 mt-10 min-h-screen px-4 lg:px-6">
+    <section className="container mx-auto mb-14 mt-10 min-h-screen px-4 lg:px-0">
       <Navigation />
+
+      <form onSubmit={handleSearch} className="mb-6 flex items-center gap-4">
+        <input
+          type="text"
+          value={searchQuery}
+          onChange={handleSearchInputChange}
+          placeholder="Search products..."
+          className="w-full rounded-md border px-4 py-2"
+        />
+        <Button type="submit">Search</Button>
+      </form>
 
       <div className="mb-12 grid grid-cols-1 gap-8 lg:grid-cols-4">
         <div className="hidden lg:block">
@@ -580,7 +671,10 @@ export default function ShopPage() {
         </div>
 
         <div className="lg:col-span-3">
-          <ProductList products={productsData} />
+          <ProductList
+            products={productsToDisplay}
+            isLoading={showProductsLoading}
+          />
 
           <div className="mt-8">
             <Pagination>
