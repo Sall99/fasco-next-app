@@ -535,21 +535,17 @@ export default function ShopPage() {
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
   const [sortBy, setSortBy] = useState("featured");
 
-  // Keep track of previous data to prevent UI flashing
   const [cachedProducts, setCachedProducts] = useState<ProductType[]>([]);
   const [initialLoadComplete, setInitialLoadComplete] = useState(false);
 
   const itemsPerPage = 12;
   const prevPageRef = useRef(currentPage);
 
-  // Initialize query parameters
   const queryParamsRef = useRef({
     query: searchParams.get("query") || "",
     page: currentPage,
   });
 
-  // Use cached query parameters for data fetching to prevent loading state
-  // while typing, we'll only update these when form is submitted
   const { products, isLoading, isError, total, isValidating } = useProducts({
     page: currentPage,
     limit: itemsPerPage,
@@ -560,7 +556,6 @@ export default function ShopPage() {
     sortBy,
   });
 
-  // Save products to cache when they're loaded
   useEffect(() => {
     if (products && products.length > 0) {
       setCachedProducts(products);
@@ -575,12 +570,10 @@ export default function ShopPage() {
     }
   }, [isValidating, currentPage]);
 
-  // Handle search input changes without triggering API calls
   const handleSearchInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
   };
 
-  // Only update the query params when the form is submitted
   const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     queryParamsRef.current.query = searchQuery;
@@ -588,7 +581,6 @@ export default function ShopPage() {
     setCurrentPage(1);
   };
 
-  // Update local state when URL params change
   useEffect(() => {
     if (searchParams.get("query") !== null) {
       const urlQuery = searchParams.get("query") || "";
@@ -597,7 +589,6 @@ export default function ShopPage() {
     }
   }, [searchParams]);
 
-  // Only show full loading state on initial load
   const showInitialLoading = isLoading && !initialLoadComplete;
 
   if (showInitialLoading) {
