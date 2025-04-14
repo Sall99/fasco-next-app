@@ -57,6 +57,7 @@ import { cn } from "@/lib/utils";
 import { ProductType } from "@/types";
 import { Product } from "@/components";
 import { useRouter, useSearchParams } from "next/navigation";
+import { Spinner } from "@/components/ui/spinner/spinner";
 
 const ProductSkeleton = ({ size = "md" }) => (
   <Card className="h-full border-none shadow-sm">
@@ -482,19 +483,6 @@ function ProductList({
           </motion.div>
         </AnimatePresence>
       )}
-
-      {!isLoading && products.length === 0 && (
-        <div className="flex h-60 flex-col items-center justify-center rounded-lg border border-dashed p-8 text-center">
-          <div className="text-3xl">😢</div>
-          <h3 className="mt-2 text-lg font-medium">No products found</h3>
-          <p className="mt-1 text-sm text-gray-500">
-            Try adjusting your filters or search terms
-          </p>
-          <Button variant="outline" className="mt-4">
-            Reset Filters
-          </Button>
-        </div>
-      )}
     </motion.div>
   );
 }
@@ -631,13 +619,11 @@ export default function ShopPage() {
     );
   }
 
-  // Use cached products if available, otherwise use the latest data
   const productsToDisplay = initialLoadComplete
     ? products || cachedProducts
     : [];
   const totalPages = Math.ceil(total / itemsPerPage);
 
-  // Show loading state in product list only when page changes, not for typing
   const showProductsLoading =
     isValidating && !isLoading && currentPage !== prevPageRef.current;
 
@@ -666,6 +652,23 @@ export default function ShopPage() {
             products={productsToDisplay}
             isLoading={showProductsLoading}
           />
+
+          {isLoading ? (
+            <div className="flex h-60 items-center justify-center">
+              <Spinner />
+            </div>
+          ) : products.length === 0 ? (
+            <div className="flex h-60 flex-col items-center justify-center rounded-lg border border-dashed p-8 text-center">
+              <div className="text-3xl">😢</div>
+              <h3 className="mt-2 text-lg font-medium">No products found</h3>
+              <p className="mt-1 text-sm text-gray-500">
+                Try adjusting your filters or search terms
+              </p>
+              <Button variant="outline" className="mt-4">
+                Reset Filters
+              </Button>
+            </div>
+          ) : null}
 
           <div className="mt-8">
             <Pagination>
