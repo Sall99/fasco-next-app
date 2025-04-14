@@ -19,7 +19,6 @@ import {
   SheetTitle,
   SheetTrigger,
   SheetFooter,
-  SheetClose,
 } from "@/components/ui/sheet";
 import {
   Select,
@@ -56,6 +55,23 @@ import {
 import { cn } from "@/lib/utils";
 import { ProductType } from "@/types";
 import { Product } from "@/components";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Spinner } from "@/components/ui/spinner/spinner";
+
+const categories = [
+  { id: "women's-fashion", label: "Women's Fashion" },
+  { id: "men's-fashion", label: "Men's Fashion" },
+  { id: "women-accessories", label: "Women Accessories" },
+  { id: "men-accessories", label: "Men Accessories" },
+];
+
+const brands = [
+  { id: "Al Karam", label: "Al Karam" },
+  { id: "Adidas", label: "Adidas" },
+  { id: "Dokotoo", label: "Dokotoo" },
+  { id: "Exlura", label: "Exlura" },
+  { id: "Donna Karan", label: "Donna Karan" },
+];
 
 const ProductSkeleton = ({ size = "md" }) => (
   <Card className="h-full border-none shadow-sm">
@@ -116,46 +132,93 @@ const itemVariants = {
   },
 };
 
-const PriceRangeFilter = () => {
-  const [range, setRange] = useState([0, 1000]);
-
-  return (
-    <div className="space-y-3">
-      <div className="mb-4">
-        <Slider
-          defaultValue={[0, 1000]}
-          max={1000}
-          step={10}
-          value={range}
-          onValueChange={setRange}
-          className="py-4"
-        />
-      </div>
-      <div className="flex items-center justify-between">
-        <span className="text-sm font-medium">${range[0]}</span>
-        <span className="text-sm font-medium">${range[1]}</span>
-      </div>
-    </div>
-  );
+type FilterOptions = {
+  priceRange?: [number, number];
+  categories?: string[];
+  brands?: string[];
+  ratings?: number[];
 };
 
-const FilterSidebar = () => {
-  const categories = [
-    { id: "women's-fashion", label: "Women's Fashion" },
-    { id: "men's-fashion", label: "Men's Fashion" },
-    { id: "women-accessories", label: "Women Accessories" },
-    { id: "men-accessories", label: "Men Accessories" },
-  ];
+const FilterSidebar = ({
+  onFilterChange,
+  initialFilters,
+}: {
+  onFilterChange: (filters: FilterOptions) => void;
+  initialFilters?: FilterOptions;
+}) => {
+  const [priceRange, setPriceRange] = useState<[number, number]>(
+    initialFilters?.priceRange || [0, 1000],
+  );
+  const [selectedCategories, setSelectedCategories] = useState<string[]>(
+    initialFilters?.categories || [],
+  );
+  const [selectedBrands, setSelectedBrands] = useState<string[]>(
+    initialFilters?.brands || [],
+  );
+  const [selectedRatings, setSelectedRatings] = useState<number[]>(
+    initialFilters?.ratings || [],
+  );
 
-  const brands = [
-    { id: "Al Karam", label: "Al Karam" },
-    { id: "Adidas", label: "Adidas" },
-    { id: "Dokotoo", label: "Dokotoo" },
-    { id: "Exlura", label: "Exlura" },
-    { id: "Donna Karan", label: "Donna Karan" },
-  ];
+  const handlePriceRangeChange = (value: [number, number]) => {
+    setPriceRange(value);
+    handleApplyFilters({
+      priceRange: value,
+      categories: selectedCategories,
+      brands: selectedBrands,
+      ratings: selectedRatings,
+    });
+  };
 
-  const ratings = [5, 4, 3, 2, 1];
+  const handleCategoryChange = (categoryId: string, checked: boolean) => {
+    const newCategories = checked
+      ? [...selectedCategories, categoryId]
+      : selectedCategories.filter((id) => id !== categoryId);
+    setSelectedCategories(newCategories);
+    handleApplyFilters({
+      priceRange,
+      categories: newCategories,
+      brands: selectedBrands,
+      ratings: selectedRatings,
+    });
+  };
+
+  const handleBrandChange = (brandId: string) => {
+    const newBrands = selectedBrands.includes(brandId)
+      ? selectedBrands.filter((id) => id !== brandId)
+      : [...selectedBrands, brandId];
+    setSelectedBrands(newBrands);
+    handleApplyFilters({
+      priceRange,
+      categories: selectedCategories,
+      brands: newBrands,
+      ratings: selectedRatings,
+    });
+  };
+
+  const handleRatingChange = (rating: number, checked: boolean) => {
+    const newRatings = checked
+      ? [...selectedRatings, rating]
+      : selectedRatings.filter((r) => r !== rating);
+    setSelectedRatings(newRatings);
+    handleApplyFilters({
+      priceRange,
+      categories: selectedCategories,
+      brands: selectedBrands,
+      ratings: newRatings,
+    });
+  };
+
+  const handleApplyFilters = (filters: FilterOptions) => {
+    onFilterChange(filters);
+  };
+
+  const handleReset = () => {
+    setPriceRange([0, 1000]);
+    setSelectedCategories([]);
+    setSelectedBrands([]);
+    setSelectedRatings([]);
+    onFilterChange({});
+  };
 
   return (
     <Card className="sticky top-24 h-fit">
@@ -171,7 +234,22 @@ const FilterSidebar = () => {
           <AccordionItem value="price">
             <AccordionTrigger>Price Range</AccordionTrigger>
             <AccordionContent>
-              <PriceRangeFilter />
+              <div className="space-y-3">
+                <div className="mb-4">
+                  <Slider
+                    defaultValue={[0, 1000]}
+                    max={1000}
+                    step={10}
+                    value={priceRange}
+                    onValueChange={handlePriceRangeChange}
+                    className="py-4"
+                  />
+                </div>
+                <div className="flex items-center justify-between text-primary-600">
+                  <span className="text-sm font-medium">${priceRange[0]}</span>
+                  <span className="text-sm font-medium">${priceRange[1]}</span>
+                </div>
+              </div>
             </AccordionContent>
           </AccordionItem>
 
@@ -184,10 +262,16 @@ const FilterSidebar = () => {
                     key={category.id}
                     className="flex items-center space-x-2"
                   >
-                    <Checkbox id={`category-${category.id}`} />
+                    <Checkbox
+                      id={`category-${category.id}`}
+                      checked={selectedCategories.includes(category.id)}
+                      onCheckedChange={(checked) =>
+                        handleCategoryChange(category.id, checked === true)
+                      }
+                    />
                     <label
                       htmlFor={`category-${category.id}`}
-                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                      className="text-sm font-medium leading-none text-primary-600 peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                     >
                       {category.label}
                     </label>
@@ -204,8 +288,11 @@ const FilterSidebar = () => {
                 {brands.map((brand) => (
                   <Badge
                     key={brand.id}
-                    variant="outline"
-                    className="cursor-pointer hover:bg-primary/10 hover:text-primary"
+                    variant={
+                      selectedBrands.includes(brand.id) ? "default" : "outline"
+                    }
+                    className="cursor-pointer"
+                    onClick={() => handleBrandChange(brand.id)}
                   >
                     {brand.label}
                   </Badge>
@@ -218,9 +305,15 @@ const FilterSidebar = () => {
             <AccordionTrigger>Ratings</AccordionTrigger>
             <AccordionContent>
               <div className="space-y-2">
-                {ratings.map((rating) => (
+                {[5, 4, 3, 2, 1].map((rating) => (
                   <div key={rating} className="flex items-center space-x-2">
-                    <Checkbox id={`rating-${rating}`} />
+                    <Checkbox
+                      id={`rating-${rating}`}
+                      checked={selectedRatings.includes(rating)}
+                      onCheckedChange={(checked) =>
+                        handleRatingChange(rating, checked === true)
+                      }
+                    />
                     <label
                       htmlFor={`rating-${rating}`}
                       className="flex items-center text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
@@ -248,16 +341,43 @@ const FilterSidebar = () => {
       </CardContent>
 
       <CardFooter className="flex-col gap-2">
-        <Button className="w-full">Apply Filters</Button>
-        <Button variant="outline" className="w-full">
-          Reset
+        <Button variant="outline" className="w-full" onClick={handleReset}>
+          Reset Filters
         </Button>
       </CardFooter>
     </Card>
   );
 };
 
-const MobileFilters = () => {
+const MobileFilters = ({
+  onFilterChange,
+  initialFilters,
+}: {
+  onFilterChange: (filters: FilterOptions) => void;
+  initialFilters?: FilterOptions;
+}) => {
+  const [priceRange, setPriceRange] = useState<[number, number]>(
+    initialFilters?.priceRange || [0, 1000],
+  );
+  const [selectedCategories, setSelectedCategories] = useState<string[]>(
+    initialFilters?.categories || [],
+  );
+  const [selectedBrands, setSelectedBrands] = useState<string[]>(
+    initialFilters?.brands || [],
+  );
+  const [selectedRatings, setSelectedRatings] = useState<number[]>(
+    initialFilters?.ratings || [],
+  );
+
+  const handleApplyFilters = () => {
+    onFilterChange({
+      priceRange,
+      categories: selectedCategories,
+      brands: selectedBrands,
+      ratings: selectedRatings,
+    });
+  };
+
   return (
     <Sheet>
       <SheetTrigger asChild>
@@ -281,7 +401,28 @@ const MobileFilters = () => {
             <AccordionItem value="price">
               <AccordionTrigger>Price Range</AccordionTrigger>
               <AccordionContent>
-                <PriceRangeFilter />
+                <div className="space-y-3">
+                  <div className="mb-4">
+                    <Slider
+                      defaultValue={[0, 1000]}
+                      max={1000}
+                      step={10}
+                      value={priceRange}
+                      onValueChange={(value) =>
+                        setPriceRange(value as [number, number])
+                      }
+                      className="py-4"
+                    />
+                  </div>
+                  <div className="flex items-center justify-between text-primary-600">
+                    <span className="text-sm font-medium">
+                      ${priceRange[0]}
+                    </span>
+                    <span className="text-sm font-medium">
+                      ${priceRange[1]}
+                    </span>
+                  </div>
+                </div>
               </AccordionContent>
             </AccordionItem>
 
@@ -289,21 +430,27 @@ const MobileFilters = () => {
               <AccordionTrigger>Categories</AccordionTrigger>
               <AccordionContent>
                 <div className="space-y-2">
-                  {[
-                    "Electronics",
-                    "Clothing",
-                    "Home & Garden",
-                    "Beauty",
-                    "Sports",
-                    "Toys",
-                  ].map((category) => (
-                    <div key={category} className="flex items-center space-x-2">
-                      <Checkbox id={`mobile-category-${category}`} />
+                  {categories.map((category) => (
+                    <div
+                      key={category.id}
+                      className="flex items-center space-x-2"
+                    >
+                      <Checkbox
+                        id={`mobile-category-${category.id}`}
+                        checked={selectedCategories.includes(category.id)}
+                        onCheckedChange={(checked) => {
+                          setSelectedCategories((prev) =>
+                            checked
+                              ? [...prev, category.id]
+                              : prev.filter((id) => id !== category.id),
+                          );
+                        }}
+                      />
                       <label
-                        htmlFor={`mobile-category-${category}`}
+                        htmlFor={`mobile-category-${category.id}`}
                         className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                       >
-                        {category}
+                        {category.label}
                       </label>
                     </div>
                   ))}
@@ -315,17 +462,26 @@ const MobileFilters = () => {
               <AccordionTrigger>Brands</AccordionTrigger>
               <AccordionContent>
                 <div className="flex flex-wrap gap-2">
-                  {["Apple", "Samsung", "Nike", "Adidas", "Sony"].map(
-                    (brand) => (
-                      <Badge
-                        key={brand}
-                        variant="outline"
-                        className="cursor-pointer hover:bg-primary/10 hover:text-primary"
-                      >
-                        {brand}
-                      </Badge>
-                    ),
-                  )}
+                  {brands.map((brand) => (
+                    <Badge
+                      key={brand.id}
+                      variant={
+                        selectedBrands.includes(brand.id)
+                          ? "default"
+                          : "outline"
+                      }
+                      className="cursor-pointer"
+                      onClick={() => {
+                        setSelectedBrands((prev) =>
+                          prev.includes(brand.id)
+                            ? prev.filter((id) => id !== brand.id)
+                            : [...prev, brand.id],
+                        );
+                      }}
+                    >
+                      {brand.label}
+                    </Badge>
+                  ))}
                 </div>
               </AccordionContent>
             </AccordionItem>
@@ -336,7 +492,17 @@ const MobileFilters = () => {
                 <div className="space-y-2">
                   {[5, 4, 3, 2, 1].map((rating) => (
                     <div key={rating} className="flex items-center space-x-2">
-                      <Checkbox id={`mobile-rating-${rating}`} />
+                      <Checkbox
+                        id={`mobile-rating-${rating}`}
+                        checked={selectedRatings.includes(rating)}
+                        onCheckedChange={(checked) => {
+                          setSelectedRatings((prev) =>
+                            checked
+                              ? [...prev, rating]
+                              : prev.filter((r) => r !== rating),
+                          );
+                        }}
+                      />
                       <label
                         htmlFor={`mobile-rating-${rating}`}
                         className="flex items-center text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
@@ -363,9 +529,22 @@ const MobileFilters = () => {
           </Accordion>
         </div>
         <SheetFooter className="mt-4">
-          <SheetClose asChild>
-            <Button className="w-full">Apply Filters</Button>
-          </SheetClose>
+          <Button className="w-full" onClick={handleApplyFilters}>
+            Apply Filters
+          </Button>
+          <Button
+            variant="outline"
+            className="w-full"
+            onClick={() => {
+              setPriceRange([0, 1000]);
+              setSelectedCategories([]);
+              setSelectedBrands([]);
+              setSelectedRatings([]);
+              onFilterChange({});
+            }}
+          >
+            Reset Filters
+          </Button>
         </SheetFooter>
       </SheetContent>
     </Sheet>
@@ -376,13 +555,22 @@ function ProductList({
   products,
   title = "All Products",
   size = "md",
+  isLoading = false,
+  onFilterChange,
+  filters,
+  sortBy,
+  onSortChange,
 }: {
   products: ProductType[];
   title?: string;
   size?: "md" | "sm";
+  isLoading?: boolean;
+  onFilterChange: (filters: FilterOptions) => void;
+  filters: FilterOptions;
+  sortBy: string;
+  onSortChange: (value: string) => void;
 }) {
   const [display, setDisplay] = useState("grid");
-  const [sortBy, setSortBy] = useState("featured");
 
   return (
     <motion.div
@@ -393,14 +581,17 @@ function ProductList({
     >
       <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <h2 className="text-xl font-bold">{title}</h2>
+          <h2 className="text-xl font-bold text-primary-600">{title}</h2>
           <Badge variant="outline">{products.length} products</Badge>
         </div>
 
         <div className="flex items-center gap-3">
-          <MobileFilters />
+          <MobileFilters
+            onFilterChange={onFilterChange}
+            initialFilters={filters}
+          />
 
-          <Select value={sortBy} onValueChange={setSortBy}>
+          <Select value={sortBy} onValueChange={onSortChange}>
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="Sort by" />
             </SelectTrigger>
@@ -436,51 +627,48 @@ function ProductList({
         </div>
       </div>
 
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={display}
-          className={cn(
-            display === "grid" && "grid gap-6",
-            display === "grid" &&
-              size === "md" &&
-              "grid-cols-1 lg:grid-cols-2 xl:grid-cols-3",
-            display === "grid" &&
-              size === "sm" &&
-              "grid-cols-1 lg:grid-cols-2 xl:grid-cols-3",
-            display === "list" && "flex flex-col gap-4",
-          )}
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-          exit={{ opacity: 0 }}
-        >
-          {products.map((product) => (
-            <motion.div
-              key={product.id}
-              variants={itemVariants}
-              className={cn(display === "list" && "w-full")}
-            >
-              <Product
-                product={product}
-                size={size}
-                className={display === "list" ? "flex max-w-none gap-4" : ""}
-              />
-            </motion.div>
-          ))}
-        </motion.div>
-      </AnimatePresence>
-
-      {products.length === 0 && (
-        <div className="flex h-60 flex-col items-center justify-center rounded-lg border border-dashed p-8 text-center">
-          <div className="text-3xl">😢</div>
-          <h3 className="mt-2 text-lg font-medium">No products found</h3>
-          <p className="mt-1 text-sm text-gray-500">
-            Try adjusting your filters or search terms
-          </p>
-          <Button variant="outline" className="mt-4">
-            Reset Filters
-          </Button>
+      {isLoading ? (
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {Array(8)
+            .fill(0)
+            .map((_, index) => (
+              <ProductSkeleton key={index} />
+            ))}
         </div>
+      ) : (
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={display}
+            className={cn(
+              display === "grid" && "grid gap-6",
+              display === "grid" &&
+                size === "md" &&
+                "grid-cols-1 lg:grid-cols-2 xl:grid-cols-3",
+              display === "grid" &&
+                size === "sm" &&
+                "grid-cols-1 lg:grid-cols-2 xl:grid-cols-3",
+              display === "list" && "flex flex-col gap-4",
+            )}
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+            exit={{ opacity: 0 }}
+          >
+            {products.map((product) => (
+              <motion.div
+                key={product.id}
+                variants={itemVariants}
+                className={cn(display === "list" && "w-full")}
+              >
+                <Product
+                  product={product}
+                  size={size}
+                  className={display === "list" ? "flex max-w-none gap-4" : ""}
+                />
+              </motion.div>
+            ))}
+          </motion.div>
+        </AnimatePresence>
       )}
     </motion.div>
   );
@@ -512,13 +700,47 @@ const Navigation = () => {
 };
 
 export default function ShopPage() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useState(
+    searchParams.get("query") || "",
+  );
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 1000]);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
+  const [selectedRatings, setSelectedRatings] = useState<number[]>([]);
+  const [sortBy, setSortBy] = useState("featured");
+
+  const [cachedProducts, setCachedProducts] = useState<ProductType[]>([]);
+  const [initialLoadComplete, setInitialLoadComplete] = useState(false);
+
   const itemsPerPage = 12;
   const prevPageRef = useRef(currentPage);
-  const { products, isLoading, isError, total, isValidating } = useProducts(
-    currentPage,
-    itemsPerPage,
-  );
+
+  const queryParamsRef = useRef({
+    query: searchParams.get("query") || "",
+    page: currentPage,
+  });
+
+  const { products, isLoading, isError, total, isValidating } = useProducts({
+    page: currentPage,
+    limit: itemsPerPage,
+    query: queryParamsRef.current.query,
+    brand: selectedBrands,
+    priceRange:
+      priceRange[0] > 0 || priceRange[1] < 1000 ? priceRange : undefined,
+    category: selectedCategories,
+    rating: selectedRatings,
+    sortBy,
+  });
+
+  useEffect(() => {
+    if (products && products.length > 0) {
+      setCachedProducts(products);
+      setInitialLoadComplete(true);
+    }
+  }, [products]);
 
   useEffect(() => {
     if (prevPageRef.current !== currentPage && !isValidating) {
@@ -527,7 +749,28 @@ export default function ShopPage() {
     }
   }, [isValidating, currentPage]);
 
-  if (isLoading) {
+  const handleSearchInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+  };
+
+  const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    queryParamsRef.current.query = searchQuery;
+    router.push(`?query=${searchQuery}`);
+    setCurrentPage(1);
+  };
+
+  useEffect(() => {
+    if (searchParams.get("query") !== null) {
+      const urlQuery = searchParams.get("query") || "";
+      setSearchQuery(urlQuery);
+      queryParamsRef.current.query = urlQuery;
+    }
+  }, [searchParams]);
+
+  const showInitialLoading = isLoading && !initialLoadComplete;
+
+  if (showInitialLoading) {
     return (
       <section className="container mx-auto mb-14 mt-10 min-h-screen px-4 lg:px-6">
         <Skeleton className="mb-8 h-10 w-64" />
@@ -567,20 +810,98 @@ export default function ShopPage() {
     );
   }
 
-  const productsData = products;
   const totalPages = Math.ceil(total / itemsPerPage);
 
+  const showProductsLoading =
+    isValidating && !isLoading && currentPage !== prevPageRef.current;
+
   return (
-    <section className="container mx-auto mb-14 mt-10 min-h-screen px-4 lg:px-6">
+    <section className="container mx-auto mb-14 mt-10 min-h-screen px-4 lg:px-0">
       <Navigation />
+
+      <form onSubmit={handleSearch} className="mb-6 flex items-center gap-4">
+        <input
+          type="text"
+          value={searchQuery}
+          onChange={handleSearchInputChange}
+          placeholder="Search products..."
+          className="w-full rounded-md border px-4 py-2"
+        />
+        <Button type="submit">Search</Button>
+      </form>
 
       <div className="mb-12 grid grid-cols-1 gap-8 lg:grid-cols-4">
         <div className="hidden lg:block">
-          <FilterSidebar />
+          <FilterSidebar
+            onFilterChange={(filters) => {
+              if (filters.priceRange) setPriceRange(filters.priceRange);
+              if (filters.categories) setSelectedCategories(filters.categories);
+              if (filters.brands) setSelectedBrands(filters.brands);
+              if (filters.ratings) setSelectedRatings(filters.ratings);
+            }}
+            initialFilters={{
+              priceRange,
+              categories: selectedCategories,
+              brands: selectedBrands,
+              ratings: selectedRatings,
+            }}
+          />
         </div>
 
         <div className="lg:col-span-3">
-          <ProductList products={productsData} />
+          <div className="flex items-center gap-3">
+            <MobileFilters
+              onFilterChange={(filters) => {
+                if (filters.priceRange) setPriceRange(filters.priceRange);
+                if (filters.categories)
+                  setSelectedCategories(filters.categories);
+                if (filters.brands) setSelectedBrands(filters.brands);
+                if (filters.ratings) setSelectedRatings(filters.ratings);
+              }}
+              initialFilters={{
+                priceRange,
+                categories: selectedCategories,
+                brands: selectedBrands,
+                ratings: selectedRatings,
+              }}
+            />
+            <ProductList
+              products={products || cachedProducts}
+              isLoading={showProductsLoading}
+              sortBy={sortBy}
+              onSortChange={setSortBy}
+              onFilterChange={(filters) => {
+                if (filters.priceRange) setPriceRange(filters.priceRange);
+                if (filters.categories)
+                  setSelectedCategories(filters.categories);
+                if (filters.brands) setSelectedBrands(filters.brands);
+                if (filters.ratings) setSelectedRatings(filters.ratings);
+              }}
+              filters={{
+                priceRange,
+                categories: selectedCategories,
+                brands: selectedBrands,
+                ratings: selectedRatings,
+              }}
+            />
+          </div>
+
+          {isLoading ? (
+            <div className="flex h-60 items-center justify-center">
+              <Spinner />
+            </div>
+          ) : products.length === 0 ? (
+            <div className="flex h-60 flex-col items-center justify-center rounded-lg border border-dashed p-8 text-center">
+              <div className="text-3xl">😢</div>
+              <h3 className="mt-2 text-lg font-medium">No products found</h3>
+              <p className="mt-1 text-sm text-gray-500">
+                Try adjusting your filters or search terms
+              </p>
+              <Button variant="outline" className="mt-4">
+                Reset Filters
+              </Button>
+            </div>
+          ) : null}
 
           <div className="mt-8">
             <Pagination>

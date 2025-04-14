@@ -1,9 +1,40 @@
 import useSWR from "swr";
 import { fetcher, instance } from "@/config";
 
-export const useProducts = (page: number, limit: number) => {
+interface UseProductsParams {
+  page: number;
+  limit: number;
+  query?: string;
+  brand?: string[];
+  category?: string[];
+  rating?: number[];
+  priceRange?: [number, number];
+  sortBy?: string;
+}
+
+export const useProducts = ({
+  page,
+  limit,
+  query = "",
+  brand = [],
+  category = [],
+  rating = [],
+  priceRange,
+  sortBy = "featured",
+}: UseProductsParams) => {
+  const brandParams = brand
+    .map((b) => `&brand=${encodeURIComponent(b)}`)
+    .join("");
+  const categoryParams = category
+    .map((c) => `&category=${encodeURIComponent(c)}`)
+    .join("");
+  const ratingParams = rating.map((r) => `&rating=${r}`).join("");
+  const priceParams = priceRange
+    ? `&minPrice=${priceRange[0]}&maxPrice=${priceRange[1]}`
+    : "";
+
   const { data, error, isValidating } = useSWR(
-    `/products?page=${page}&limit=${limit}`,
+    `/products?page=${page}&limit=${limit}&query=${encodeURIComponent(query)}${brandParams}${categoryParams}${ratingParams}${priceParams}&sortBy=${sortBy}`,
     fetcher,
     {
       keepPreviousData: true,
