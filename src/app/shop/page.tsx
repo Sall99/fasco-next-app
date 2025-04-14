@@ -19,7 +19,6 @@ import {
   SheetTitle,
   SheetTrigger,
   SheetFooter,
-  SheetClose,
 } from "@/components/ui/sheet";
 import {
   Select,
@@ -58,6 +57,21 @@ import { ProductType } from "@/types";
 import { Product } from "@/components";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Spinner } from "@/components/ui/spinner/spinner";
+
+const categories = [
+  { id: "women's-fashion", label: "Women's Fashion" },
+  { id: "men's-fashion", label: "Men's Fashion" },
+  { id: "women-accessories", label: "Women Accessories" },
+  { id: "men-accessories", label: "Men Accessories" },
+];
+
+const brands = [
+  { id: "Al Karam", label: "Al Karam" },
+  { id: "Adidas", label: "Adidas" },
+  { id: "Dokotoo", label: "Dokotoo" },
+  { id: "Exlura", label: "Exlura" },
+  { id: "Donna Karan", label: "Donna Karan" },
+];
 
 const ProductSkeleton = ({ size = "md" }) => (
   <Card className="h-full border-none shadow-sm">
@@ -118,46 +132,93 @@ const itemVariants = {
   },
 };
 
-const PriceRangeFilter = () => {
-  const [range, setRange] = useState([0, 1000]);
-
-  return (
-    <div className="space-y-3">
-      <div className="mb-4">
-        <Slider
-          defaultValue={[0, 1000]}
-          max={1000}
-          step={10}
-          value={range}
-          onValueChange={setRange}
-          className="py-4"
-        />
-      </div>
-      <div className="flex items-center justify-between text-primary-600">
-        <span className="text-sm font-medium">${range[0]}</span>
-        <span className="text-sm font-medium">${range[1]}</span>
-      </div>
-    </div>
-  );
+type FilterOptions = {
+  priceRange?: [number, number];
+  categories?: string[];
+  brands?: string[];
+  ratings?: number[];
 };
 
-const FilterSidebar = () => {
-  const categories = [
-    { id: "women's-fashion", label: "Women's Fashion" },
-    { id: "men's-fashion", label: "Men's Fashion" },
-    { id: "women-accessories", label: "Women Accessories" },
-    { id: "men-accessories", label: "Men Accessories" },
-  ];
+const FilterSidebar = ({
+  onFilterChange,
+  initialFilters,
+}: {
+  onFilterChange: (filters: FilterOptions) => void;
+  initialFilters?: FilterOptions;
+}) => {
+  const [priceRange, setPriceRange] = useState<[number, number]>(
+    initialFilters?.priceRange || [0, 1000],
+  );
+  const [selectedCategories, setSelectedCategories] = useState<string[]>(
+    initialFilters?.categories || [],
+  );
+  const [selectedBrands, setSelectedBrands] = useState<string[]>(
+    initialFilters?.brands || [],
+  );
+  const [selectedRatings, setSelectedRatings] = useState<number[]>(
+    initialFilters?.ratings || [],
+  );
 
-  const brands = [
-    { id: "Al Karam", label: "Al Karam" },
-    { id: "Adidas", label: "Adidas" },
-    { id: "Dokotoo", label: "Dokotoo" },
-    { id: "Exlura", label: "Exlura" },
-    { id: "Donna Karan", label: "Donna Karan" },
-  ];
+  const handlePriceRangeChange = (value: [number, number]) => {
+    setPriceRange(value);
+    handleApplyFilters({
+      priceRange: value,
+      categories: selectedCategories,
+      brands: selectedBrands,
+      ratings: selectedRatings,
+    });
+  };
 
-  const ratings = [5, 4, 3, 2, 1];
+  const handleCategoryChange = (categoryId: string, checked: boolean) => {
+    const newCategories = checked
+      ? [...selectedCategories, categoryId]
+      : selectedCategories.filter((id) => id !== categoryId);
+    setSelectedCategories(newCategories);
+    handleApplyFilters({
+      priceRange,
+      categories: newCategories,
+      brands: selectedBrands,
+      ratings: selectedRatings,
+    });
+  };
+
+  const handleBrandChange = (brandId: string) => {
+    const newBrands = selectedBrands.includes(brandId)
+      ? selectedBrands.filter((id) => id !== brandId)
+      : [...selectedBrands, brandId];
+    setSelectedBrands(newBrands);
+    handleApplyFilters({
+      priceRange,
+      categories: selectedCategories,
+      brands: newBrands,
+      ratings: selectedRatings,
+    });
+  };
+
+  const handleRatingChange = (rating: number, checked: boolean) => {
+    const newRatings = checked
+      ? [...selectedRatings, rating]
+      : selectedRatings.filter((r) => r !== rating);
+    setSelectedRatings(newRatings);
+    handleApplyFilters({
+      priceRange,
+      categories: selectedCategories,
+      brands: selectedBrands,
+      ratings: newRatings,
+    });
+  };
+
+  const handleApplyFilters = (filters: FilterOptions) => {
+    onFilterChange(filters);
+  };
+
+  const handleReset = () => {
+    setPriceRange([0, 1000]);
+    setSelectedCategories([]);
+    setSelectedBrands([]);
+    setSelectedRatings([]);
+    onFilterChange({});
+  };
 
   return (
     <Card className="sticky top-24 h-fit">
@@ -173,7 +234,22 @@ const FilterSidebar = () => {
           <AccordionItem value="price">
             <AccordionTrigger>Price Range</AccordionTrigger>
             <AccordionContent>
-              <PriceRangeFilter />
+              <div className="space-y-3">
+                <div className="mb-4">
+                  <Slider
+                    defaultValue={[0, 1000]}
+                    max={1000}
+                    step={10}
+                    value={priceRange}
+                    onValueChange={handlePriceRangeChange}
+                    className="py-4"
+                  />
+                </div>
+                <div className="flex items-center justify-between text-primary-600">
+                  <span className="text-sm font-medium">${priceRange[0]}</span>
+                  <span className="text-sm font-medium">${priceRange[1]}</span>
+                </div>
+              </div>
             </AccordionContent>
           </AccordionItem>
 
@@ -186,7 +262,13 @@ const FilterSidebar = () => {
                     key={category.id}
                     className="flex items-center space-x-2"
                   >
-                    <Checkbox id={`category-${category.id}`} />
+                    <Checkbox
+                      id={`category-${category.id}`}
+                      checked={selectedCategories.includes(category.id)}
+                      onCheckedChange={(checked) =>
+                        handleCategoryChange(category.id, checked === true)
+                      }
+                    />
                     <label
                       htmlFor={`category-${category.id}`}
                       className="text-sm font-medium leading-none text-primary-600 peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
@@ -206,8 +288,11 @@ const FilterSidebar = () => {
                 {brands.map((brand) => (
                   <Badge
                     key={brand.id}
-                    variant="outline"
-                    className="cursor-pointer text-primary-600 hover:bg-primary/10 hover:text-primary"
+                    variant={
+                      selectedBrands.includes(brand.id) ? "default" : "outline"
+                    }
+                    className="cursor-pointer"
+                    onClick={() => handleBrandChange(brand.id)}
                   >
                     {brand.label}
                   </Badge>
@@ -220,9 +305,15 @@ const FilterSidebar = () => {
             <AccordionTrigger>Ratings</AccordionTrigger>
             <AccordionContent>
               <div className="space-y-2">
-                {ratings.map((rating) => (
+                {[5, 4, 3, 2, 1].map((rating) => (
                   <div key={rating} className="flex items-center space-x-2">
-                    <Checkbox id={`rating-${rating}`} />
+                    <Checkbox
+                      id={`rating-${rating}`}
+                      checked={selectedRatings.includes(rating)}
+                      onCheckedChange={(checked) =>
+                        handleRatingChange(rating, checked === true)
+                      }
+                    />
                     <label
                       htmlFor={`rating-${rating}`}
                       className="flex items-center text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
@@ -250,16 +341,43 @@ const FilterSidebar = () => {
       </CardContent>
 
       <CardFooter className="flex-col gap-2">
-        <Button className="w-full">Apply Filters</Button>
-        <Button variant="outline" className="w-full">
-          Reset
+        <Button variant="outline" className="w-full" onClick={handleReset}>
+          Reset Filters
         </Button>
       </CardFooter>
     </Card>
   );
 };
 
-const MobileFilters = () => {
+const MobileFilters = ({
+  onFilterChange,
+  initialFilters,
+}: {
+  onFilterChange: (filters: FilterOptions) => void;
+  initialFilters?: FilterOptions;
+}) => {
+  const [priceRange, setPriceRange] = useState<[number, number]>(
+    initialFilters?.priceRange || [0, 1000],
+  );
+  const [selectedCategories, setSelectedCategories] = useState<string[]>(
+    initialFilters?.categories || [],
+  );
+  const [selectedBrands, setSelectedBrands] = useState<string[]>(
+    initialFilters?.brands || [],
+  );
+  const [selectedRatings, setSelectedRatings] = useState<number[]>(
+    initialFilters?.ratings || [],
+  );
+
+  const handleApplyFilters = () => {
+    onFilterChange({
+      priceRange,
+      categories: selectedCategories,
+      brands: selectedBrands,
+      ratings: selectedRatings,
+    });
+  };
+
   return (
     <Sheet>
       <SheetTrigger asChild>
@@ -283,7 +401,28 @@ const MobileFilters = () => {
             <AccordionItem value="price">
               <AccordionTrigger>Price Range</AccordionTrigger>
               <AccordionContent>
-                <PriceRangeFilter />
+                <div className="space-y-3">
+                  <div className="mb-4">
+                    <Slider
+                      defaultValue={[0, 1000]}
+                      max={1000}
+                      step={10}
+                      value={priceRange}
+                      onValueChange={(value) =>
+                        setPriceRange(value as [number, number])
+                      }
+                      className="py-4"
+                    />
+                  </div>
+                  <div className="flex items-center justify-between text-primary-600">
+                    <span className="text-sm font-medium">
+                      ${priceRange[0]}
+                    </span>
+                    <span className="text-sm font-medium">
+                      ${priceRange[1]}
+                    </span>
+                  </div>
+                </div>
               </AccordionContent>
             </AccordionItem>
 
@@ -291,21 +430,27 @@ const MobileFilters = () => {
               <AccordionTrigger>Categories</AccordionTrigger>
               <AccordionContent>
                 <div className="space-y-2">
-                  {[
-                    "Electronics",
-                    "Clothing",
-                    "Home & Garden",
-                    "Beauty",
-                    "Sports",
-                    "Toys",
-                  ].map((category) => (
-                    <div key={category} className="flex items-center space-x-2">
-                      <Checkbox id={`mobile-category-${category}`} />
+                  {categories.map((category) => (
+                    <div
+                      key={category.id}
+                      className="flex items-center space-x-2"
+                    >
+                      <Checkbox
+                        id={`mobile-category-${category.id}`}
+                        checked={selectedCategories.includes(category.id)}
+                        onCheckedChange={(checked) => {
+                          setSelectedCategories((prev) =>
+                            checked
+                              ? [...prev, category.id]
+                              : prev.filter((id) => id !== category.id),
+                          );
+                        }}
+                      />
                       <label
-                        htmlFor={`mobile-category-${category}`}
+                        htmlFor={`mobile-category-${category.id}`}
                         className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                       >
-                        {category}
+                        {category.label}
                       </label>
                     </div>
                   ))}
@@ -317,17 +462,26 @@ const MobileFilters = () => {
               <AccordionTrigger>Brands</AccordionTrigger>
               <AccordionContent>
                 <div className="flex flex-wrap gap-2">
-                  {["Apple", "Samsung", "Nike", "Adidas", "Sony"].map(
-                    (brand) => (
-                      <Badge
-                        key={brand}
-                        variant="outline"
-                        className="cursor-pointer hover:bg-primary/10 hover:text-primary"
-                      >
-                        {brand}
-                      </Badge>
-                    ),
-                  )}
+                  {brands.map((brand) => (
+                    <Badge
+                      key={brand.id}
+                      variant={
+                        selectedBrands.includes(brand.id)
+                          ? "default"
+                          : "outline"
+                      }
+                      className="cursor-pointer"
+                      onClick={() => {
+                        setSelectedBrands((prev) =>
+                          prev.includes(brand.id)
+                            ? prev.filter((id) => id !== brand.id)
+                            : [...prev, brand.id],
+                        );
+                      }}
+                    >
+                      {brand.label}
+                    </Badge>
+                  ))}
                 </div>
               </AccordionContent>
             </AccordionItem>
@@ -338,7 +492,17 @@ const MobileFilters = () => {
                 <div className="space-y-2">
                   {[5, 4, 3, 2, 1].map((rating) => (
                     <div key={rating} className="flex items-center space-x-2">
-                      <Checkbox id={`mobile-rating-${rating}`} />
+                      <Checkbox
+                        id={`mobile-rating-${rating}`}
+                        checked={selectedRatings.includes(rating)}
+                        onCheckedChange={(checked) => {
+                          setSelectedRatings((prev) =>
+                            checked
+                              ? [...prev, rating]
+                              : prev.filter((r) => r !== rating),
+                          );
+                        }}
+                      />
                       <label
                         htmlFor={`mobile-rating-${rating}`}
                         className="flex items-center text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
@@ -365,9 +529,22 @@ const MobileFilters = () => {
           </Accordion>
         </div>
         <SheetFooter className="mt-4">
-          <SheetClose asChild>
-            <Button className="w-full">Apply Filters</Button>
-          </SheetClose>
+          <Button className="w-full" onClick={handleApplyFilters}>
+            Apply Filters
+          </Button>
+          <Button
+            variant="outline"
+            className="w-full"
+            onClick={() => {
+              setPriceRange([0, 1000]);
+              setSelectedCategories([]);
+              setSelectedBrands([]);
+              setSelectedRatings([]);
+              onFilterChange({});
+            }}
+          >
+            Reset Filters
+          </Button>
         </SheetFooter>
       </SheetContent>
     </Sheet>
@@ -379,14 +556,21 @@ function ProductList({
   title = "All Products",
   size = "md",
   isLoading = false,
+  onFilterChange,
+  filters,
+  sortBy,
+  onSortChange,
 }: {
   products: ProductType[];
   title?: string;
   size?: "md" | "sm";
   isLoading?: boolean;
+  onFilterChange: (filters: FilterOptions) => void;
+  filters: FilterOptions;
+  sortBy: string;
+  onSortChange: (value: string) => void;
 }) {
   const [display, setDisplay] = useState("grid");
-  const [sortBy, setSortBy] = useState("featured");
 
   return (
     <motion.div
@@ -402,9 +586,12 @@ function ProductList({
         </div>
 
         <div className="flex items-center gap-3">
-          <MobileFilters />
+          <MobileFilters
+            onFilterChange={onFilterChange}
+            initialFilters={filters}
+          />
 
-          <Select value={sortBy} onValueChange={setSortBy}>
+          <Select value={sortBy} onValueChange={onSortChange}>
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="Sort by" />
             </SelectTrigger>
@@ -520,7 +707,9 @@ export default function ShopPage() {
     searchParams.get("query") || "",
   );
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 1000]);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
+  const [selectedRatings, setSelectedRatings] = useState<number[]>([]);
   const [sortBy, setSortBy] = useState("featured");
 
   const [cachedProducts, setCachedProducts] = useState<ProductType[]>([]);
@@ -541,6 +730,8 @@ export default function ShopPage() {
     brand: selectedBrands,
     priceRange:
       priceRange[0] > 0 || priceRange[1] < 1000 ? priceRange : undefined,
+    category: selectedCategories,
+    rating: selectedRatings,
     sortBy,
   });
 
@@ -619,9 +810,6 @@ export default function ShopPage() {
     );
   }
 
-  const productsToDisplay = initialLoadComplete
-    ? products || cachedProducts
-    : [];
   const totalPages = Math.ceil(total / itemsPerPage);
 
   const showProductsLoading =
@@ -644,14 +832,59 @@ export default function ShopPage() {
 
       <div className="mb-12 grid grid-cols-1 gap-8 lg:grid-cols-4">
         <div className="hidden lg:block">
-          <FilterSidebar />
+          <FilterSidebar
+            onFilterChange={(filters) => {
+              if (filters.priceRange) setPriceRange(filters.priceRange);
+              if (filters.categories) setSelectedCategories(filters.categories);
+              if (filters.brands) setSelectedBrands(filters.brands);
+              if (filters.ratings) setSelectedRatings(filters.ratings);
+            }}
+            initialFilters={{
+              priceRange,
+              categories: selectedCategories,
+              brands: selectedBrands,
+              ratings: selectedRatings,
+            }}
+          />
         </div>
 
         <div className="lg:col-span-3">
-          <ProductList
-            products={productsToDisplay}
-            isLoading={showProductsLoading}
-          />
+          <div className="flex items-center gap-3">
+            <MobileFilters
+              onFilterChange={(filters) => {
+                if (filters.priceRange) setPriceRange(filters.priceRange);
+                if (filters.categories)
+                  setSelectedCategories(filters.categories);
+                if (filters.brands) setSelectedBrands(filters.brands);
+                if (filters.ratings) setSelectedRatings(filters.ratings);
+              }}
+              initialFilters={{
+                priceRange,
+                categories: selectedCategories,
+                brands: selectedBrands,
+                ratings: selectedRatings,
+              }}
+            />
+            <ProductList
+              products={products || cachedProducts}
+              isLoading={showProductsLoading}
+              sortBy={sortBy}
+              onSortChange={setSortBy}
+              onFilterChange={(filters) => {
+                if (filters.priceRange) setPriceRange(filters.priceRange);
+                if (filters.categories)
+                  setSelectedCategories(filters.categories);
+                if (filters.brands) setSelectedBrands(filters.brands);
+                if (filters.ratings) setSelectedRatings(filters.ratings);
+              }}
+              filters={{
+                priceRange,
+                categories: selectedCategories,
+                brands: selectedBrands,
+                ratings: selectedRatings,
+              }}
+            />
+          </div>
 
           {isLoading ? (
             <div className="flex h-60 items-center justify-center">
