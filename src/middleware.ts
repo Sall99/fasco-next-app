@@ -14,35 +14,47 @@ export async function middleware(req: NextRequest) {
   }
 
   try {
+    const isProduction = process.env.NODE_ENV === "production";
+    const productionDomain = "fasco-next-app.vercel.app";
+
     // Get the token and enforce strict verification
     const token = await getToken({
       req,
       secret: process.env.NEXTAUTH_SECRET,
-      secureCookie:
-        process.env.NEXTAUTH_URL?.startsWith("https://") ??
-        !!process.env.VERCEL_URL,
+      secureCookie: isProduction || req.nextUrl.protocol === "https:",
     });
 
-    // Debug log
-    console.log("Auth Debug:", {
-      path,
-      hasToken: !!token,
-      baseUrl: req.nextUrl.origin,
-      vercelUrl: process.env.VERCEL_URL,
-    });
+    // Debug log (only in development)
+    if (!isProduction) {
+      console.log("Auth Debug:", {
+        path,
+        hasToken: !!token,
+        baseUrl: req.nextUrl.origin,
+        env: process.env.NODE_ENV,
+      });
+    }
 
     if (!token) {
       // Store the full URL to return to after login
-      const loginUrl = new URL("/auth/login", req.url);
+      const baseUrl = isProduction
+        ? `https://${productionDomain}`
+        : req.nextUrl.origin;
+      const loginUrl = new URL("/auth/login", baseUrl);
       loginUrl.searchParams.set("callbackUrl", req.url);
       return NextResponse.redirect(loginUrl);
     }
 
     return NextResponse.next();
   } catch (error) {
-    console.error("Middleware auth error:", error);
-    // On error, redirect to login for security
-    const loginUrl = new URL("/auth/login", req.url);
+    if (process.env.NODE_ENV !== "production") {
+      console.error("Middleware auth error:", error);
+    }
+
+    const baseUrl =
+      process.env.NODE_ENV === "production"
+        ? `https://fasco-next-app.vercel.app`
+        : req.nextUrl.origin;
+    const loginUrl = new URL("/auth/login", baseUrl);
     loginUrl.searchParams.set("callbackUrl", req.url);
     return NextResponse.redirect(loginUrl);
   }
