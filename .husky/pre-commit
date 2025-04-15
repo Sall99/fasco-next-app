@@ -1,0 +1,10 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Check for env files
+if git diff --cached --name-only | grep -E '^.env.*$' >/dev/null 2>&1
+then
+  echo "Blocked commit of .env files"
+  echo "Remove them from staging area with: git reset .env*"
+  exit 1
+fi
