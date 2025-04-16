@@ -4,11 +4,11 @@ import { getToken } from "next-auth/jwt";
 export async function middleware(req: NextRequest) {
   const path = req.nextUrl.pathname;
 
-  // Skip middleware for non-protected paths
   if (
     !path.startsWith("/profile") &&
     !path.startsWith("/orders") &&
-    !path.startsWith("/checkout")
+    !path.startsWith("/checkout") &&
+    !path.startsWith("/admin")
   ) {
     return NextResponse.next();
   }
@@ -17,14 +17,12 @@ export async function middleware(req: NextRequest) {
     const isProduction = process.env.NODE_ENV === "production";
     const productionDomain = "fasco-next-app.vercel.app";
 
-    // Get the token and enforce strict verification
     const token = await getToken({
       req,
       secret: process.env.NEXTAUTH_SECRET,
       secureCookie: isProduction || req.nextUrl.protocol === "https:",
     });
 
-    // Debug log (only in development)
     if (!isProduction) {
       console.log("Auth Debug:", {
         path,
@@ -35,13 +33,16 @@ export async function middleware(req: NextRequest) {
     }
 
     if (!token) {
-      // Store the full URL to return to after login
       const baseUrl = isProduction
         ? `https://${productionDomain}`
         : req.nextUrl.origin;
       const loginUrl = new URL("/auth/login", baseUrl);
       loginUrl.searchParams.set("callbackUrl", req.url);
       return NextResponse.redirect(loginUrl);
+    }
+
+    if (path.startsWith("/admin") && token.role !== "ADMIN") {
+      return NextResponse.redirect(new URL("/", req.url));
     }
 
     return NextResponse.next();
@@ -61,5 +62,10 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/profile/:path*", "/orders/:path*", "/checkout/:path*"],
+  matcher: [
+    "/profile/:path*",
+    "/orders/:path*",
+    "/checkout/:path*",
+    "/admin/:path*",
+  ],
 };
