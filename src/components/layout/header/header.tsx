@@ -21,16 +21,29 @@ const Links = [
   { title: "Log in", path: "/auth/login" },
 ];
 
-const getLinks = (isAuthenticated: boolean) => [
-  { title: "Home", path: "/" },
-  { title: "Shop", path: "/shop" },
-  ...(isAuthenticated
-    ? [
-        { title: "My Orders", path: "/orders" },
-        { title: "Profile", path: "/profile" },
-      ]
-    : [{ title: "Log in", path: "/auth/login" }]),
-];
+const getLinks = (isAuthenticated: boolean, userRole?: string) => {
+  console.log(userRole, "userRole");
+
+  if (userRole === "ADMIN") {
+    return [
+      { title: "Dashboard", path: "/admin/dashboard" },
+      { title: "Add admin", path: "/create-admin" },
+      { title: "Profile", path: "/profile" },
+    ];
+  }
+
+  return [
+    { title: "Home", path: "/" },
+    { title: "Shop", path: "/shop" },
+    ...(isAuthenticated
+      ? [
+          { title: "My Orders", path: "/orders" },
+          { title: "Profile", path: "/profile" },
+        ]
+      : [{ title: "Log in", path: "/auth/login" }]),
+  ];
+};
+
 interface CartItemActions {
   handleUpdateQuantity: (productId: string, quantity: number) => void;
   handleDecreaseQuantity: (productId: string) => void;
@@ -40,6 +53,7 @@ interface HeaderProps {
   user: {
     name: string;
     email: string;
+    role?: string;
   } | null;
 }
 
@@ -361,6 +375,7 @@ export const Header = ({ user }: HeaderProps) => {
             toggleCart={toggleCart}
             cartItems={cartItems}
             isAuthenticated={isAuthenticated}
+            userRole={user?.role}
           />
 
           <MobileNavigation
@@ -400,14 +415,16 @@ const DesktopNavigation = ({
   toggleCart,
   cartItems,
   isAuthenticated,
+  userRole,
 }: {
   toggleCart: () => void;
   cartItems: CartItem[];
   isAuthenticated: boolean;
+  userRole?: string;
 }) => (
   <div className="hidden items-center gap-5 lg:flex">
     <motion.ul className="flex items-center gap-5" variants={headerVariants}>
-      {getLinks(isAuthenticated).map(({ title, path }, key) => (
+      {getLinks(isAuthenticated, userRole).map(({ title, path }, key) => (
         <NavLink key={key} path={path} title={title} />
       ))}
     </motion.ul>
