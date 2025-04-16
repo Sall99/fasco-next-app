@@ -90,6 +90,12 @@ model Stock {
   productId         String  @unique @db.ObjectId
 }
 
+enum Role {
+  ADMIN
+  EMPLOYER
+  USER
+}
+
 model User {
   id            String    @id @default(auto()) @map("_id") @db.ObjectId
   name          String?
@@ -98,6 +104,7 @@ model User {
   emailVerified DateTime?
   image         String?
   password      String?   @db.String
+  role          Role      @default(USER)
   accounts      Account[]
   sessions      Session[]
   Order         Order[]

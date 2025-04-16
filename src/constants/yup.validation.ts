@@ -117,3 +117,23 @@ export const passwordSchema = yup.object({
     .oneOf([yup.ref("newPassword")], "Passwords must match")
     .required("Please confirm your password"),
 });
+
+export const createAdminSchema = yup.object().shape({
+  name: yup
+    .string()
+    .required("Name is required")
+    .min(2, "Name must be at least 2 characters")
+    .max(50, "Name must be less than 50 characters"),
+  email: yup
+    .string()
+    .email("Invalid email format")
+    .required("Email is required"),
+  password: yup
+    .string()
+    .required("Password is required")
+    .min(8, "Password must be at least 8 characters")
+    .matches(
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])/,
+      "Password must include uppercase, lowercase, number, and special character",
+    ),
+});
