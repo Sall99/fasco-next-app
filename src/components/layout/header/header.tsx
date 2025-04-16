@@ -22,8 +22,6 @@ const Links = [
 ];
 
 const getLinks = (isAuthenticated: boolean, userRole?: string) => {
-  console.log(userRole, "userRole");
-
   if (userRole === "ADMIN") {
     return [
       { title: "Dashboard", path: "/admin/dashboard" },
