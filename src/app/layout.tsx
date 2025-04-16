@@ -69,6 +69,7 @@ export default async function RootLayout({
     ? {
         name: session.user.name ?? "",
         email: session.user.email ?? "",
+        role: session.user.role ?? "",
       }
     : null;
 
