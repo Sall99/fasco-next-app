@@ -9,6 +9,7 @@ import {
   Settings,
   ChevronLeft,
   ChevronRight,
+  UserPlus,
 } from "lucide-react";
 
 import {
@@ -30,12 +31,14 @@ import {
 import { cn } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { CreateAdminForm } from "@/components/ui/admin/create-admin-form";
 
 type SectionId =
   | "overview"
   | "products"
   | "categories"
   | "customers"
+  | "addAdmin"
   | "orders"
   | "settings";
 
@@ -74,6 +77,11 @@ const NAV_ITEMS: NavItem[] = [
     id: "customers",
     label: "Customers",
     icon: <Users className="h-5 w-5" />,
+  },
+  {
+    id: "addAdmin",
+    label: "Add admin",
+    icon: <UserPlus className="h-5 w-5" />,
   },
   {
     id: "orders",
@@ -168,6 +176,7 @@ const MainContent: React.FC<MainContentProps> = ({ activeSection }) => {
     products: <ProductsSection />,
     categories: <CategoriesSection />,
     customers: <CustomersSection />,
+    addAdmin: <CreateAdminForm />,
     orders: <OrdersSection />,
     settings: <SettingsSection />,
   };
