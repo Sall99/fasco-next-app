@@ -4,7 +4,7 @@ import { getToken } from "next-auth/jwt";
 export async function middleware(req: NextRequest) {
   const path = req.nextUrl.pathname;
 
-  // Skip middleware for non-protected paths s
+  // Skip middleware for non-protected paths
   if (
     !path.startsWith("/profile") &&
     !path.startsWith("/orders") &&
