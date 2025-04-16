@@ -27,7 +27,6 @@ const getLinks = (isAuthenticated: boolean, userRole?: string) => {
   if (userRole === "ADMIN") {
     return [
       { title: "Dashboard", path: "/admin/dashboard" },
-      { title: "Add admin", path: "/create-admin" },
       { title: "Profile", path: "/profile" },
     ];
   }
