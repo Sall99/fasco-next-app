@@ -9,7 +9,7 @@ const links = [
   { name: "Contact", url: "/contact" },
   { name: "Careers", url: "/careers" },
   { name: "Blog", url: "/blog" },
-  { name: "FAQs", url: "/faqs" },
+  { name: "FAQs", url: "/faq" },
 ];
 
 export const Footer = () => {

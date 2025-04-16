@@ -18,6 +18,7 @@ import { CartItem } from "@/types";
 const Links = [
   { title: "Home", path: "/" },
   { title: "Shop", path: "/shop" },
+  { title: "FAQ", path: "/faq" },
   { title: "Log in", path: "/auth/login" },
 ];
 
