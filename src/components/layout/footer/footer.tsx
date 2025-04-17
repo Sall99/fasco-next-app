@@ -6,10 +6,10 @@ import React from "react";
 const links = [
   { name: "Support Center", url: "/support-center" },
   { name: "Invoicing", url: "/invoicing" },
-  { name: "Contract", url: "/contract" },
+  { name: "Contact", url: "/contact" },
   { name: "Careers", url: "/careers" },
   { name: "Blog", url: "/blog" },
-  { name: "FAQs", url: "/faqs" },
+  { name: "FAQs", url: "/faq" },
 ];
 
 export const Footer = () => {
