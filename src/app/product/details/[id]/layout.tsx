@@ -1,13 +1,13 @@
-import { Metadata } from "next";
 import { prisma } from "../../../../../libs";
 
-type Props = {
-  params: { id: string };
-};
-
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const productId = (await params).id;
   const product = await prisma.product.findUnique({
-    where: { id: params.id },
+    where: { id: productId },
     select: {
       name: true,
       description: true,
