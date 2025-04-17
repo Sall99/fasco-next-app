@@ -190,7 +190,7 @@ const OrdersSection = () => {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-3xl font-bold">Orders</h2>
+        <h2 className="text-3xl font-bold text-primary-600">Orders</h2>
         <Button variant="outline" className="flex items-center gap-2">
           <Download className="h-4 w-4" />
           Export Orders
@@ -204,7 +204,9 @@ const OrdersSection = () => {
             <ShoppingCart className="h-4 w-4 text-fuchsia-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.totalOrders}</div>
+            <div className="text-2xl font-bold text-primary-600">
+              {stats.totalOrders}
+            </div>
           </CardContent>
         </Card>
         <Card>
@@ -213,7 +215,7 @@ const OrdersSection = () => {
             <DollarSign className="h-4 w-4 text-green-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
+            <div className="text-2xl font-bold text-primary-600">
               ${stats.totalRevenue.toFixed(2)}
             </div>
           </CardContent>
@@ -224,7 +226,9 @@ const OrdersSection = () => {
             <Clock className="h-4 w-4 text-yellow-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.processingOrders}</div>
+            <div className="text-2xl font-bold text-primary-600">
+              {stats.processingOrders}
+            </div>
           </CardContent>
         </Card>
         <Card>
@@ -233,7 +237,9 @@ const OrdersSection = () => {
             <Package className="h-4 w-4 text-blue-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.deliveredOrders}</div>
+            <div className="text-2xl font-bold text-primary-600">
+              {stats.deliveredOrders}
+            </div>
           </CardContent>
         </Card>
       </div>
