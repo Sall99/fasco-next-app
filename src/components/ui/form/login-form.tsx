@@ -52,7 +52,8 @@ export function LoginForm() {
         console.error(result.error);
         toast.error("Invalid email or password");
       } else {
-        router.push("/");
+        await new Promise((resolve) => setTimeout(resolve, 500));
+        router.replace("/");
       }
     } catch (error) {
       toast.error("An error occurred. Please try again later.");

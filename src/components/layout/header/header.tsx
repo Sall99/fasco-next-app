@@ -6,6 +6,7 @@ import { X, Menu, ShoppingCart, Plus, Minus } from "lucide-react";
 import { Button, Typography } from "@/components";
 import Link from "next/link";
 import { useDispatch, useSelector } from "react-redux";
+import { useSession } from "next-auth/react";
 import {
   decreaseQuantity,
   selectCartItems,
@@ -15,14 +16,10 @@ import {
 import Image from "next/image";
 import { CartItem } from "@/types";
 
-const Links = [
-  { title: "Home", path: "/" },
-  { title: "Shop", path: "/shop" },
-  { title: "FAQ", path: "/faq" },
-  { title: "Log in", path: "/auth/login" },
-];
-
-const getLinks = (isAuthenticated: boolean, userRole?: string) => {
+const getLinks = (
+  isAuthenticated: boolean,
+  userRole: string | null | undefined,
+) => {
   if (userRole === "ADMIN") {
     return [
       { title: "Dashboard", path: "/admin/dashboard" },
@@ -45,14 +42,6 @@ const getLinks = (isAuthenticated: boolean, userRole?: string) => {
 interface CartItemActions {
   handleUpdateQuantity: (productId: string, quantity: number) => void;
   handleDecreaseQuantity: (productId: string) => void;
-}
-
-interface HeaderProps {
-  user: {
-    name: string;
-    email: string;
-    role?: string;
-  } | null;
 }
 
 const Items = ({
@@ -224,13 +213,19 @@ const NavLink = ({
   </motion.li>
 );
 
+interface MobileMenuProps {
+  isOpen: boolean;
+  toggle: () => void;
+  isAuthenticated: boolean;
+  userRole: string | null | undefined;
+}
+
 const MobileMenu = ({
   isOpen,
   toggle,
-}: {
-  isOpen: boolean;
-  toggle: () => void;
-}) => (
+  isAuthenticated,
+  userRole,
+}: MobileMenuProps) => (
   <AnimatePresence>
     {isOpen && (
       <motion.div
@@ -242,7 +237,7 @@ const MobileMenu = ({
         className="fixed left-0 top-0 z-[75] h-screen w-full bg-white px-6 pt-20 lg:hidden"
       >
         <div className="flex flex-col gap-6">
-          {Links.map(({ title, path }, key) => (
+          {getLinks(isAuthenticated, userRole).map(({ title, path }, key) => (
             <motion.div key={key} variants={linkVariants} onClick={toggle}>
               <NavLink
                 path={path}
@@ -310,12 +305,13 @@ const headerVariants = {
   },
 };
 
-export const Header = ({ user }: HeaderProps) => {
+export const Header = () => {
   const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const dispatch = useDispatch();
-  const isAuthenticated = !!user?.email;
+  const { data: session } = useSession();
+  const isAuthenticated = !!session?.user?.email;
 
   const cartItems = useSelector(selectCartItems);
   const cartTotalPrice = useSelector(selectTotalPrice);
@@ -373,7 +369,7 @@ export const Header = ({ user }: HeaderProps) => {
             toggleCart={toggleCart}
             cartItems={cartItems}
             isAuthenticated={isAuthenticated}
-            userRole={user?.role}
+            userRole={session?.user?.role}
           />
 
           <MobileNavigation
@@ -381,6 +377,8 @@ export const Header = ({ user }: HeaderProps) => {
             cartItems={cartItems}
             toggleMobileMenu={toggleMobileMenu}
             isMobileMenuOpen={isMobileMenuOpen}
+            isAuthenticated={isAuthenticated}
+            userRole={session?.user?.role}
           />
         </div>
 
@@ -404,22 +402,29 @@ export const Header = ({ user }: HeaderProps) => {
           )}
         </AnimatePresence>
       </motion.header>
-      <MobileMenu isOpen={isMobileMenuOpen} toggle={toggleMobileMenu} />
+      <MobileMenu
+        isOpen={isMobileMenuOpen}
+        toggle={toggleMobileMenu}
+        isAuthenticated={isAuthenticated}
+        userRole={session?.user?.role}
+      />
     </>
   );
 };
+
+interface NavigationProps {
+  toggleCart: () => void;
+  cartItems: CartItem[];
+  isAuthenticated: boolean;
+  userRole: string | null | undefined;
+}
 
 const DesktopNavigation = ({
   toggleCart,
   cartItems,
   isAuthenticated,
   userRole,
-}: {
-  toggleCart: () => void;
-  cartItems: CartItem[];
-  isAuthenticated: boolean;
-  userRole?: string;
-}) => (
+}: NavigationProps) => (
   <div className="hidden items-center gap-5 lg:flex">
     <motion.ul className="flex items-center gap-5" variants={headerVariants}>
       {getLinks(isAuthenticated, userRole).map(({ title, path }, key) => (
@@ -438,17 +443,17 @@ const DesktopNavigation = ({
   </div>
 );
 
+interface MobileNavigationProps extends NavigationProps {
+  toggleMobileMenu: () => void;
+  isMobileMenuOpen: boolean;
+}
+
 const MobileNavigation = ({
   toggleCart,
   cartItems,
   toggleMobileMenu,
   isMobileMenuOpen,
-}: {
-  toggleCart: () => void;
-  cartItems: CartItem[];
-  toggleMobileMenu: () => void;
-  isMobileMenuOpen: boolean;
-}) => (
+}: MobileNavigationProps) => (
   <div className="flex items-center gap-4 lg:hidden">
     <motion.div
       onClick={toggleCart}
