@@ -9,8 +9,6 @@ import { Toaster as SonnerToaster } from "sonner";
 import { Header } from "@/components";
 import StoreProvider from "@/store/provider";
 import { SessionWrapper } from "../../libs";
-import { getServerSession } from "next-auth";
-import { authOptions } from "../../libs/auth-options";
 import { ClientLayout } from "@/utils/client-route";
 
 const DigitalNumbers = localFont({
@@ -79,16 +77,6 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const session = await getServerSession(authOptions);
-
-  const user = session?.user
-    ? {
-        name: session.user.name ?? "",
-        email: session.user.email ?? "",
-        role: session.user.role ?? "",
-      }
-    : null;
-
   return (
     <html lang="en">
       <head>
@@ -126,7 +114,7 @@ export default async function RootLayout({
       >
         <StoreProvider>
           <SessionWrapper>
-            <Header user={user} />
+            <Header />
             <ClientLayout>
               {children}
               <Toaster />
