@@ -29,10 +29,11 @@ const poppins = Poppins({
 });
 
 export async function generateMetadata(): Promise<Metadata> {
-  const title = "Fasco - Fashion & Accessories";
+  const title = "Fasco - Premium Fashion & Accessories Store";
   const description =
-    "Premium fashion and accessories store with the latest trends and designer collections";
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://fasco.com";
+    "Discover luxury fashion, designer collections, and premium accessories at Fasco. Shop the latest trends in clothing, bags, shoes, and accessories.";
+  const baseUrl =
+    process.env.NEXT_PUBLIC_BASE_URL || "https://fasco-next-app.vercel.app";
 
   return {
     title: {
@@ -40,6 +41,10 @@ export async function generateMetadata(): Promise<Metadata> {
       template: `%s | ${title}`,
     },
     description,
+    metadataBase: new URL(baseUrl),
+    alternates: {
+      canonical: "/",
+    },
     openGraph: {
       title: {
         default: title,
@@ -51,8 +56,8 @@ export async function generateMetadata(): Promise<Metadata> {
       images: [
         {
           url: `${baseUrl}/og-image.jpg`,
-          width: 800,
-          height: 600,
+          width: 1200,
+          height: 630,
           alt: "Fasco Fashion Store",
         },
       ],
@@ -68,6 +73,20 @@ export async function generateMetadata(): Promise<Metadata> {
       description,
       creator: "@fasco",
       images: [`${baseUrl}/twitter-image.jpg`],
+    },
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        "max-video-preview": -1,
+        "max-image-preview": "large",
+        "max-snippet": -1,
+      },
+    },
+    verification: {
+      google: process.env.NEXT_PUBLIC_GOOGLE_VERIFICATION,
     },
   };
 }

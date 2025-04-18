@@ -62,7 +62,7 @@ export type ProductType = {
   stock: {
     quantity: number;
     lowStockThreshold: number;
-  } | null;
+  };
 };
 
 type OrderItem = {
