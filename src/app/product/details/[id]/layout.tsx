@@ -1,13 +1,13 @@
-import { Metadata } from "next";
 import { prisma } from "../../../../../libs/prisma.db";
 
 export async function generateMetadata({
   params,
 }: {
-  params: { id: string };
-}): Promise<Metadata> {
+  params: Promise<{ id: string }>;
+}) {
+  const productId = (await params).id;
   const product = await prisma.product.findUnique({
-    where: { id: params.id },
+    where: { id: productId },
     include: {
       category: true,
       stock: true,
@@ -61,7 +61,7 @@ export async function generateMetadata({
       images: [product.images[0]],
     },
     alternates: {
-      canonical: `${baseUrl}/product/details/${params.id}`,
+      canonical: `${baseUrl}/product/details/${productId}`,
     },
   };
 }
