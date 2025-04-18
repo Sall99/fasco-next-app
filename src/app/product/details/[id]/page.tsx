@@ -7,7 +7,13 @@ import Image from "next/image";
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { useGetProduct } from "@/actions";
-import { Button, ProductReviews, Skeleton, Typography } from "@/components";
+import {
+  Button,
+  ProductReviews,
+  Skeleton,
+  Typography,
+  ProductSchema,
+} from "@/components";
 import { StarRating } from "@/components/ui/star-rating";
 import { useDispatch, useSelector } from "react-redux";
 import { addToCart } from "@/store/slices/cart";
@@ -468,89 +474,59 @@ const Details = ({
 };
 
 export default function Page() {
-  const { id } = useParams<{ id: string }>();
-  const { data, isLoading, isError } = useGetProduct(id);
+  const { id } = useParams();
+  const { data, isLoading } = useGetProduct(id as string);
+  const product = data?.data;
 
   if (isLoading) {
     return (
       <section className="mx-auto max-w-7xl px-4 py-12">
-        <motion.div
-          className="flex flex-col justify-center gap-8 lg:flex-row"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5 }}
-        >
+        <div className="flex flex-col justify-center gap-12 lg:flex-row">
           <GallerySkeleton />
           <DetailsSkeleton />
-        </motion.div>
+        </div>
       </section>
     );
   }
 
-  if (isError) {
+  if (!product) {
     return (
-      <motion.div
-        className="fixed inset-0 z-50 flex h-screen items-center justify-center bg-white"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-      >
-        <div className="rounded-lg bg-red-50 p-8 text-center shadow-lg">
-          <div className="mb-4 inline-flex h-16 w-16 items-center justify-center rounded-full bg-red-100">
-            <svg
-              className="h-8 w-8 text-red-600"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
-          </div>
-          <h3 className="mb-2 text-lg font-medium text-red-800">
-            Error Loading Product
-          </h3>
-          <p className="text-red-600">
-            We couldn&apos;t load the product information. Please try again
-            later.
-          </p>
-        </div>
-      </motion.div>
+      <section className="mx-auto max-w-7xl px-4 py-12">
+        <Typography variant="h4">Product not found</Typography>
+      </section>
     );
   }
 
-  const product = data?.data;
-
   return (
-    <section className="mx-auto max-w-7xl px-4 py-12">
-      <div className="flex flex-col justify-center gap-12 lg:flex-row">
-        <Gallery
-          images={product?.images}
-          productId={product?.id}
-          name={product?.name}
-          price={product?.price}
-        />
-        <Details
-          id={product?.id}
-          name={product?.name}
-          brand={product?.brand}
-          price={product?.price}
-          viewersCount={product?.viewersCount}
-          tags={product?.tags}
-          description={product?.description}
-          category={product?.category}
-          stock={product?.stock}
-          rating={product?.rating}
-          images={product?.images}
-        />
-      </div>
-      <div className="mt-12">
-        <ProductReviews productId={product?.id} />
-      </div>
-      <Toaster richColors />
-    </section>
+    <>
+      <ProductSchema product={product} />
+      <section className="mx-auto max-w-7xl px-4 py-12">
+        <div className="flex flex-col justify-center gap-12 lg:flex-row">
+          <Gallery
+            images={product?.images}
+            productId={product?.id}
+            name={product?.name}
+            price={product?.price}
+          />
+          <Details
+            id={product?.id}
+            name={product?.name}
+            brand={product?.brand}
+            price={product?.price}
+            viewersCount={product?.viewersCount}
+            tags={product?.tags}
+            description={product?.description}
+            category={product?.category}
+            stock={product?.stock}
+            rating={product?.rating}
+            images={product?.images}
+          />
+        </div>
+        <div className="mt-12">
+          <ProductReviews productId={product?.id} />
+        </div>
+        <Toaster richColors />
+      </section>
+    </>
   );
 }

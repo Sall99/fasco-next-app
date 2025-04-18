@@ -35,7 +35,7 @@ const SettingsSection = () => {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // Handle form submission
+
     console.log("Saving settings:", settings);
   };
 
@@ -178,7 +178,7 @@ const SettingsSection = () => {
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-3xl font-bold">Settings</h2>
+        <h2 className="text-3xl font-bold text-primary-600">Settings</h2>
         <Button type="submit" className="bg-blue-600 hover:bg-blue-700">
           <Save className="mr-2 h-4 w-4" />
           Save Changes
@@ -227,12 +227,10 @@ const SettingsSection = () => {
 
           <TabsContent value="payment">
             <h3 className="text-lg font-semibold">Payment Settings</h3>
-            {/* Add payment settings content */}
           </TabsContent>
 
           <TabsContent value="security">
             <h3 className="text-lg font-semibold">Security Settings</h3>
-            {/* Add security settings content */}
           </TabsContent>
         </div>
       </Tabs>

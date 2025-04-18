@@ -44,7 +44,9 @@ export function CreateAdminForm() {
   return (
     <div className="mx-auto w-full max-w-md space-y-6 rounded-lg bg-white p-6 shadow-md">
       <div className="text-center">
-        <h2 className="text-2xl font-bold text-gray-900">Create New Admin</h2>
+        <h2 className="text-2xl font-bold text-primary-600">
+          Create New Admin
+        </h2>
         <p className="mt-2 text-sm text-gray-600">
           Fill in the details to create a new admin account
         </p>
